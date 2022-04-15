@@ -1,0 +1,11 @@
+{
+  "dependencies": {
+    "amqplib": "^0.8.0",
+    "dotenv": "^16.0.0",
+    "express": "^4.17.3",
+    "ioredis": "^5.0.4",
+    "js-priority-queue": "^0.1.5",
+    "mongodb": "^4.5.0",
+    "redis": "^4.0.6"
+  }
+}

@@ -1,0 +1,268 @@
+const express = require('express');
+const app = express();
+const redisClient = require('./util/cache');
+const rabbitmqPub = require('./util/rabbitmq');
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+const TIME_FILLTER = '00000';
+
+// async function test() {
+//   const rabbitmqConn = await rabbitmq;
+//   rabbitmqConn.assertQueue('tasks').then(function (ok) {
+//     return rabbitmqConn.sendToQueue('tasks', Buffer.from('something to do'));
+
+//   })
+// }
+
+// test()
+
+
+app.post('/newOrder', async (req, res, next) => {
+  req.body.price = parseFloat(req.body.price)
+  req.body.quantity = parseInt(req.body.quantity)
+  let { account, symbol, BS, price, quantity } = req.body;
+
+  let scoreLeft = parseInt('' + (price * 100) + '00000000', 10);
+  let scoreRight = parseInt('' + (price * 100) + '99999999', 10);
+  let bestBuyer, bestBuyerScore, bestSeller, bestSellerScore;
+  if (BS === 'buyer') {
+    // console.log(await redisClient.zrange(`${req.body.symbol}-buyer`, 0, -1));
+    // console.log(await redisClient.zrange(`${req.body.symbol}-seller`, 0, -1))
+    do {
+      // console.log(await redisClient.zrange(`${req.body.symbol}-seller`, 0, -1, 'WITHSCORES'))
+      // bestSeller = await redisClient.zrange(`${symbol}-seller`, scoreLeft, scoreRight, 'BYSCORE', 'WITHSCORES', 'LIMIT', 0, 1)
+      let testbestSeller = await redisClient.zrange(`${symbol}-seller`, 0, -1, 'WITHSCORES'); //TODO: 先比對(>/<)再拿出
+      [bestSeller, bestSellerScore] = await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
+      if (bestSeller === undefined) {
+        let buyerInfo = await addBuyer(req.body);
+        return res.send(buyerInfo);
+      }
+      bestSeller = JSON.parse(bestSeller)
+
+      if (bestSeller.price * 100 > price * 100) {
+        let buyerInfo = await addBuyer(req.body);
+        return res.send(buyerInfo);
+      }
+
+      let finalQTY
+      if (quantity === bestSeller.quantity) {
+        finalQTY = quantity;
+      } else if (quantity < bestSeller.quantity) {
+        finalQTY = quantity
+      } else {
+        finalQTY = bestSeller.quantity
+      }
+
+
+      let executionDetail = {
+        seller: bestSeller.account,
+        buyer: req.body.account,
+        price: bestSeller.price,
+        quantity: finalQTY
+      }
+      console.log(executionDetail)
+      await rabbitmqPub('saveNewOrder', 'newOrder', JSON.stringify(executionDetail))
+      await redisClient.zrem(`${symbol}-seller`, JSON.stringify(bestSeller));
+
+      if (quantity === bestSeller.quantity) {
+        break;
+      } else if (quantity < bestSeller.quantity) {
+        bestSeller.quantity -= quantity;
+        let scores = [{ score: bestSellerScore, buyer: JSON.stringify(bestSeller) }];
+        await redisClient.zadd(`${symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        //TODO: zadd new quantity
+        break;
+      } else {
+        quantity -= bestSeller.quantity;
+        req.body.quantity = quantity;
+        continue;
+      }
+    } while (true);
+    return res.send('buyer order success')
+
+  } else {
+
+    do {
+      // console.log(await redisClient.zrange(`${req.body.symbol}-buyer`, 0, -1, 'WITHSCORES'))
+      [bestBuyer, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES');
+      if (bestBuyer === undefined) {
+        let sellerInfo = await addSeller(req.body);
+        return res.send(sellerInfo);
+      }
+      bestBuyer = JSON.parse(bestBuyer)
+
+      if (bestBuyer.price * 100 < price * 100) {
+        let sellerInfo = await addSeller(req.body);
+        return res.send(sellerInfo);
+      }
+
+
+      let finalQTY
+      if (quantity === bestBuyer.quantity) {
+        finalQTY = quantity;
+      } else if (quantity < bestBuyer.quantity) {
+        finalQTY = quantity
+      } else {
+        finalQTY = bestBuyer.quantity
+      }
+
+
+      let executionDetail = {
+        seller: req.body.account,
+        buyer: bestBuyer.account,
+        price: bestBuyer.price,
+        quantity: finalQTY
+      }
+      console.log(executionDetail)
+      //save the order
+      await rabbitmqPub('saveNewOrder', 'newOrder', JSON.stringify(executionDetail))
+      await redisClient.zrem(`${symbol}-buyer`, JSON.stringify(bestBuyer));
+
+      if (quantity === bestBuyer.quantity) {
+        break;
+      } else if (quantity < bestBuyer.quantity) {
+        bestBuyer.quantity -= quantity;
+        let scores = [{ score: bestBuyerScore, buyer: JSON.stringify(bestBuyer) }];
+        await redisClient.zadd(`${symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        break;
+      } else {
+        quantity -= bestBuyer.quantity;
+        req.body.quantity = quantity;
+        continue;
+      }
+
+    } while (true);
+    return res.send('seller order success')
+  }
+
+
+  //TODO: send noti to brokers
+})
+
+var bCount = 0;
+let addBuyer = async function (buyerInfo) {
+  let time = (+new Date());
+  // let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+  let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
+  let todayRestTime = midnight - time;
+  if (todayRestTime.length < 8) {
+    todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
+  }
+  buyerInfo.time = todayRestTime;
+
+
+  let setScore = parseInt('' + (parseFloat(buyerInfo.price) * 100) + `${todayRestTime}`, 10);
+  buyerInfo.tradeID = setScore;
+  let scores = [{ score: setScore, buyer: JSON.stringify(buyerInfo) }];
+  await redisClient.zadd(`${buyerInfo.symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
+  bCount++;
+  console.log(buyerInfo.account)
+  console.log('buyer count', bCount);
+  return buyerInfo;
+}
+
+var sCount = 0;
+let addSeller = async function (sellerInfo) {
+  let time = (+new Date());
+  let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
+  // let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
+  let todayRestTime = time - midnight;
+  if (todayRestTime.length < 8) {
+    todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
+  }
+  sellerInfo.time = todayRestTime;
+
+
+  let setScore = parseInt('' + (parseFloat(sellerInfo.price) * 100) + `${todayRestTime}`, 10);
+  sellerInfo.tradeID = setScore;
+  let scores = [{ score: setScore, buyer: JSON.stringify(sellerInfo) }];
+  await redisClient.zadd(`${sellerInfo.symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
+  sCount++;
+  console.log(sellerInfo.account)
+  console.log('seller count', sCount);
+  return sellerInfo;
+}
+
+
+
+
+
+app.listen(6000, () => {
+  console.log('Server runs on port 6000.')
+})
+
+
+
+
+app.post('/seller', async (req, res, next) => {
+  // console.log(await redisClient.zrange('salary', 0, -1))
+  // await redisClient.zrem('salary', 'May')
+  // console.log(await redisClient.zrange('salary', 0, -1))
+  let test = await redisClient.zrange('100-buyer', 0, -1, 'WITHSCORES')
+  console.log(test[0])
+  // let { uid, symbol, price, quantity, time } = req.body
+  // if (sellerList[price]) {
+  //   sellerList[price].push(req.body)
+  // } else {
+  //   sellerList[price] = []
+  //   sellerList[price].push(req.body)
+  // }
+  // console.log(sellerList)
+
+  // let sellerPrice = new priorityQueue()
+  // sellerPrice.queue(price)
+  // console.log(sellerPrice)
+  // res.send(sellerPrice)
+})
+
+// function isSameQuantity(buyerQuantity, sellerQuantity) { return buyerQuantity === sellerQuantity }
+// function isSellerQuantityMoreThanBuyer(buyerQuantity, sellerQuantity) { return buyerQuantity < sellerQuantity }
+// function isSellerQuantityLessThanBuyer(buyerQuantity, sellerQuantity) { return buyerQuantity > sellerQuantity }
+
+
+
+
+
+
+
+
+
+
+// app.post('/buyer', async (req, res, next) => {
+//   let { uid, symbol, price, quantity, time } = req.body;
+//   let scoreLeft = parseInt('' + (price * 100) + '00000000', 10);
+//   let scoreRight = parseInt('' + (price * 100) + '99999999', 10);
+
+//   // let isSameQuantity = quantity === bestSeller[0].quantity
+//   // let isSellerQuantityMoreThanBuyer = quantity < bestSeller[0].quantity
+//   // let isSellerQuantityLessThanBuyer = quantity > bestSeller[0].quantity
+//   let bestSeller = JSON.parse(await redisClient.zrange(`${symbol}-seller`, scoreLeft, scoreRight, 'BYSCORE', 'WITHSCORES', 'LIMIT', 0, 1))
+//   // let bestSellerQuantity= bestSeller[0].quantity
+//   // while (isSellerQuantityLessThanBuyer(quantity, bestSellerQuantity)) {
+
+
+//   //   let canNotBuyTheMostCheap =  bestSeller[1].slice(6) > price * 100
+//   //   if (canNotBuyTheMostCheap) {
+//   //     //TODO: push the buyer to the list  
+//   //     break;
+//   //   }
+
+//   //   //TODO: buyer get the price
+
+
+//   //   if (isSameQuantity) {
+//   //     await redisClient.zrem('salary', bestSeller[0])
+//   //   } else if (isSellerQuantityMoreThanBuyer) {
+//   //     //TODO: seller quantity -= buyer quantity
+//   //   } else {
+//   //     quantity -= bestSeller[0].quantity;
+//   //     req.body.quantity = quantity;
+//   //     await redisClient.zrem('salary', bestSeller[0])
+
+
+//   //   }
+
+//   // } 
+// })
