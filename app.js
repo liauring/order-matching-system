@@ -28,6 +28,7 @@ app.post('/newOrder', async (req, res, next) => {
   let bestBuyer, bestBuyerScore, bestSeller, bestSellerScore;
   let orderID = uuidv4();
   req.body.orderID = orderID;
+  let hasRemainingQuantity = false;
   if (BS === 'buyer') {
     do {
       // bestSeller = await redisClient.zrange(`${symbol}-seller`, scoreLeft, scoreRight, 'BYSCORE', 'WITHSCORES', 'LIMIT', 0, 1)
@@ -38,18 +39,27 @@ app.post('/newOrder', async (req, res, next) => {
         return res.send(buyerInfo);
       }
 
-
+      await redisClient.zrem(`${symbol}-seller`, bestSeller); //需要防止後面未完成嗎
       bestSeller = JSON.parse(bestSeller);
       console.log(bestSeller);
+
+
 
       let executionID = uuidv4();
       let finalQTY
       if (quantity === bestSeller.quantity) {
         finalQTY = quantity;
+        hasRemainingQuantity = false;
       } else if (quantity < bestSeller.quantity) {
         finalQTY = quantity
+        bestSeller.quantity -= quantity;
+        await redisClient.zadd(`${symbol}-seller`, bestSellerScore, JSON.stringify(bestSeller));
+        hasRemainingQuantity = false;
       } else {
-        finalQTY = bestSeller.quantity
+        finalQTY = bestSeller.quantity;
+        quantity -= bestSeller.quantity;
+        req.body.quantity = quantity;
+        hasRemainingQuantity = true;
       }
 
 
@@ -79,30 +89,11 @@ app.post('/newOrder', async (req, res, next) => {
 
       console.log('executionDetail: ', executionDetail)
       await rabbitmqPub('saveNewOrder', 'newOrder', JSON.stringify(executionDetail))
-      await redisClient.zrem(`${symbol}-seller`, JSON.stringify(bestSeller));
       socket.sendExec(broker, executionBuyer);
       socket.sendExec(bestSeller.broker, executionSeller);
 
 
-
-      if (quantity === bestSeller.quantity) {
-        break;
-      } else if (quantity < bestSeller.quantity) {
-        bestSeller.quantity -= quantity;
-        let scores = [{ score: bestSellerScore, buyer: JSON.stringify(bestSeller) }];
-        await redisClient.zadd(`${symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
-        break;
-      } else {
-        quantity -= bestSeller.quantity;
-        req.body.quantity = quantity;
-        continue;
-      };
-
-
-    } while (true);
-
-
-    return res.send('buyer order success')
+    } while (hasRemainingQuantity);
 
   } else {
 
@@ -113,6 +104,8 @@ app.post('/newOrder', async (req, res, next) => {
         let sellerInfo = await addNewSeller(req.body);
         return res.send(sellerInfo);
       }
+
+      await redisClient.zrem(`${symbol}-buyer`, bestBuyer);
       bestBuyer = JSON.parse(bestBuyer);
       console.log(bestBuyer);
 
@@ -120,10 +113,17 @@ app.post('/newOrder', async (req, res, next) => {
       let finalQTY
       if (quantity === bestBuyer.quantity) {
         finalQTY = quantity;
+        hasRemainingQuantity = false;
       } else if (quantity < bestBuyer.quantity) {
-        finalQTY = quantity
+        finalQTY = quantity;
+        bestBuyer.quantity -= quantity;
+        await redisClient.zadd(`${symbol}-buyer`, bestBuyerScore, JSON.stringify(bestBuyer));
+        hasRemainingQuantity = false;
       } else {
-        finalQTY = bestBuyer.quantity
+        finalQTY = bestBuyer.quantity;
+        quantity -= bestBuyer.quantity;
+        req.body.quantity = quantity;
+        hasRemainingQuantity = true;
       }
 
 
@@ -155,33 +155,16 @@ app.post('/newOrder', async (req, res, next) => {
 
 
       console.log(executionDetail)
-      //save the order
       await rabbitmqPub('saveNewOrder', 'newOrder', JSON.stringify(executionDetail))
-      await redisClient.zrem(`${symbol}-buyer`, JSON.stringify(bestBuyer));
       socket.sendExec(broker, executionSeller);
       socket.sendExec(bestBuyer.broker, executionBuyer);
 
-      if (quantity === bestBuyer.quantity) {
-        break;
-      } else if (quantity < bestBuyer.quantity) {
-        bestBuyer.quantity -= quantity;
-        let scores = [{ score: bestBuyerScore, buyer: JSON.stringify(bestBuyer) }];
-        await redisClient.zadd(`${symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
-        break;
-      } else {
-        quantity -= bestBuyer.quantity;
-        req.body.quantity = quantity;
-        continue;
-      }
 
 
-
-    } while (true);
-
-
-    return res.send('seller order success')
+    } while (hasRemainingQuantity);
   }
 
+  return res.send(`${BS} order success`)
   //TODO:send noti to brokers 從redis拿到五檔
   // let fiveTicks =
   // socket.io.emit('ticks',)

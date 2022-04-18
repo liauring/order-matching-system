@@ -17,9 +17,9 @@
   </head>
   <body>
     <ul id="messages"></ul>
-    <form id="form" action="">
+    <!-- <form id="form" action="">
       <input id="input" autocomplete="off" /><button>Send</button>
-    </form>
+    </form> -->
     <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
     <script>
       let socket = io();
@@ -27,7 +27,7 @@
       
       const BROKERID = 1020
       socket.on('connect', () => {
-        console.log('I am TW')
+        
         socket.emit('brokerID',BROKERID)
         console.log(`I am ${BROKERID} after emit`)
         
