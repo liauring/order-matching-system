@@ -47,16 +47,10 @@ app.post('/newOrder', async (req, res, next) => {
       if (quantity === bestSeller.quantity) {
         finalQTY = quantity;
       } else if (quantity < bestSeller.quantity) {
-        finalQTY = quantity;
-        bestSeller.quantity -= quantity;
-        let scores = [{ score: bestSellerScore, buyer: JSON.stringify(bestSeller) }];
-        await redisClient.zadd(`${symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        finalQTY = quantity
       } else {
-        finalQTY = bestSeller.quantity;
-        quantity -= bestSeller.quantity;
-        req.body.quantity = quantity;
+        finalQTY = bestSeller.quantity
       }
-      await redisClient.zrem(`${symbol}-seller`, JSON.stringify(bestSeller));
 
 
       let executionDetail = {
@@ -85,26 +79,27 @@ app.post('/newOrder', async (req, res, next) => {
 
       console.log('executionDetail: ', executionDetail)
       await rabbitmqPub('saveNewOrder', 'newOrder', JSON.stringify(executionDetail))
+      await redisClient.zrem(`${symbol}-seller`, JSON.stringify(bestSeller));
       socket.sendExec(broker, executionBuyer);
       socket.sendExec(bestSeller.broker, executionSeller);
 
 
 
-      // if (quantity === bestSeller.quantity) {
-      //   break;
-      // } else if (quantity < bestSeller.quantity) {
-      //   bestSeller.quantity -= quantity;
-      //   let scores = [{ score: bestSellerScore, buyer: JSON.stringify(bestSeller) }];
-      //   await redisClient.zadd(`${symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
-      //   break;
-      // } else {
-      //   quantity -= bestSeller.quantity;
-      //   req.body.quantity = quantity;
-      //   continue;
-      // };
+      if (quantity === bestSeller.quantity) {
+        break;
+      } else if (quantity < bestSeller.quantity) {
+        bestSeller.quantity -= quantity;
+        let scores = [{ score: bestSellerScore, buyer: JSON.stringify(bestSeller) }];
+        await redisClient.zadd(`${symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        break;
+      } else {
+        quantity -= bestSeller.quantity;
+        req.body.quantity = quantity;
+        continue;
+      };
 
 
-    } while (quantity > bestSeller.quantity);
+    } while (true);
 
 
     return res.send('buyer order success')
@@ -126,14 +121,9 @@ app.post('/newOrder', async (req, res, next) => {
       if (quantity === bestBuyer.quantity) {
         finalQTY = quantity;
       } else if (quantity < bestBuyer.quantity) {
-        finalQTY = quantity;
-        bestBuyer.quantity -= quantity;
-        let scores = [{ score: bestBuyerScore, buyer: JSON.stringify(bestBuyer) }];
-        await redisClient.zadd(`${symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        finalQTY = quantity
       } else {
-        finalQTY = bestBuyer.quantity;
-        quantity -= bestBuyer.quantity;
-        req.body.quantity = quantity;
+        finalQTY = bestBuyer.quantity
       }
 
 
@@ -171,22 +161,22 @@ app.post('/newOrder', async (req, res, next) => {
       socket.sendExec(broker, executionSeller);
       socket.sendExec(bestBuyer.broker, executionBuyer);
 
-      // if (quantity === bestBuyer.quantity) {
-      //   break;
-      // } else if (quantity < bestBuyer.quantity) {
-      //   bestBuyer.quantity -= quantity;
-      //   let scores = [{ score: bestBuyerScore, buyer: JSON.stringify(bestBuyer) }];
-      //   await redisClient.zadd(`${symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
-      //   break;
-      // } else {
-      //   quantity -= bestBuyer.quantity;
-      //   req.body.quantity = quantity;
-      //   continue;
-      // }
+      if (quantity === bestBuyer.quantity) {
+        break;
+      } else if (quantity < bestBuyer.quantity) {
+        bestBuyer.quantity -= quantity;
+        let scores = [{ score: bestBuyerScore, buyer: JSON.stringify(bestBuyer) }];
+        await redisClient.zadd(`${symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
+        break;
+      } else {
+        quantity -= bestBuyer.quantity;
+        req.body.quantity = quantity;
+        continue;
+      }
 
 
 
-    } while (quantity > bestBuyer.quantity);
+    } while (true);
 
 
     return res.send('seller order success')
