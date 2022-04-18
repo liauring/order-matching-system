@@ -1,17 +1,19 @@
 // var q = 'tasks';
 require('dotenv').config();
 
+let rabbitmq = require('amqplib').connect(`amqp://${process.env.rabbitmqUser}:${process.env.rabbitmqPW}@${process.env.rabbitmqHost}:${process.env.rabbitmqPort}/`);
 
-const rabbitmqconn = rabbitmq.then(function (conn) {
+const rabbitmqConn = rabbitmq.then(function (conn) {
   return conn.createChannel();
 }).catch(console.warn);
 
 
 async function rabbitmqPub(exchange, severity, message) {
-  let rabbitmqconnCh = await rabbitmqconn;
-  await rabbitmqconnCh.publish(exchange, severity, Buffer.from(message));
-  console.log('[o] Sent %s: %s', severity, message);
+  let rabbitmqConnCh = await rabbitmqConn;
+  await rabbitmqConnCh.publish(exchange, severity, Buffer.from(message));
+  console.log('[o] rabbitmq sent %s: %s', severity, message);
 }
+//外面再close connection
 
 // rabbitmqPub('test', 'tasks', 'coco')
 
@@ -43,4 +45,4 @@ async function rabbitmqPub(exchange, severity, message) {
 //   });
 // }).catch(console.warn);
 
-module.exports = rabbitmqPub
+module.exports = { rabbitmqConn, rabbitmqPub };

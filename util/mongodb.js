@@ -1,19 +1,30 @@
-const { MongoClient } = require("mongodb");
+const { MongoClient } = require('mongodb');
 
+const url = `mongodb://${process.env.mongodbUser}:${process.env.mongodbPW}@${process.env.mongodbHost}:${process.env.mongodbPort}/?maxPoolSize=20&w=majority`;
 
+const client = new MongoClient(url);
+(async () => {
+  await client.connect();
+  console.log("Connected successfully to server");
+})();
+// const mongodbConn = async function () {
+//   await client.connect();
+//   console.log("Connected successfully to server"); //每次都連一次？
+// }
 
+const mongodbExec = async function (data) {
+  // await mongodbConn(); //TODO:檢查斷線
+  const collection = client.db('oms').collection('executions')
+  const insertResult = await collection.insertMany([data]);
+  return insertResult
+};
 
-const client = new MongoClient(uri);
-async function run() {
-  try {
-    // Connect the client to the server
-    await client.connect();
-    // Establish and verify connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Connected successfully to server");
-  } finally {
-    // Ensures that the client will close when you finish/error
-    await client.close();
-  }
-}
-run().catch(console.dir);
+// const mongodbExec = async function (data) {
+
+//   await mongodbConn();
+//   console.log("aftet conn");
+//   return client.db('oms').collection('executions')
+
+// };
+
+module.exports = mongodbExec;
