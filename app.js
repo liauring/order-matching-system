@@ -172,9 +172,6 @@ app.post('/newOrder', async (req, res, next) => {
 
 
 
-
-
-var bCount = 0;
 let addNewBuyer = async function (buyerInfo) {
   let time = (+new Date());
   let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
@@ -186,16 +183,11 @@ let addNewBuyer = async function (buyerInfo) {
 
   let setScore = parseInt('' + (parseFloat(buyerInfo.price) * 100) + `${todayRestTime}`, 10);
   buyerInfo.tradeID = setScore;
-  // let scores = [{ score: setScore, buyer: JSON.stringify(buyerInfo) }];
-  // await redisClient.zadd(`${buyerInfo.symbol}-buyer`, ...scores.map(({ score, buyer }) => [score, buyer]));
   await redisClient.zadd(`${buyerInfo.symbol}-buyer`, setScore, JSON.stringify(buyerInfo));
-  bCount++;
-  // console.debug(buyerInfo.account)
-  // console.debug('buyer count', bCount);
   return buyerInfo;
 }
 
-var sCount = 0;
+
 let addNewSeller = async function (sellerInfo) {
   let time = (+new Date());
   let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
@@ -207,12 +199,7 @@ let addNewSeller = async function (sellerInfo) {
 
   let setScore = parseInt('' + (parseFloat(sellerInfo.price) * 100) + `${todayRestTime}`, 10);
   sellerInfo.tradeID = setScore;
-  // let scores = [{ score: setScore, buyer: JSON.stringify(sellerInfo) }];
-  // await redisClient.zadd(`${sellerInfo.symbol}-seller`, ...scores.map(({ score, buyer }) => [score, buyer])); //TODO:只有一組不需要用到map
   await redisClient.zadd(`${sellerInfo.symbol}-seller`, setScore, JSON.stringify(sellerInfo));
-  sCount++;
-  // console.debug(sellerInfo.account) //TODO: console.debug(debug不印)
-  // console.debug('seller count', sCount);
   return sellerInfo;
 }
 

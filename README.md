@@ -1,7 +1,7 @@
 # order-matching-system
 
 ### New Order API
-* **End Point:** `/stock/newOrder`
+* **End Point:** `/newOrder`
 
 * **Method:** `POST`
 

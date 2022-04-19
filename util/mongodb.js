@@ -7,10 +7,6 @@ const client = new MongoClient(url);
   await client.connect();
   console.log("Connected successfully to server");
 })();
-// const mongodbConn = async function () {
-//   await client.connect();
-//   console.log("Connected successfully to server"); //每次都連一次？
-// }
 
 const mongodbExec = async function (data) {
   // await mongodbConn(); //TODO:檢查斷線
@@ -18,13 +14,5 @@ const mongodbExec = async function (data) {
   const insertResult = await collection.insertMany([data]);
   return insertResult
 };
-
-// const mongodbExec = async function (data) {
-
-//   await mongodbConn();
-//   console.log("aftet conn");
-//   return client.db('oms').collection('executions')
-
-// };
 
 module.exports = mongodbExec;
