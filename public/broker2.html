@@ -33,6 +33,15 @@
         
       })
       
+      socket.on('fiveTicks', function(msg) {
+        console.log('execution', msg)
+        var item = document.createElement('li');
+        item.textContent = JSON.stringify(msg);
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+        
+      });
+
 
       socket.on('execution', function(msg) {
         console.log('execution', msg)

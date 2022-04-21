@@ -22,7 +22,7 @@ function config(server) {
     })
   })
 }
-
+//TODO:處理disconnect
 function sendMsg(event) {
   io.emit(event);
 }
@@ -31,4 +31,8 @@ function sendExec(brokerID, event) {
   io.to(brokerID).emit('execution', event);
 }
 
-module.exports = { config, sendMsg, sendExec };
+function sendFiveTicks(event) {
+  io.emit('fiveTicks', event);
+}
+
+module.exports = { config, sendMsg, sendExec, sendFiveTicks };
