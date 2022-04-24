@@ -1,6 +1,8 @@
 import CandleStick from './components/CandleStick'
 import FiveTicks from './components/FiveTicks'
 import Sheets from './components/Sheets'
+import Socket from '../../global/Socket'
+
 import './base.css'
 import './flex.css'
 

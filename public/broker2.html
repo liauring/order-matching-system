@@ -34,7 +34,7 @@
       })
       
       socket.on('fiveTicks', function(msg) {
-        console.log('execution', msg)
+        console.log('fiveTicks', msg)
         var item = document.createElement('li');
         item.textContent = JSON.stringify(msg);
         messages.appendChild(item);

@@ -27,7 +27,14 @@ const redisClient = new redis({
     if (channel === 'sendExec') {
       socket.sendExec(message.brokerID, message.execution);
     } else if (channel === 'fiveTicks') {
-      socket.sendFiveTicks(message);
+      let fiveTicksInfo = {
+        buyer: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }],
+        seller: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }]
+      }
+
+      // let
+      socket.sendFiveTicks(fiveTicksInfo);
+      // socket.sendKLine(fiveTicksInfo)
     } else {
       //TODO: console.log
     }

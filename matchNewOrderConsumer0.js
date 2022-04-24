@@ -114,7 +114,8 @@ const pubQueue = 'saveNewExec';
           [bestBuyer, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES'); //TODO: race condition
           if (bestBuyer === undefined || JSON.parse(bestBuyer).price * 100 < price * 100) {
             let sellerInfo = await addNewSeller(order);
-            await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
+            let test = await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
+            console.log('[ttt] test five ticks', test)
             return;
           }
 
@@ -230,8 +231,8 @@ let addNewOrderFiveTicks = async function (redisKeyPrefix, newOrderPrice, newOrd
   let [orderFiveTicks] = await redisClient.zrange(`${redisKeyPrefix}-fiveTicks`, score, score, 'BYSCORE', 'WITHSCORES');
   if (orderFiveTicks === undefined) {
     fiveTicksSize = '' + score + newOrderQuantity;
-    await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, JSON.stringify(fiveTicksSize));
-    return
+    let insertResult = await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, JSON.stringify(fiveTicksSize));
+    return insertResult
   }
 
   orderFiveTicks = parseInt(orderFiveTicks.slice(5));
@@ -256,6 +257,7 @@ let getFiveTicks = async function (symbol) {
   // 取現在五檔
   let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
   let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
+
   let FiveTicks = {
     buyer: buyerfiveTicks,
     seller: sellerFiveTicks,
