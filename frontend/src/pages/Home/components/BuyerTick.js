@@ -1,8 +1,8 @@
 const BuyerTick = ({ size, price }) => {
   return <tr>
-    <td>{size}</td>
-    <td>{size}</td>
-    <td>{price}</td>
+    <td class="buyerTickSize">{size}</td>
+    <td class="buyerTickBar"></td>
+    <td class="buyerTickPrice">{price}</td>
 
   </tr>
 

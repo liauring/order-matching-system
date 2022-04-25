@@ -15,6 +15,10 @@ main {
   justify-content: center
 }
 
+.main-header {
+  display: flex;
+}
+
 #fiveTicks {
   display: flex;
   justify-content: space-around;

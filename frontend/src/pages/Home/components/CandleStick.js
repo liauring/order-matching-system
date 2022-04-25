@@ -27,7 +27,7 @@ class CandleStick extends React.Component {
           type: 'candlestick',
         },
         title: {
-          text: 'CandleStick Chart - Category X-axis',
+          // text: 'CandleStick Chart - Category X-axis',
           align: 'left'
         },
         annotations: {
@@ -339,13 +339,14 @@ class CandleStick extends React.Component {
 
     return (
 
-      < div id="candleStick " >
-        <ReactApexChart options={this.optionalSetting.options} series={this.state.series} type="candlestick" height={350} />
+      < div id="candleStick" >
         <button onClick={this.delta}>
           Click me
         </button>
+        <ReactApexChart options={this.optionalSetting.options} series={this.state.series} type="candlestick" height={350} />
         {/* <ReactApexChart options={this.state.options} series={this.state.series} type="candlestick" height={350} /> */}
       </div >
+
 
 
     );

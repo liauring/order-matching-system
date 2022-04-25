@@ -12,16 +12,29 @@ const FiveTicks = () => {
   })
 
   Socket.on('fiveTicks', function (fiveTicks) {
+    fiveTicks.buyer.reverse();
+    if (fiveTicks.buyer.length < 5) {
+      let addLength = 5 - fiveTicks.buyer.length;
+      for (let i = 1; i <= addLength; i++) {
+        fiveTicks.buyer.push({});
+      }
+    }
+    if (fiveTicks.seller.length < 5) {
+      let addLength = 5 - fiveTicks.seller.length;
+      for (let i = 1; i <= addLength; i++) {
+        fiveTicks.seller.push({});
+      }
+    }
     console.log('fiveTicks', fiveTicks)
     setTicksInfo(fiveTicks)
   });
 
   return <div id='fiveTicks'>
-    <table className='buyerFiveTicks'>
+    <table className='buyerFiveTicks ticks'>
       <thead>
         <tr>
           <th>委買量</th>
-          <th>買量bar</th>
+          <th></th>
           <th>買價</th>
         </tr>
       </thead>
@@ -31,11 +44,11 @@ const FiveTicks = () => {
         }
       </tbody>
     </table >
-    <table className='sellerFiveTicks'>
+    <table className='sellerFiveTicks ticks'>
       <thead>
         <tr>
           <th>賣價</th>
-          <th>賣量bar</th>
+          <th></th>
           <th>委賣量</th>
 
         </tr>
