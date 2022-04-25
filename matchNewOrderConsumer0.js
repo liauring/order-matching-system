@@ -39,7 +39,7 @@ const pubQueue = 'saveNewExec';
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestSeller.orderStatus = '完全成交';
-            await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, bestSeller.quantity, '-')
+            await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
           } else if (quantity < bestSeller.quantity) {
             finalQTY = quantity
             bestSeller.quantity -= quantity;
@@ -47,16 +47,17 @@ const pubQueue = 'saveNewExec';
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestSeller.orderStatus = '部分成交';
-            await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, bestSeller.quantity, '-')
-          } else {
+            await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
+          } else if (quantity > bestSeller.quantity) {
             finalQTY = bestSeller.quantity;
             quantity -= bestSeller.quantity;
             order.quantity = quantity;
             hasRemainingQuantity = true;
             order.orderStatus = '部分成交';
             bestSeller.orderStatus = '完全成交';
-            // await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, order.quantity, '+')
-            // await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, bestSeller.quantity, '-')
+            await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
+          } else {
+            console.error('matchNewOrderConsumer0-buyer condition Error')
           }
 
 
@@ -93,7 +94,7 @@ const pubQueue = 'saveNewExec';
             orderStatus: bestSeller.orderStatus,
           }
 
-          console.debug('executionDetail: ', executionDetail)
+          console.debug('[executionDetail]', executionDetail)
           await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
           let execBuyerMessage = { brokerID: order.broker, execution: executionBuyer };
           let execSellerMessage = { brokerID: bestSeller.broker, execution: executionSeller };
@@ -128,7 +129,7 @@ const pubQueue = 'saveNewExec';
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestBuyer.orderStatus = '完全成交';
-            await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, bestBuyer.quantity, '-')
+            await addNewOrderFiveTicks(`${order.symbol}-buyer`, bestBuyer.price, finalQTY, '-')
           } else if (quantity < bestBuyer.quantity) {
             finalQTY = quantity;
             bestBuyer.quantity -= quantity;
@@ -136,16 +137,17 @@ const pubQueue = 'saveNewExec';
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestBuyer.orderStatus = '部分成交';
-            await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, bestBuyer.quantity, '-')
-          } else {
+            await addNewOrderFiveTicks(`${order.symbol}-buyer`, bestBuyer.price, finalQTY, '-')
+          } else if (quantity > bestBuyer.quantity) {
             finalQTY = bestBuyer.quantity;
             quantity -= bestBuyer.quantity;
             newOrder.quantity = quantity;
             hasRemainingQuantity = true;
             order.orderStatus = '部分成交';
             bestBuyer.orderStatus = '完全成交';
-            await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
-            await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, bestBuyer.quantity, '-')
+            await addNewOrderFiveTicks(`${order.symbol}-buyer`, bestBuyer.price, finalQTY, '-')
+          } else {
+            console.error('matchNewOrderConsumer0-seller condition Error')
           }
 
           let executionDetail = {
@@ -183,7 +185,7 @@ const pubQueue = 'saveNewExec';
 
 
 
-          // console.debug(executionDetail)
+          console.debug('[executionDetail]', executionDetail)
           await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
           // console.log(order.broker)
           // console.log(executionSeller)
@@ -191,6 +193,7 @@ const pubQueue = 'saveNewExec';
           let execBuyerMessage = { brokerID: bestBuyer.broker, execution: executionBuyer }
           // socket.sendExec(order.broker, executionSeller);
           // socket.sendExec(bestBuyer.broker, executionBuyer);
+
           await redisClient.publish('sendExec', JSON.stringify(execSellerMessage));
           await redisClient.publish('sendExec', JSON.stringify(execBuyerMessage));
 
@@ -203,6 +206,7 @@ const pubQueue = 'saveNewExec';
       console.error(error)
     } finally {
       let fiveTicks = await getFiveTicks(symbol);
+      console.debug('[fiveTicks]', fiveTicks)
       await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks)); //TODO: subFiveTicks socket in app.js
       rabbitmqConn.ack(newOrder);
     }
@@ -248,8 +252,8 @@ let addNewOrderFiveTicks = async function (redisKeyPrefix, newOrderPrice, newOrd
     //TODO: error(there is no such operator.)
   }
 
-  await redisClient.zremrangebyscore(`${redisKeyPrefix}-fiveTicks`, score, score);
-  if (newQuantity !== 0) { //防止減到零還存入五檔
+  let zrem = await redisClient.zremrangebyscore(`${redisKeyPrefix}-fiveTicks`, score, score);
+  if (newQuantity > 0) { //防止減到零還存入五檔
     await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, fiveTicksSize);
   }
   return;
@@ -260,13 +264,13 @@ let getFiveTicks = async function (symbol) {
   let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
   let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
   let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks);
-  let formattedSellerFiveTicks = formatFiveTicks(buyerfiveTicks);
+  let formattedSellerFiveTicks = formatFiveTicks(sellerFiveTicks);
   let FiveTicks = {
     buyer: formattedBuyerFiveTicks,
     seller: formattedSellerFiveTicks,
   }
   //TODO: 更改五檔格式，還沒value換回數量
-
+  console.log(FiveTicks)
   return FiveTicks;
 }
 

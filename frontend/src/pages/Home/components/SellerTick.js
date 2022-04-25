@@ -1,14 +1,11 @@
-const SellerTick = () => {
-  return <div>
-    <thead>
-      <tr>
-        <th>賣價</th>
-        <th>賣量bar</th>
-        <th>委賣量</th>
+const SellerTick = ({ size, price }) => {
+  return <tr>
+    <th>{price}</th>
+    <th>{size}</th>
+    <th>{size}</th>
 
-      </tr>
-    </thead>
-  </div>
+  </tr>
+
 }
 
 export default SellerTick

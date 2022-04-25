@@ -1,16 +1,11 @@
 const BuyerTick = ({ size, price }) => {
-  return <div>
+  return <tr>
+    <th>{size}</th>
+    <th>{size}</th>
+    <th>{price}</th>
 
-    <tbody>
-      <tr>
-        <th>{size}</th>
-        <th>{size}</th>
-        <th>{price}</th>
+  </tr>
 
-      </tr>
-    </tbody>
-
-  </div>
 }
 
 export default BuyerTick

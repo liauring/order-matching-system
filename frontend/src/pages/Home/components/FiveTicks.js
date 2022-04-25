@@ -2,11 +2,6 @@ import BuyerTick from './BuyerTick'
 import SellerTick from './SellerTick'
 import { useState } from "react"
 import { Socket } from '../../../global/Socket'
-// const fiveTicksInfo = {
-//   buyer: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }],
-//   seller: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }]
-// }
-// const socket = Socket.Socket
 
 const FiveTicks = () => {
 
@@ -22,21 +17,38 @@ const FiveTicks = () => {
   });
 
   return <div id='fiveTicks'>
-    <thead>
-      <tr>
-        <th>委買量</th>
-        <th>買量bar</th>
-        <th>買價</th>
+    <div className='buyerFiveTicks'>
+      <thead>
+        <tr>
+          <th>委買量</th>
+          <th>買量bar</th>
+          <th>買價</th>
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ticksInfo.buyer.map(tick => <BuyerTick size={tick.size} price={tick.price} />)
+        }
+      </tbody>
+    </div >
+    <div className='sellerFiveTicks'>
+      <thead>
+        <tr>
+          <th>賣價</th>
+          <th>賣量bar</th>
+          <th>委賣量</th>
 
-      </tr>
-    </thead>
-    {
-      ticksInfo.buyer.map(tick => <BuyerTick size={tick.size} price={tick.price} />)
-    }
+        </tr>
+      </thead>
+      <tbody>
+        {
+          ticksInfo.seller.map(tick => <SellerTick size={tick.size} price={tick.price} />)
+        }
+      </tbody>
+    </div>
 
-    {/* <SellerTick /> */}
 
-  </div>
+  </div >
 }
 
 export default FiveTicks
