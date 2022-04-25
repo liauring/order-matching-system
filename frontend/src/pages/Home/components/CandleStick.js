@@ -72,22 +72,21 @@ class CandleStick extends React.Component {
   }
 
   delta = () => {
-    console.log("Finnn")
+    console.log("coco")
     this.setState({
       series: [{
         name: 'candle',
-        data: [{
-          x: new Date(1538782200000),
-          y: [6630.71, 6648.95, 6623.34, 6635.65]
-        },
+        data: [...this.state.series[0].data,
         {
-          x: new Date(1538784000000),
-          y: [6635.65, 6651, 6629.67, 6638.24]
+          x: new Date(1538780400000),
+          y: [6632.01, 6643.59, 6620, 6630.11]
         },
-        {
-          x: new Date(1538785800000),
-          y: [6638.24, 6640, 6620, 6624.47]
-        },]
+
+          // {
+          //   x: new Date(1538881200000),
+          //   y: [6603.5, 6603.99, 6597.5, 6603.86]
+          // },
+        ]
       }]
     })
   }

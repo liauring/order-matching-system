@@ -114,8 +114,7 @@ const pubQueue = 'saveNewExec';
           [bestBuyer, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES'); //TODO: race condition
           if (bestBuyer === undefined || JSON.parse(bestBuyer).price * 100 < price * 100) {
             let sellerInfo = await addNewSeller(order);
-            let test = await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
-            console.log('[ttt] test five ticks', test)
+            await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
             return;
           }
 
@@ -225,17 +224,18 @@ let addNewSeller = async function (sellerInfo) {
 }
 
 let addNewOrderFiveTicks = async function (redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {
-  let score = parseInt((parseFloat(newOrderPrice) * 100).toString().padStart(5, '0'), 10);
+  let scoreForVal = (parseFloat(newOrderPrice) * 100).toString().padStart(5, '0');
+  let score = parseInt(scoreForVal, 10)
   let fiveTicksSize
   // 取現在該價格的值
   let [orderFiveTicks] = await redisClient.zrange(`${redisKeyPrefix}-fiveTicks`, score, score, 'BYSCORE', 'WITHSCORES');
   if (orderFiveTicks === undefined) {
-    fiveTicksSize = '' + score + newOrderQuantity;
-    let insertResult = await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, JSON.stringify(fiveTicksSize));
-    return insertResult
+    fiveTicksSize = scoreForVal + newOrderQuantity.toString();
+    await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, fiveTicksSize);
+    return
   }
 
-  orderFiveTicks = parseInt(orderFiveTicks.slice(5));
+  orderFiveTicks = orderFiveTicks.slice(5);
   let originalQuantity = parseInt(orderFiveTicks)
   let newQuantity
   if (operator === '+') {
@@ -248,9 +248,11 @@ let addNewOrderFiveTicks = async function (redisKeyPrefix, newOrderPrice, newOrd
     //TODO: error(there is no such operator.)
   }
 
-  await redisClient.zrem(`${redisKeyPrefix}-fiveTicks`, orderFiveTicks);
-  let insertResult = await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, JSON.stringify(fiveTicksSize));
-  return insertResult;
+  await redisClient.zremrangebyscore(`${redisKeyPrefix}-fiveTicks`, score, score);
+  if (newQuantity !== 0) { //防止減到零還存入五檔
+    await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, fiveTicksSize);
+  }
+  return;
 }
 
 let getFiveTicks = async function (symbol) {
@@ -263,5 +265,8 @@ let getFiveTicks = async function (symbol) {
     seller: sellerFiveTicks,
   }
   //TODO: 更改五檔格式，還沒value換回數量
+
+  // { "buyer": ["0900010", "9000", "0990010", "9900", "9910100", "9910"], "seller": ["0980010", "9800", "09900100", "9900", "099105", "9910", "099205", "9920", "0993095", "9930"] }
+
   return FiveTicks;
 }
