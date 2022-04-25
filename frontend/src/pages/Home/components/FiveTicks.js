@@ -17,7 +17,7 @@ const FiveTicks = () => {
   });
 
   return <div id='fiveTicks'>
-    <div className='buyerFiveTicks'>
+    <table className='buyerFiveTicks'>
       <thead>
         <tr>
           <th>委買量</th>
@@ -30,8 +30,8 @@ const FiveTicks = () => {
           ticksInfo.buyer.map(tick => <BuyerTick size={tick.size} price={tick.price} />)
         }
       </tbody>
-    </div >
-    <div className='sellerFiveTicks'>
+    </table >
+    <table className='sellerFiveTicks'>
       <thead>
         <tr>
           <th>賣價</th>
@@ -45,7 +45,7 @@ const FiveTicks = () => {
           ticksInfo.seller.map(tick => <SellerTick size={tick.size} price={tick.price} />)
         }
       </tbody>
-    </div>
+    </table>
 
 
   </div >

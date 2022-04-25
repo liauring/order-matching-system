@@ -18,12 +18,11 @@ main {
 #fiveTicks {
   display: flex;
   justify-content: space-around;
-  align-items: center;
 }
 
 .fiveTicksAndSheets-section {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-wrap: wrap;
 }
 

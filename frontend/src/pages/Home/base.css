@@ -1,40 +1,69 @@
-/* td {
+th {
   padding: 10px;
+}
+
+
+
+table {
+  border-collapse: collapse;
+}
+
+/* table thead tr th {
+  border-bottom: 1px solid #000000;
+} */
+
+table thead {
+  border: 1px solid rgba(23, 173, 54);
+}
+
+/* table th,
+table td { */
+/* Added padding for better layout after collapsing */
+/* padding: 4px 8px;
 } */
 
 
+
+
+
+
+
+
+
+
 .main-header {
-  background-color: #fff;
   margin: 0 0 40px 0;
   height: 100px;
 }
 
 
 #candleStick {
-  background-color: aqua;
-  border-color: black;
   width: 1200px;
   max-width: 1200px;
 
 }
 
 #fiveTicks {
-  background-color: bisque;
-  border-color: black;
-  width: 50%;
+  width: 49%;
   height: 300px;
+  background-color: #202130;
+  margin: 1%;
+  margin-left: 0px;
 
 }
 
 #sheets {
-  background-color: aquamarine;
-  border-color: black;
-  width: 50%;
+  background-color: #202130;
+  margin: 1%;
+  width: 49%;
+  margin-right: 0px;
 }
 
 body {
   max-width: 1300px;
   margin: auto;
+  background: rgb(39, 47, 71);
+  color: #777;
 }
 
 footer {
