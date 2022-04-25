@@ -240,10 +240,10 @@ let addNewOrderFiveTicks = async function (redisKeyPrefix, newOrderPrice, newOrd
   let newQuantity
   if (operator === '+') {
     newQuantity = originalQuantity + newOrderQuantity;
-    fiveTicksSize = '' + score + newQuantity;
+    fiveTicksSize = scoreForVal + newQuantity.toString();
   } else if (operator === '-') {
     newQuantity = originalQuantity - newOrderQuantity;
-    fiveTicksSize = '' + score + newQuantity;
+    fiveTicksSize = scoreForVal + newQuantity.toString();
   } else {
     //TODO: error(there is no such operator.)
   }
@@ -259,14 +259,42 @@ let getFiveTicks = async function (symbol) {
   // 取現在五檔
   let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
   let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
-
+  let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks);
+  let formattedSellerFiveTicks = formatFiveTicks(buyerfiveTicks);
   let FiveTicks = {
-    buyer: buyerfiveTicks,
-    seller: sellerFiveTicks,
+    buyer: formattedBuyerFiveTicks,
+    seller: formattedSellerFiveTicks,
   }
   //TODO: 更改五檔格式，還沒value換回數量
 
-  // { "buyer": ["0900010", "9000", "0990010", "9900", "9910100", "9910"], "seller": ["0980010", "9800", "09900100", "9900", "099105", "9910", "099205", "9920", "0993095", "9930"] }
-
   return FiveTicks;
 }
+
+// let fiveTicksInfo = {
+//   buyer: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }],
+//   seller: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }]
+// }
+// { "buyer": ["0900010", "9000", "0990010", "9900", "9910100", "9910"], "seller": ["0980010", "9800", "09900100", "9900", "099105", "9910", "099205", "9920", "0993095", "9930"] }
+
+let formatFiveTicks = function (fiveTicks) {
+  let formattedFiveTicks = fiveTicks.reduce((accumulator, currentValue, currentIndex) => {
+
+    let tick = {};
+    if (currentIndex % 2 === 1) {
+      parseInt(currentValue)
+      originalPrice = currentValue / 100;
+      accumulator[Math.floor(currentIndex / 2)].price = originalPrice;
+    } else {
+      originalSize = parseInt(currentValue.slice(5));
+      tick.size = originalSize;
+      accumulator.push(tick);
+    }
+
+    return accumulator;
+  }, [])
+  return formattedFiveTicks
+}
+
+
+
+
