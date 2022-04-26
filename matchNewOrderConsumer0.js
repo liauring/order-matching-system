@@ -6,29 +6,33 @@ const consumeQueue = 'matchNewOrder-stock-0';
 const pubQueue = 'saveNewExec';
 
 
-// TODO: 要不要改更簡化的，bestSeller跟bestBuyer合併為dealer
+// TODO: 包成class
 (async () => {
   rabbitmqConn = await rabbitmqConn;
   rabbitmqConn.prefetch(1);
   rabbitmqConn.consume(consumeQueue, async (newOrder) => {
     let order = JSON.parse(newOrder.content.toString())
-    //console.log(order);
-    let { broker, symbol, BS, price, quantity } = order;
+    let { symbol, BS, price, quantity } = order;
     let hasRemainingQuantity = false;
-    let bestBuyer, bestBuyerScore, bestSeller, bestSellerScore;
+    let bestBuyerOrderID, bestBuyer, bestBuyerScore, bestSellerOrderID, bestSeller, bestSellerScore;
     try {
       if (BS === 'buyer') {
         do {
-          // bestSeller = await redisClient.zrange(`${symbol}-seller`, scoreLeft, scoreRight, 'BYSCORE', 'WITHSCORES', 'LIMIT', 0, 1)
-          // let testbestSeller = await redisClient.zrange(`${symbol}-seller`, 0, -1, 'WITHSCORES'); //TODO: 先比對(>/<)再拿出
-          [bestSeller, bestSellerScore] = await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
-          if (bestSeller === undefined || JSON.parse(bestSeller).price * 100 > price * 100) {
+
+          [bestSellerOrderID, bestSellerScore] = await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
+
+
+          if (bestSellerOrderID === undefined || parseInt(bestSellerScore.toString().slice(0, -8)) > price * 100) {
             await addNewBuyer(order);
             await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, order.quantity, '+')
             return;
           }
 
-          await redisClient.zrem(`${symbol}-seller`, bestSeller); //需要防止後面未完成嗎
+          bestSeller = await redisClient.get(bestSellerOrderID)
+
+
+          await redisClient.zrem(`${symbol}-seller`, bestSellerOrderID);
+          await redisClient.del(`${bestSellerOrderID}`)
           bestSeller = JSON.parse(bestSeller);
 
 
@@ -43,7 +47,8 @@ const pubQueue = 'saveNewExec';
           } else if (quantity < bestSeller.quantity) {
             finalQTY = quantity
             bestSeller.quantity -= quantity;
-            await redisClient.zadd(`${symbol}-seller`, bestSellerScore, JSON.stringify(bestSeller));
+            await redisClient.zadd(`${symbol}-seller`, bestSellerScore, JSON.stringify(bestSeller.orderID));
+            await redisClient.set(`${bestSeller.orderID}`, JSON.stringify(bestSeller));
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestSeller.orderStatus = '部分成交';
@@ -121,15 +126,21 @@ const pubQueue = 'saveNewExec';
       } else {
 
         do {
-          // console.log(await redisClient.zrange(`${req.body.symbol}-buyer`, 0, -1, 'WITHSCORES'))
-          [bestBuyer, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES'); //TODO: race condition
-          if (bestBuyer === undefined || JSON.parse(bestBuyer).price * 100 < price * 100) {
-            let sellerInfo = await addNewSeller(order);
+
+          [bestBuyerOrderID, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES'); //TODO: race condition
+
+
+          if (bestBuyerOrderID === undefined || parseInt(bestBuyerScore.toString().slice(0, -8)) < price * 100) {
+            await addNewSeller(order);
             await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
             return;
           }
 
-          await redisClient.zrem(`${symbol}-buyer`, bestBuyer);
+          bestBuyer = await redisClient.get(bestBuyerOrderID)
+
+
+          await redisClient.zrem(`${symbol}-buyer`, bestBuyerOrderID);
+          await redisClient.del(`${bestBuyerOrderID}`)
           bestBuyer = JSON.parse(bestBuyer);
 
           let executionID = uuidv4();
@@ -143,7 +154,8 @@ const pubQueue = 'saveNewExec';
           } else if (quantity < bestBuyer.quantity) {
             finalQTY = quantity;
             bestBuyer.quantity -= quantity;
-            await redisClient.zadd(`${symbol}-buyer`, bestBuyerScore, JSON.stringify(bestBuyer));
+            await redisClient.zadd(`${symbol}-buyer`, bestBuyerScore, JSON.stringify(bestBuyer.orderID));
+            await redisClient.set(`${bestBuyer.orderID}`, JSON.stringify(bestBuyer))
             hasRemainingQuantity = false;
             order.orderStatus = '完全成交';
             bestBuyer.orderStatus = '部分成交';
@@ -235,13 +247,15 @@ const pubQueue = 'saveNewExec';
 
 let addNewBuyer = async function (buyerInfo) {
   let setScore = buyerInfo.orderID;
-  await redisClient.zadd(`${buyerInfo.symbol}-buyer`, setScore, JSON.stringify(buyerInfo));
+  await redisClient.zadd(`${buyerInfo.symbol}-buyer`, setScore, JSON.stringify(buyerInfo.orderID));
+  await redisClient.set(`${buyerInfo.orderID}`, JSON.stringify(buyerInfo))
   return buyerInfo;
 }
 
 let addNewSeller = async function (sellerInfo) {
   let setScore = sellerInfo.orderID;
-  await redisClient.zadd(`${sellerInfo.symbol}-seller`, setScore, JSON.stringify(sellerInfo));
+  await redisClient.zadd(`${sellerInfo.symbol}-seller`, setScore, JSON.stringify(sellerInfo.orderID));
+  await redisClient.set(`${sellerInfo.orderID}`, JSON.stringify(sellerInfo));
   return sellerInfo;
 }
 
@@ -287,16 +301,11 @@ let getFiveTicks = async function (symbol) {
     buyer: formattedBuyerFiveTicks,
     seller: formattedSellerFiveTicks,
   }
-  //TODO: 更改五檔格式，還沒value換回數量
+
   console.log(FiveTicks)
   return FiveTicks;
 }
 
-// let fiveTicksInfo = {
-//   buyer: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }],
-//   seller: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }]
-// }
-// { "buyer": ["0900010", "9000", "0990010", "9900", "9910100", "9910"], "seller": ["0980010", "9800", "09900100", "9900", "099105", "9910", "099205", "9920", "0993095", "9930"] }
 
 let formatFiveTicks = function (fiveTicks) {
   let formattedFiveTicks = fiveTicks.reduce((accumulator, currentValue, currentIndex) => {

@@ -53,7 +53,7 @@ app.post('/newOrder', async (req, res, next) => {
     let time = (+new Date());
     let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
     let todayRestTime = midnight - time;
-    if (todayRestTime.length < 8) {
+    if (todayRestTime.toString().length < 8) {
       todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
     }
     req.body.orderTime = todayRestTime;
@@ -66,7 +66,7 @@ app.post('/newOrder', async (req, res, next) => {
     let time = (+new Date());
     let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
     let todayRestTime = time - midnight;
-    if (todayRestTime.length < 8) {
+    if (todayRestTime.toString().length < 8) {
       todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
     }
     req.body.orderTime = todayRestTime;
