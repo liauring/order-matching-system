@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 const TIME_FILLTER = '00000';
 const exchange = 'matchNewOrder';
 
-// {
+// newOrder.body {
 //   account: '3', //改int
 //   broker: 1030,
 //   symbol: '2330',  //改int
@@ -34,10 +34,31 @@ const exchange = 'matchNewOrder';
 // x orderStatus: '未成交'
 // }
 
-// app.post('/new', async (req, res, next) => {
-//   await rabbitmqPub(exchange, '0', JSON.stringify(req.body));
-//   return res.send('success')
-// })
+
+// updateOrder.body {
+//   orderID: int
+//   symbol:  int
+//   quantity:  int
+//   BS:  string
+// }
+
+
+// TODO: 錯誤處理：1.找不到orderID 
+app.patch('/order', async (req, res, next) => { //patch用法對嗎？
+  let { orderID, symbol, quantity, BS } = req.body;
+  let orderInfo = await redisClient.get(`${orderID}`)
+  orderInfo = JSON.parse(orderInfo)
+  await redisClient.del(`${orderID}`)
+  orderInfo.quantity += quantity; //quantity為負也可以
+  if (orderInfo.quantity <= 0) {
+    // 刪除redis裏zset的order
+    await redisClient.zrem(`${symbol}-${BS}`, orderID.toString());
+    return res.send('Your order has been deleted.')
+  }
+  await redisClient.set(`${orderID}`, JSON.stringify(orderInfo));
+  return res.send('Your order has been updated. Your remaining quantity is ', orderInfo.quantity)
+
+})
 
 
 app.post('/newOrder', async (req, res, next) => {
@@ -85,7 +106,7 @@ app.post('/newOrder', async (req, res, next) => {
   await rabbitmqPub(exchange, symbolSharding.toString(), JSON.stringify(req.body));
 
 
-  return res.send(`${req.body.BS} order created successfully`)
+  return res.send('Order successed! Your orderID is ', orderID)
 })
 
 

@@ -18,25 +18,27 @@ const pubQueue = 'saveNewExec';
     try {
       if (BS === 'buyer') {
         do {
-
+          // getBestDealerOrderID()
           [bestSellerOrderID, bestSellerScore] = await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
 
-
+          // notHaveBestDealer(bestSellerOrderID,bestSellerScore,order)
           if (bestSellerOrderID === undefined || parseInt(bestSellerScore.toString().slice(0, -8)) > price * 100) {
             await addNewBuyer(order);
             await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, order.quantity, '+')
             return;
           }
 
+          // getBestDealerOrderInfo(bestSellerOrderID)
           bestSeller = await redisClient.get(bestSellerOrderID)
+          bestSeller = JSON.parse(bestSeller); //上移
 
 
+          // deleteBestDealer(bestSellerOrderID)
           await redisClient.zrem(`${symbol}-seller`, bestSellerOrderID);
           await redisClient.del(`${bestSellerOrderID}`)
-          bestSeller = JSON.parse(bestSeller);
 
 
-          let executionID = uuidv4();
+          // matchExecutionQuantity(bestSeller, order, hasRemainingQuantity)
           let finalQTY
           if (quantity === bestSeller.quantity) {
             finalQTY = quantity;
@@ -65,6 +67,7 @@ const pubQueue = 'saveNewExec';
             console.error('matchNewOrderConsumer0-buyer condition Error')
           }
 
+          let executionID = uuidv4(); //下移
           let executionTime = (+new Date())
           let executionDetail = {
             executionID: executionID,
@@ -109,16 +112,21 @@ const pubQueue = 'saveNewExec';
           }
 
           console.debug('[executionDetail]', executionDetail)
+
+          // sendExecutionToRabbitmqForStorage(pubQueue, executionDetail)
           await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
+
           let execBuyerMessage = { brokerID: order.broker, execution: executionBuyer };
           let execSellerMessage = { brokerID: bestSeller.broker, execution: executionSeller };
 
           // socket.sendExec(order.broker, executionBuyer);
           // socket.sendExec(bestSeller.broker, executionSeller);
 
-
+          // emitExeuction(execSellerMessage, execBuyerMessage)
           await redisClient.publish('sendExec', JSON.stringify(execSellerMessage));
           await redisClient.publish('sendExec', JSON.stringify(execBuyerMessage));
+
+          // emitKLine(kLineInfo) 
           await redisClient.publish('kLine', JSON.stringify(kLineInfo))
 
         } while (hasRemainingQuantity);
@@ -237,7 +245,7 @@ const pubQueue = 'saveNewExec';
     } finally {
       let fiveTicks = await getFiveTicks(symbol);
       console.debug('[fiveTicks]', fiveTicks)
-      await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks)); //TODO: subFiveTicks socket in app.js
+      await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks));
       rabbitmqConn.ack(newOrder);
     }
   }, { noAck: false })
