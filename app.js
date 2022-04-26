@@ -5,6 +5,7 @@ const redisClient = require('./util/cache');
 const { rabbitmqPub } = require('./util/rabbitmq');
 const http = require('http');
 const server = http.createServer(app);
+let { mongodbNewOrder, mongodbUpdateOrder } = require('./util/mongodb');
 
 require('./util/socket.js').config(server);
 require('./redisSub.js');
@@ -45,24 +46,31 @@ const exchange = 'matchNewOrder';
 
 // TODO: 錯誤處理：1.找不到orderID 
 app.patch('/order', async (req, res, next) => { //patch用法對嗎？
+  let insertResult = await mongodbUpdateOrder(req.body);
+  console.log('Log-updateOrder: ', insertResult);
   let { orderID, symbol, quantity, BS } = req.body;
-  let orderInfo = await redisClient.get(`${orderID}`)
-  orderInfo = JSON.parse(orderInfo)
-  await redisClient.del(`${orderID}`)
+  orderID = parseInt(orderID);
+  symbol = parseInt(symbol);
+  quantity = parseInt(quantity);
+  let orderInfo = await redisClient.get(`${orderID}`);
+  orderInfo = JSON.parse(orderInfo);
+  await redisClient.del(`${orderID}`);
+  orderInfo.quantity = parseInt(orderInfo.quantity)
   orderInfo.quantity += quantity; //quantity為負也可以
   if (orderInfo.quantity <= 0) {
     // 刪除redis裏zset的order
     await redisClient.zrem(`${symbol}-${BS}`, orderID.toString());
-    return res.send('Your order has been deleted.')
+    return res.send('Your order has been deleted.');
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo));
-  return res.send('Your order has been updated. Your remaining quantity is ', orderInfo.quantity)
+  return res.send(`Your order has been updated. Your remaining quantity is ${orderInfo.quantity}`,);
 
 })
 
 
 app.post('/newOrder', async (req, res, next) => {
-
+  let insertResult = await mongodbNewOrder(req.body);
+  console.log('Log-newOrder: ', insertResult);
   req.body.account = parseInt(req.body.account);
   req.body.broker = parseInt(req.body.broker);
   req.body.symbol = parseInt(req.body.symbol);
@@ -106,7 +114,7 @@ app.post('/newOrder', async (req, res, next) => {
   await rabbitmqPub(exchange, symbolSharding.toString(), JSON.stringify(req.body));
 
 
-  return res.send('Order successed! Your orderID is ', orderID)
+  return res.send(`Order successed! Your orderID is ${orderID}`)
 })
 
 

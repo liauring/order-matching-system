@@ -1,6 +1,6 @@
 require('dotenv').config();
 let { rabbitmqConn } = require('./util/rabbitmq');
-let mongodbExec = require('./util/mongodb');
+let { mongodbExec } = require('./util/mongodb');
 
 (async () => {
   rabbitmqConn = await rabbitmqConn;
