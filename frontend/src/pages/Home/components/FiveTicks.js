@@ -1,6 +1,6 @@
 import BuyerTick from './BuyerTick'
 import SellerTick from './SellerTick'
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Socket } from '../../../global/Socket'
 
 const FiveTicks = () => {
@@ -11,23 +11,52 @@ const FiveTicks = () => {
     seller: []
   })
 
-  Socket.on('fiveTicks', function (fiveTicks) {
-    fiveTicks.buyer.reverse();
-    if (fiveTicks.buyer.length < 5) {
-      let addLength = 5 - fiveTicks.buyer.length;
-      for (let i = 1; i <= addLength; i++) {
-        fiveTicks.buyer.push({});
-      }
+  useEffect(() => {
+    if (Socket) {
+
+      Socket.on('fiveTicks', function (fiveTicks) {
+        // await fiveTicks.buyer.reverse();
+        let maxSize = fiveTicks.buyer.reduce((acc, cur) => {
+          if (cur.size > acc) {
+            return cur.size;
+          }
+          return acc;
+        }, 0);
+        maxSize = fiveTicks.seller.reduce((acc, cur) => {
+          if (cur.size > acc) {
+            return cur.size;
+          }
+          return acc;
+        }, maxSize);
+        fiveTicks.buyer.forEach(item => {
+          item.percent = item.size * 100 / maxSize;
+        })
+        fiveTicks.seller.forEach(item => {
+          item.percent = item.size * 100 / maxSize;
+        })
+        console.log({ ...fiveTicks.buyer });
+        console.log({ ...fiveTicks.seller });
+        if (fiveTicks.buyer.length < 5) {
+          let addLength = 5 - fiveTicks.buyer.length;
+          for (let i = 1; i <= addLength; i++) {
+            fiveTicks.buyer.push({});
+          }
+        }
+        if (fiveTicks.seller.length < 5) {
+          let addLength = 5 - fiveTicks.seller.length;
+          for (let i = 1; i <= addLength; i++) {
+            fiveTicks.seller.push({});
+          }
+        }
+
+        console.log({ ...fiveTicks.seller });
+        console.log('fiveTicks', fiveTicks)
+        setTicksInfo(fiveTicks)
+      });
     }
-    if (fiveTicks.seller.length < 5) {
-      let addLength = 5 - fiveTicks.seller.length;
-      for (let i = 1; i <= addLength; i++) {
-        fiveTicks.seller.push({});
-      }
-    }
-    console.log('fiveTicks', fiveTicks)
-    setTicksInfo(fiveTicks)
-  });
+  }, [Socket])
+
+
 
   return <div id='fiveTicks'>
     <table className='buyerFiveTicks ticks'>
@@ -40,7 +69,7 @@ const FiveTicks = () => {
       </thead>
       <tbody>
         {
-          ticksInfo.buyer.map(tick => <BuyerTick size={tick.size} price={tick.price} />)
+          ticksInfo.buyer.map(tick => <BuyerTick size={tick.size} price={tick.price} percent={tick.percent} />)
         }
       </tbody>
     </table >
@@ -55,7 +84,7 @@ const FiveTicks = () => {
       </thead>
       <tbody>
         {
-          ticksInfo.seller.map(tick => <SellerTick size={tick.size} price={tick.price} />)
+          ticksInfo.seller.map(tick => <SellerTick size={tick.size} price={tick.price} percent={tick.percent} />)
         }
       </tbody>
     </table>

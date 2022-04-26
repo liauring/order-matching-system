@@ -60,9 +60,10 @@ const pubQueue = 'saveNewExec';
             console.error('matchNewOrderConsumer0-buyer condition Error')
           }
 
-
+          let executionTime = (+new Date())
           let executionDetail = {
             executionID: executionID,
+            executionTime: executionTime,
             seller: bestSeller.account,
             sellerOrderID: bestSeller.orderID,
             sellerOrderTime: bestSeller.orderTime,
@@ -76,6 +77,7 @@ const pubQueue = 'saveNewExec';
 
           let executionBuyer = {
             executionID: executionID,
+            executionTime: executionTime,
             orderID: order.orderID,
             orderTime: order.orderTime,
             stock: order.symbol,
@@ -86,12 +88,19 @@ const pubQueue = 'saveNewExec';
 
           let executionSeller = {
             executionID: executionID,
+            executionTime: executionTime,
             orderID: bestSeller.orderID,
             orderTime: bestSeller.orderTime,
             stock: order.symbol,
             price: bestSeller.price,
             quantity: finalQTY,
             orderStatus: bestSeller.orderStatus,
+          }
+
+          let kLineInfo = {
+            stock: order.symbol,
+            price: bestSeller.price,
+            executionTime: executionTime,
           }
 
           console.debug('[executionDetail]', executionDetail)
@@ -105,6 +114,7 @@ const pubQueue = 'saveNewExec';
 
           await redisClient.publish('sendExec', JSON.stringify(execSellerMessage));
           await redisClient.publish('sendExec', JSON.stringify(execBuyerMessage));
+          await redisClient.publish('kLine', JSON.stringify(kLineInfo))
 
         } while (hasRemainingQuantity);
 
@@ -149,9 +159,10 @@ const pubQueue = 'saveNewExec';
           } else {
             console.error('matchNewOrderConsumer0-seller condition Error')
           }
-
+          let executionTime = (+new Date())
           let executionDetail = {
             executionID: executionID,
+            executionTime: executionTime,
             seller: order.account,
             sellerOrderID: order.orderID,
             sellerOrderTime: order.orderTime,
@@ -165,6 +176,7 @@ const pubQueue = 'saveNewExec';
 
           let executionBuyer = {
             executionID: executionID,
+            executionTime: executionTime,
             orderID: bestBuyer.orderID,
             orderTime: bestBuyer.orderTime,
             stock: order.symbol,
@@ -175,6 +187,7 @@ const pubQueue = 'saveNewExec';
 
           let executionSeller = {
             executionID: executionID,
+            executionTime: executionTime,
             orderID: order.orderID,
             orderTime: order.orderTime,
             stock: order.symbol,
@@ -183,6 +196,11 @@ const pubQueue = 'saveNewExec';
             orderStatus: order.orderStatus,
           }
 
+          let kLineInfo = {
+            stock: order.symbol,
+            price: bestBuyer.price,
+            executionTime: executionTime,
+          }
 
 
           console.debug('[executionDetail]', executionDetail)
@@ -196,7 +214,7 @@ const pubQueue = 'saveNewExec';
 
           await redisClient.publish('sendExec', JSON.stringify(execSellerMessage));
           await redisClient.publish('sendExec', JSON.stringify(execBuyerMessage));
-
+          await redisClient.publish('kLine', JSON.stringify(kLineInfo))
 
         } while (hasRemainingQuantity);
       }
@@ -263,7 +281,7 @@ let getFiveTicks = async function (symbol) {
   // 取現在五檔
   let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
   let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
-  let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks);
+  let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks).reverse();
   let formattedSellerFiveTicks = formatFiveTicks(sellerFiveTicks);
   let FiveTicks = {
     buyer: formattedBuyerFiveTicks,

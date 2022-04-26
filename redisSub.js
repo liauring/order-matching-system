@@ -35,6 +35,8 @@ const redisClient = new redis({
       // // let
       socket.sendFiveTicks(message);
       // TODO:socket.sendKLine(fiveTicksInfo)
+    } else if (channel === 'kLine') {
+      socket.sendKLine(message);
     } else {
       //TODO: console.log
     }
