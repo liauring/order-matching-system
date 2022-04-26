@@ -13,31 +13,31 @@ const NewOrder = () => {
       <div className="orderTypeAndDuration-section">
         <div className="orderType">
           <button className="orderType-limit button-selected">限價</button>
-          <button className="orderType-market" disabled>市價</button>
+          <button className="orderType-market button-unselected" disabled='true'>市價</button>
         </div>
         <div className="duration">
           <button className="duration-ROC button-selected">ROC</button>
-          <button className="duration-IOC" disabled>IOC</button>
-          <button className="duration-FOK" disabled>FOK</button>
+          <button className="duration-IOC button-unselected" disabled='true'>IOC</button>
+          <button className="duration-FOK button-unselected" disabled='true'>FOK</button>
         </div>
 
       </div>
       <div className="priceAndQuantity-section">
 
         <div className="price-section">
-          <button className="decrement" type="button">-</button>
+          <button className="inAndDe decrement" type="button">-</button>
           <input className="price" placeholder="價格" type="number" />
-          <button className="increment" type="button">+</button>
+          <button className="inAndDe increment" type="button">+</button>
         </div>
         <div className="quantity-section">
-          <button className="decrement" type="button">-</button>
+          <button className="inAndDe decrement" type="button">-</button>
           <input className="quantity" placeholder="數量" type="number" />
-          <button className="increment" type="button">+</button>
+          <button className="inAndDe increment" type="button">+</button>
         </div>
       </div>
       <div className="newOrderbuttons">
-        <button className="buyOrder">買進</button>
-        <button className="sellOrder">賣出</button>
+        <button className="orderButtons buyOrder">買進</button>
+        <button className="orderButtons sellOrder">賣出</button>
       </div>
 
     </div>

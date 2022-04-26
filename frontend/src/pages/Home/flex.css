@@ -49,16 +49,13 @@ main {
 .price-section,
 .quantity-section,
 .newOrderbuttons,
-#stockInfo-section {
+#stockInfo-section,
+.orderType {
   display: flex;
 }
 
 .price-section,
 .quantity-section {
   flex-wrap: nowrap;
-}
-
-.stockInfo-leftBlock,
-.stockInfo-rightBlock {
-  width: 50%;
+  justify-content: space-between;
 }
