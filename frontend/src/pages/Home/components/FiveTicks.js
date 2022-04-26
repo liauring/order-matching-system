@@ -5,11 +5,13 @@ import { Socket } from '../../../global/Socket'
 
 const FiveTicks = () => {
 
-
+  // const [time, setTime] = useState(new Date())
   const [ticksInfo, setTicksInfo] = useState({
     buyer: [],
     seller: []
   })
+
+
 
   useEffect(() => {
     if (Socket) {
@@ -57,8 +59,10 @@ const FiveTicks = () => {
   }, [Socket])
 
 
-
   return <div id='fiveTicks'>
+    <div className='fiveTicksSizeBar'>
+      <div className='fiveTicksSizeBarPercent'></div>
+    </div>
     <table className='buyerFiveTicks ticks'>
       <thead>
         <tr>

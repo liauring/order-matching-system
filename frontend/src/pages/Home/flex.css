@@ -24,7 +24,7 @@ main {
   justify-content: space-around;
 }
 
-.fiveTicksAndSheets-section {
+.blocks {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
@@ -40,4 +40,25 @@ main {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
+}
+
+
+.stockDetail,
+.stockInfo,
+.duration,
+.price-section,
+.quantity-section,
+.newOrderbuttons,
+#stockInfo-section {
+  display: flex;
+}
+
+.price-section,
+.quantity-section {
+  flex-wrap: nowrap;
+}
+
+.stockInfo-leftBlock,
+.stockInfo-rightBlock {
+  width: 50%;
 }

@@ -50,11 +50,50 @@
         window.scrollTo(0, document.body.scrollHeight);
         
       });
+      
 
+      
+
+      // let kLineInfo = {
+          //   stock: order.symbol,
+          //   price: bestBuyer.price,
+          //   executionTime: executionTime,
+          // }
+
+      let lowestPrice, highestPrice, firstPrice, lastPrice, periodMinute;
       socket.on('kLine', function (kLineInfo) {
-        let currentTime = (+new Date());
-      setInterval((() => function ()), 60)
+        
+        console.log('kLineInfo.executionTime', kLineInfo.executionTime)
+        let currentMinute = new Date(kLineInfo.executionTime).setSeconds(0, 0);
+        console.log('currentMinute', currentMinute)
+        
+        
+        
+        lastPrice = kLineInfo.price;
+
+        if(periodMinute  === undefined || periodMinute < currentMinute) {
+          periodMinute = currentMinute;
+          firstPrice = kLineInfo.price;
+        }
+
+        if(lowestPrice === undefined || lowestPrice > kLineInfo.price) {
+          lowestPrice = kLineInfo.price
+        }
+
+        if(highestPrice === undefined || highestPrice < kLineInfo.price) {
+          highestPrice = kLineInfo.price
+        }
+
+        let kLine = {
+          x: new Date(currentMinute),
+          y: [lowestPrice, highestPrice, firstPrice, lastPrice]
+        }
+
+        console.log(kLine)
+
       })
+
+        
 
       
     </script>

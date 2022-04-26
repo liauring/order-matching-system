@@ -4,10 +4,7 @@ const BuyerTick = ({ size, price, percent }) => {
     <td className="buyerTickSize">{size}</td>
     <td className="buyerTickBar">
       <div className="buyerBar tickBar">
-        {
-          size ?
-            <div className="buyerPercentBar" style={{ width: percent + '%' }}></div> : null
-        }
+        <div className="buyerPercentBar" style={{ width: percent || 0 + '%' }}></div>
       </div>
     </td>
     <td className="buyerTickPrice">{price}</td>

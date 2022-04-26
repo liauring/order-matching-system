@@ -11,7 +11,7 @@ const redisClient = new redis({
 
 
 (() => {
-  redisClient.subscribe('sendExec', 'fiveTicks', (err, count) => {
+  redisClient.subscribe('sendExec', 'fiveTicks', 'kLine', (err, count) => {
     if (err) {
       console.error("Failed to subscribe: %s", err.message);
     } else {
@@ -36,6 +36,7 @@ const redisClient = new redis({
       socket.sendFiveTicks(message);
       // TODO:socket.sendKLine(fiveTicksInfo)
     } else if (channel === 'kLine') {
+      console.log('kLine in redisSub', message)
       socket.sendKLine(message);
     } else {
       //TODO: console.log
