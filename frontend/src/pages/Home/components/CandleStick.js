@@ -24,83 +24,48 @@ const CandleStick = () => {
       let lowestPrice, highestPrice, firstPrice, lastPrice, periodMinute;
       Socket.on('kLine', function (kLineInfo) {
 
-        console.log('kLineInfo.executionTime', kLineInfo.executionTime)
+        // console.log('kLineInfo.executionTime', kLineInfo.executionTime)
         let currentMinute = new Date(kLineInfo.executionTime).setSeconds(0, 0);
-        console.log('currentMinute', currentMinute)
-        console.log('periodMinute', periodMinute)
+        // console.log('currentMinute', currentMinute)
+        // console.log('periodMinute', periodMinute)
+        setKInfo((prev) => {
+          let oldData = [...prev.series[0].data];
 
+          let periodK = oldData[oldData.length - 1];
 
+          if (periodMinute === undefined || periodMinute < currentMinute) {
+            // new candle
+            periodMinute = currentMinute;
+            periodK = {
+              x: new Date(currentMinute),
+              y: [kLineInfo.price, kLineInfo.price, kLineInfo.price, kLineInfo.price]
+            }
+            oldData.push(periodK);
+            console.log("new", currentMinute, kLineInfo.price, periodK.y);
+          } else {
+            periodK.y[3] = kLineInfo.price
+            if (periodK.y[2] > kLineInfo.price) {
+              periodK.y[2] = kLineInfo.price
+            }
 
-        lastPrice = kLineInfo.price;
-
-        if (periodMinute === undefined || periodMinute < currentMinute) {
-          periodMinute = currentMinute;
-          firstPrice = kLineInfo.price;
-        }
-
-        if (lowestPrice === undefined || lowestPrice > kLineInfo.price) {
-          lowestPrice = kLineInfo.price
-        }
-
-        if (highestPrice === undefined || highestPrice < kLineInfo.price) {
-          highestPrice = kLineInfo.price
-        }
-
-        let kLine = {
-          x: new Date(currentMinute),
-          y: [lowestPrice, highestPrice, firstPrice, lastPrice]
-        }
-
-        let oldData = JSON.parse(JSON.stringify(kInfo.series[0].data))
-        setKInfo({
-          series: [{
-            name: 'candle',
-            data: [...kInfo.series[0].data,
-            {
-              x: new Date(1538778600000),
-              y: [6629.81, 6650.5, 6623.04, 6633.33]
-            },
-            {
-              x: new Date(1538780400000),
-              y: [6632.01, 6643.59, 6620, 6630.11]
-            },
-            {
-              x: new Date(1538782200000),
-              y: [6630.71, 6648.95, 6623.34, 6635.65]
-            },
-            ]
-          }]
+            if (periodK.y[1] < kLineInfo.price) {
+              periodK.y[1] = kLineInfo.price
+            }
+            console.log("old", currentMinute, kLineInfo.price, periodK.y);
+          }
+          return {
+            series: [{
+              name: 'candle',
+              data: oldData
+            }]
+          }
         })
-        console.log(kLine)
+
       });
     }
   }, [Socket])
 
-  const addNewK = () => {
-    setKInfo({
-      series: [{
-        name: 'candle',
-        data: [...kInfo.series[0].data,
-        {
-          x: new Date(1538782200000),
-          y: [6630.71, 6648.95, 6623.34, 6635.65]
-        },
-        {
-          x: new Date(1538784000000),
-          y: [6635.65, 6651, 6629.67, 6638.24]
-        },
-        {
-          x: new Date(1538785800000),
-          y: [6638.24, 6640, 6620, 6624.47]
-        },
-        {
-          x: new Date(1538787600000),
-          y: [6624.53, 6636.03, 6621.68, 6624.31]
-        },
-        ]
-      }]
-    })
-  }
+
 
   const optionalSetting = {
     options: {
@@ -165,10 +130,7 @@ const CandleStick = () => {
   return (
 
     < div id="candleStick" >
-      {console.log('render')}
-      <button onClick={addNewK}>
-        Click me
-      </button>
+
       <ReactApexChart options={optionalSetting.options} series={kInfo.series} type="candlestick" height={350} />
       {/* <ReactApexChart options={this.state.options} series={this.state.series} type="candlestick" height={350} /> */}
     </div >

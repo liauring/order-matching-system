@@ -1,13 +1,20 @@
+//市價api切在哪
+
 class buyerMatchLogic {
+  constructor(order) {
+    this.order = order;
+
+  }
+
   getBestDealerOrderID() {
     return await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
   }
 
-  notHaveBestDealer(bestSellerOrderID, bestSellerScore, order) {
+  haveBestDealer(bestSellerOrderID, bestSellerScore, order) {
     if (bestSellerOrderID === undefined || parseInt(bestSellerScore.toString().slice(0, -8)) > price * 100) {
       await addNewBuyer(order);
       await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, order.quantity, '+')
-      return; //TODO:怎麼整個return
+      return; //TODO:怎麼整個return >> true false判斷return
     }
     return
   }

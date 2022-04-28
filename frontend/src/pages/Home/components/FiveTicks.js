@@ -36,8 +36,8 @@ const FiveTicks = () => {
         fiveTicks.seller.forEach(item => {
           item.percent = item.size * 100 / maxSize;
         })
-        console.log({ ...fiveTicks.buyer });
-        console.log({ ...fiveTicks.seller });
+        console.log('fiveTicksBuyer', { ...fiveTicks.buyer });
+        console.log('fiveTicksSeller', { ...fiveTicks.seller });
         if (fiveTicks.buyer.length < 5) {
           let addLength = 5 - fiveTicks.buyer.length;
           for (let i = 1; i <= addLength; i++) {
@@ -51,8 +51,8 @@ const FiveTicks = () => {
           }
         }
 
-        console.log({ ...fiveTicks.seller });
-        console.log('fiveTicks', fiveTicks)
+        // console.log({ ...fiveTicks.seller });
+        // console.log('fiveTicks', fiveTicks)
         setTicksInfo(fiveTicks)
       });
     }

@@ -67,7 +67,7 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
 
 })
 
-
+//TODO:定義委託失敗？
 app.post('/newOrder', async (req, res, next) => {
   let insertResult = await mongodbNewOrder(req.body);
   console.log('Log-newOrder: ', insertResult);
@@ -77,7 +77,7 @@ app.post('/newOrder', async (req, res, next) => {
   req.body.price = parseFloat(req.body.price);
   req.body.quantity = parseInt(req.body.quantity);
   req.body.orderStatus = '未成交';
-
+  let orderID
   if (req.body.BS === 'buyer') {
     let time = (+new Date());
     let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
@@ -87,7 +87,7 @@ app.post('/newOrder', async (req, res, next) => {
     }
     req.body.orderTime = todayRestTime;
 
-    let orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
+    orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
     req.body.orderID = orderID;
 
   } else if (req.body.BS === 'seller') {
@@ -100,7 +100,7 @@ app.post('/newOrder', async (req, res, next) => {
     }
     req.body.orderTime = todayRestTime;
 
-    let orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
+    orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
     req.body.orderID = orderID;
 
   } else {
