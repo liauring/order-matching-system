@@ -67,7 +67,9 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
 
 })
 
-//TODO:定義委託失敗？
+
+//TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
+//不做：沒有這個broker/沒有這檔股票
 app.post('/newOrder', async (req, res, next) => {
   let insertResult = await mongodbNewOrder(req.body);
   console.log('Log-newOrder: ', insertResult);
@@ -77,30 +79,30 @@ app.post('/newOrder', async (req, res, next) => {
   req.body.price = parseFloat(req.body.price);
   req.body.quantity = parseInt(req.body.quantity);
   req.body.orderStatus = '未成交';
-  let orderID
+  let orderID, time
   if (req.body.BS === 'buyer') {
-    let time = (+new Date());
+    time = new Date();
     let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
     let todayRestTime = midnight - time;
     if (todayRestTime.toString().length < 8) {
-      todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
+      todayRestTime = ((TIME_FILLTER + todayRestTime).slice(-8)).toString();
     }
-    req.body.orderTime = todayRestTime;
+    req.body.orderTime = todayRestTime.toString();
 
-    orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
+    orderID = parseInt('' + parseInt(parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
     req.body.orderID = orderID;
 
   } else if (req.body.BS === 'seller') {
 
-    let time = (+new Date());
+    time = new Date();
     let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
     let todayRestTime = time - midnight;
     if (todayRestTime.toString().length < 8) {
-      todayRestTime = (TIME_FILLTER + todayRestTime).slice(-8);
+      todayRestTime = ((TIME_FILLTER + todayRestTime).slice(-8)).toString();
     }
-    req.body.orderTime = todayRestTime;
+    req.body.orderTime = todayRestTime.toString();
 
-    orderID = parseInt('' + (parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
+    orderID = parseInt('' + parseInt(parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
     req.body.orderID = orderID;
 
   } else {
@@ -112,10 +114,62 @@ app.post('/newOrder', async (req, res, next) => {
   let { symbol } = req.body;
   let symbolSharding = symbol % 5;
   await rabbitmqPub(exchange, symbolSharding.toString(), JSON.stringify(req.body));
+  console.log(req.body)
+  let response = {
+    status: "委託成功",
+    quantity: req.body.quantity,
+    price: req.body.price,
+    executionCount: 0,
+    orderTime: time.toLocaleString(),
+    orderID: req.body.orderID
+  }
 
+  console.log(response)
 
-  return res.send(`Order successed! Your orderID is ${orderID}`)
+  return res.send(response)
 })
+
+
+app.get('/fiveTicks/:symbol', async (req, res, next) => {
+  let { symbol } = req.params;
+  let fiveTicks = await getFiveTicks(parseInt(symbol));
+  console.log(fiveTicks)
+  return res.send(fiveTicks)
+})
+
+let getFiveTicks = async function (symbol) {
+  // 取現在五檔
+  let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
+  let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
+  let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks).reverse();
+  let formattedSellerFiveTicks = formatFiveTicks(sellerFiveTicks);
+  let FiveTicks = {
+    buyer: formattedBuyerFiveTicks,
+    seller: formattedSellerFiveTicks,
+  }
+
+  console.log(FiveTicks)
+  return FiveTicks;
+}
+
+let formatFiveTicks = function (fiveTicks) {
+  let formattedFiveTicks = fiveTicks.reduce((accumulator, currentValue, currentIndex) => {
+
+    let tick = {};
+    if (currentIndex % 2 === 1) {
+      parseInt(currentValue)
+      originalPrice = currentValue / 100;
+      accumulator[Math.floor(currentIndex / 2)].price = originalPrice;
+    } else {
+      originalSize = parseInt(currentValue.slice(5));
+      tick.size = originalSize;
+      accumulator.push(tick);
+    }
+
+    return accumulator;
+  }, [])
+  return formattedFiveTicks
+}
 
 
 

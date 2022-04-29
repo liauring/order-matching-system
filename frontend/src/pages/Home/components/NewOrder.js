@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react"
-// import { API_POST_ORDER } from "../../../global/Constants"
-// import axios from "axios"
+import { API_POST_ORDER } from "../../../global/Constants"
+import axios from "axios"
 
-const NewOrder = () => {
+const NewOrder = ({ setNewOrderToHistory }) => {
   const [price, setPrice] = useState(null)
   const incrementPrice = () => {
     setPrice(function (prev) {
@@ -43,9 +43,36 @@ const NewOrder = () => {
     })
   }
 
-  // const sendOrder = () => {
-  //   let newOrderResponse = axios.post(`${API_POST_ORDER}`)
-  // }
+  const sendOrder = async (dealer) => {
+    let BS
+    if (dealer === '買進') {
+      BS = 'buyer'
+    } else if (dealer === '賣出') {
+      BS = 'seller'
+    } else {
+      window.alert('請點選 [買進] 或 [賣出]')
+    }
+
+    if ({ price } === null || quantity === null)
+      console.log('BS', BS)
+    let reqBody = {
+      account: '6', //後端會改int
+      broker: 1030,
+      symbol: '2330',  //後端會改int
+      BS: BS,
+      orderType: 'limit',
+      duration: 'ROD',
+      price: { price }.price,
+      quantity: { quantity }.quantity,
+      brokerName: '土銀',
+      symbolName: '台積電',
+    }
+    console.log(reqBody);
+    let newOrderResponse = await axios.post(`${API_POST_ORDER}`, reqBody);
+    console.log(newOrderResponse.data);
+    setNewOrderToHistory((prev) => [...prev, newOrderResponse.data])
+
+  }
 
 
   return <div id="newOrder-section">
@@ -86,12 +113,12 @@ const NewOrder = () => {
         </div>
       </div>
       <div className="newOrderbuttons">
-        <button className="orderButtons buyOrder" type="submit">買進</button>
-        <button className="orderButtons sellOrder" type="submit">賣出</button>
+        <button className="orderButtons buyOrder" type="submit" onClick={(buy) => { sendOrder(buy.target.innerText) }}>買進</button>
+        <button className="orderButtons sellOrder" type="submit" onClick={(sell) => { sendOrder(sell.target.innerText) }}>賣出</button>
       </div>
 
-    </div>
-  </div>
+    </div >
+  </div >
 
 }
 export default NewOrder

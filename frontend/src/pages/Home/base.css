@@ -9,12 +9,10 @@ body {
   background: rgb(39, 47, 71);
   color: #777;
   font-family: 'Apple LiSung Light';
-
 }
 
 footer {
   height: 150px;
-
 }
 
 ul {
@@ -58,6 +56,7 @@ h1 a {
   text-decoration: none;
   color: #fff;
   font-family: Inter;
+  margin-left: 20px;
 
 }
 
@@ -236,9 +235,21 @@ table td {
 
 .orderHistory th,
 .orderHistory td {
-  width: 20%;
   padding: 15px 5px
 }
+
+.tableOrderStatus {
+  width: 25%
+}
+
+.tableOrderTime {
+  width: 30%
+}
+
+.tableOrder {
+  width: 15%
+}
+
 
 .inAndDe {
   width: 45px !important;
@@ -251,19 +262,26 @@ table td {
   border-radius: 5px;
   text-align: center;
   margin: 10px;
-  border-style: none
+  border-style: none;
+  font-size: 18px;
+  background-color: rgb(17, 17, 26) !important;
+  color: #fff !important;
+  border: solid 1px #3a3a3a !important;
+}
+
+::placeholder {
+  color: #3a3a3a !important;
 }
 
 .button-selected {
-  background-color: antiquewhite !important;
-  color: rgb(32, 33, 48) !important;
-  border: solid 3px rgb(245, 203, 149) !important;
+  background-color: rgb(94, 112, 166) !important;
+  color: rgb(255, 255, 255) !important;
   box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.3);
 }
 
 .button-unselected {
-  background-color: rgb(17, 17, 26) !important;
-  color: #3a3a3a !important;
+  background-color: rgb(94, 112, 166, 0.3) !important;
+  color: #848383 !important;
   border: solid 1px #3a3a3a !important;
 }
 
@@ -279,4 +297,24 @@ table td {
 
 .orderHistory td {
   font-size: 16px;
+}
+
+.orderListAndEdit-section {
+  width: 100%;
+}
+
+/*--------------*/
+
+.form__datatype {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form__empty {
+  color: red;
+}
+
+.form__empty--submit {
+  display: flex;
+  justify-content: flex-end;
 }

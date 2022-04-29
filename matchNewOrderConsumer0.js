@@ -314,7 +314,7 @@ let getFiveTicks = async function (symbol) {
   return FiveTicks;
 }
 
-
+//TODO:這有copy給app.js用
 let formatFiveTicks = function (fiveTicks) {
   let formattedFiveTicks = fiveTicks.reduce((accumulator, currentValue, currentIndex) => {
 
@@ -333,6 +333,7 @@ let formatFiveTicks = function (fiveTicks) {
   }, [])
   return formattedFiveTicks
 }
+
 
 
 

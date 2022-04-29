@@ -4,11 +4,15 @@ import StockInfo from './components/StockInfo'
 import NewOrder from './components/NewOrder'
 import OrderHistory from './components/OrderHistory'
 import Socket from '../../global/Socket'
+import { useState, useEffect } from "react"
 
 import './base.css'
 import './flex.css'
 
 const Home = () => {
+
+  const [newOrderToHistory, setNewOrderToHistory] = useState([])
+
   return <div>
     <CandleStick />
     <div className='blocks fiveTicksAndInfo-section'>
@@ -16,8 +20,8 @@ const Home = () => {
       <StockInfo />
     </div>
     <div className='blocks newOrderAndOrderHistory-section'>
-      <NewOrder />
-      <OrderHistory />
+      <NewOrder setNewOrderToHistory={setNewOrderToHistory} />
+      <OrderHistory newOrderToHistory={newOrderToHistory} />
     </div>
   </div >
 }

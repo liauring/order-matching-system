@@ -1,7 +1,10 @@
+/* eslint-disable no-unused-expressions */
 import BuyerTick from './BuyerTick'
 import SellerTick from './SellerTick'
 import { useEffect, useState } from "react"
 import { Socket } from '../../../global/Socket'
+import axios from "axios"
+import { API_POST_FIVETICKS } from "../../../global/Constants"
 
 const FiveTicks = () => {
 
@@ -11,7 +14,16 @@ const FiveTicks = () => {
     seller: []
   })
 
-
+  function formatFiveTicksArray(dealer) {
+    console.log('enter format')
+    if (dealer.length < 5) {
+      let addLength = 5 - dealer.length;
+      for (let i = 1; i <= addLength; i++) {
+        dealer.push({});
+      }
+    }
+    return dealer
+  }
 
   useEffect(() => {
     if (Socket) {
@@ -38,18 +50,22 @@ const FiveTicks = () => {
         })
         console.log('fiveTicksBuyer', { ...fiveTicks.buyer });
         console.log('fiveTicksSeller', { ...fiveTicks.seller });
-        if (fiveTicks.buyer.length < 5) {
-          let addLength = 5 - fiveTicks.buyer.length;
-          for (let i = 1; i <= addLength; i++) {
-            fiveTicks.buyer.push({});
-          }
-        }
-        if (fiveTicks.seller.length < 5) {
-          let addLength = 5 - fiveTicks.seller.length;
-          for (let i = 1; i <= addLength; i++) {
-            fiveTicks.seller.push({});
-          }
-        }
+
+        fiveTicks.buyer = (formatFiveTicksArray(fiveTicks.buyer))
+        fiveTicks.seller = (formatFiveTicksArray(fiveTicks.seller))
+
+        // if (fiveTicks.buyer.length < 5) {
+        //   let addLength = 5 - fiveTicks.buyer.length;
+        //   for (let i = 1; i <= addLength; i++) {
+        //     fiveTicks.buyer.push({});
+        //   }
+        // }
+        // if (fiveTicks.seller.length < 5) {
+        //   let addLength = 5 - fiveTicks.seller.length;
+        //   for (let i = 1; i <= addLength; i++) {
+        //     fiveTicks.seller.push({});
+        //   }
+        // }
 
         // console.log({ ...fiveTicks.seller });
         // console.log('fiveTicks', fiveTicks)
@@ -57,6 +73,21 @@ const FiveTicks = () => {
       });
     }
   }, [Socket])
+
+  useEffect(() => {
+    console.log('fiveTicks of useEffect')
+    const getInitialFiveTicks = async function () {
+      let initialFiveTicks = await axios.get(`${API_POST_FIVETICKS}/2330`)
+      console.log('initialFiveTicks: ', initialFiveTicks)
+      console.log(initialFiveTicks.data)
+      let responseFiveTicks
+      responseFiveTicks.buyer = await formatFiveTicksArray(initialFiveTicks.data.buyer)
+      responseFiveTicks.seller = await formatFiveTicksArray(initialFiveTicks.data.seller)
+      console.log('getInitialFiveTicks: ', responseFiveTicks)
+      setTicksInfo(responseFiveTicks)
+    }
+    getInitialFiveTicks()
+  }, [])
 
 
   return <div id='fiveTicks'>
