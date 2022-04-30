@@ -36,8 +36,10 @@ const mongodbUpdateOrder = async function (data) {
 const mongodbGetExecutionHistory = async function (symbol, time) {
   let midnight = new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
   const collection = db.collection('executions')
-  const executionHistory = await collection.find({ $and: [{ stock: { $eq: symbol } }, { executionTime: { $gte: midnight } }] }, { stock: 1, price: 1, executionTime: 1, _id: 0 }).toArray();
+  const executionHistory = await collection.find({ $and: [{ stock: { $eq: symbol } }, { executionTime: { $gte: midnight } }] }).project({ stock: 1, price: 1, executionTime: 1, _id: 0 }).toArray();
   return executionHistory;
 }
+
+
 
 module.exports = { mongodbExec, mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory };

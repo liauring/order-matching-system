@@ -1,64 +1,116 @@
 //市價api切在哪
+require('dotenv').config();
+const redisClient = require('./util/cache');
+const { v4: uuidv4 } = require('uuid');
+let { rabbitmqConn } = require('./util/rabbitmq');
+const consumeQueue = 'matchNewOrder-stock-0';
+const pubQueue = 'saveNewExec';
+
 
 class buyerMatchLogic {
   constructor(order) {
     this.order = order;
-
+    this.bestSellerOrderID = null;
+    this.bestSeller = null;
+    this.bestSellerScore = null;
+    this.finalQTY = null;
+    this.hasRemainingQuantity = false;
+    this.executionDetail = {
+      executionID: null,
+      executionTime: null,
+      seller: null,
+      sellerOrderID: null,
+      sellerOrderTime: null,
+      buyer: null,
+      buyerOrderID: null,
+      buyerOrderTime: null,
+      stock: null,
+      price: null,
+      quantity: null,
+    };
+    this.executionBuyer = {
+      executionID: null,
+      executionTime: null,
+      orderID: null,
+      orderTime: null,
+      stock: null,
+      price: null,
+      quantity: null,
+      orderStatus: null,
+    };
+    this.executionSeller = {
+      executionID: null,
+      executionTime: null,
+      orderID: null,
+      orderTime: null,
+      stock: null,
+      price: null,
+      quantity: null,
+      orderStatus: null,
+    };
+    this.kLineInfo = {
+      stock: null,
+      price: null,
+      executionTime: null,
+    }
   }
 
   getBestDealerOrderID() {
-    return await redisClient.zrange(`${symbol}-seller`, 0, 0, 'WITHSCORES');
+    [this.bestSellerOrderID, this.bestSellerScore] = await redisClient.zrange(`${this.order.symbol}-seller`, 0, 0, 'WITHSCORES');
+    return;
   }
 
-  haveBestDealer(bestSellerOrderID, bestSellerScore, order) {
-    if (bestSellerOrderID === undefined || parseInt(bestSellerScore.toString().slice(0, -8)) > price * 100) {
-      await addNewBuyer(order);
-      await addNewOrderFiveTicks(`${order.symbol}-buyer`, order.price, order.quantity, '+')
-      return; //TODO:怎麼整個return >> true false判斷return
+  haveBestDealer() {
+    if (this.bestSellerOrderID === undefined || parseInt(this.bestSellerScore.toString().slice(0, -8)) > this.order.price * 100) {
+      await addNewBuyer(this.order); //TODO: addNewBuyer跟外面的function怎麼放進來
+      await addNewOrderFiveTicks(`${this.order.symbol}-buyer`, this.order.price, this.order.quantity, '+')
+      return;
     }
     return
   }
 
-  getBestDealerOrderInfo(bestSellerOrderID) {
-    return await redisClient.get(bestSellerOrderID)
+  getBestDealerOrderInfo() {
+    this.bestSeller = await redisClient.get(this.bestSellerOrderID)
+    this.bestSeller = JSON.parse(this.bestSeller)
   }
 
-  deleteBestDealer(bestSellerOrderID) {
-    await redisClient.zrem(`${symbol}-seller`, bestSellerOrderID);
-    await redisClient.del(`${bestSellerOrderID}`)
+  deleteBestDealer() {
+    await redisClient.zrem(`${this.order.symbol}-seller`, this.bestSellerOrderID);
+    await redisClient.del(`${this.bestSellerOrderID}`)
     return
   }
 
-  matchExecutionQuantity(bestSeller, order, hasRemainingQuantity) {
-    let finalQTY
-    if (quantity === bestSeller.quantity) {
-      finalQTY = quantity;
-      hasRemainingQuantity = false;
-      order.orderStatus = '完全成交';
-      bestSeller.orderStatus = '完全成交';
-      await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
-    } else if (quantity < bestSeller.quantity) {
-      finalQTY = quantity
-      bestSeller.quantity -= quantity;
-      await redisClient.zadd(`${symbol}-seller`, bestSellerScore, JSON.stringify(bestSeller.orderID));
-      await redisClient.set(`${bestSeller.orderID}`, JSON.stringify(bestSeller));
-      hasRemainingQuantity = false;
-      order.orderStatus = '完全成交';
-      bestSeller.orderStatus = '部分成交';
-      await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
-    } else if (quantity > bestSeller.quantity) {
-      finalQTY = bestSeller.quantity;
-      quantity -= bestSeller.quantity;
-      order.quantity = quantity;
-      hasRemainingQuantity = true;
-      order.orderStatus = '部分成交';
-      bestSeller.orderStatus = '完全成交';
-      await addNewOrderFiveTicks(`${order.symbol}-seller`, bestSeller.price, finalQTY, '-')
+  matchExecutionQuantity() {
+    if (this.order.quantity === this.bestSeller.quantity) {
+      this.finalQTY = this.order.quantity;
+      // this.hasRemainingQuantity = false;
+      this.order.orderStatus = '完全成交';
+      this.bestSeller.orderStatus = '完全成交';
+      await addNewOrderFiveTicks(`${this.order.symbol}-seller`, this.bestSeller.price, this.finalQTY, '-')
+    } else if (this.order.quantity < this.bestSeller.quantity) {
+      this.finalQTY = this.order.quantity
+      this.bestSeller.quantity -= this.order.quantity;
+      await redisClient.zadd(`${this.order.symbol}-seller`, this.bestSellerScore, JSON.stringify(this.bestSeller.orderID));
+      await redisClient.set(`${this.bestSeller.orderID}`, JSON.stringify(this.bestSeller));
+      // hasRemainingQuantity = false;
+      this.order.orderStatus = '完全成交';
+      this.bestSeller.orderStatus = '部分成交';
+      await addNewOrderFiveTicks(`${this.order.symbol}-seller`, this.bestSeller.price, this.finalQTY, '-')
+    } else if (this.order.quantity > this.bestSeller.quantity) {
+      this.finalQTY = this.bestSeller.quantity;
+      this.order.quantity -= this.bestSeller.quantity;
+      this.order.quantity = this.order.quantity;
+      this.hasRemainingQuantity = true;
+      this.order.orderStatus = '部分成交';
+      this.bestSeller.orderStatus = '完全成交';
+      await addNewOrderFiveTicks(`${this.order.symbol}-seller`, this.bestSeller.price, this.finalQTY, '-')
     } else {
       console.error('matchNewOrderConsumer0-buyer condition Error')
     }
-    return { bestSeller, order, hasRemainingQuantity } //TODO: 確認變數都可以帶回global
+    return
   }
+  //------------------------------
+  //------------------------------
 
   sendExecutionToRabbitmqForStorage(pubQueue, executionDetail) {
     return await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
