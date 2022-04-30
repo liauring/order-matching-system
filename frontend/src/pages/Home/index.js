@@ -12,6 +12,7 @@ import './flex.css'
 const Home = () => {
 
   const [newOrderToHistory, setNewOrderToHistory] = useState([])
+  const [editingShow, setEditingShow] = useState(false);
 
   return <div>
     <CandleStick />

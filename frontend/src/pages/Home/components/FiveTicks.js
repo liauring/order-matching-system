@@ -80,9 +80,10 @@ const FiveTicks = () => {
       let initialFiveTicks = await axios.get(`${API_POST_FIVETICKS}/2330`)
       console.log('initialFiveTicks: ', initialFiveTicks)
       console.log(initialFiveTicks.data)
-      let responseFiveTicks
-      responseFiveTicks.buyer = await formatFiveTicksArray(initialFiveTicks.data.buyer)
-      responseFiveTicks.seller = await formatFiveTicksArray(initialFiveTicks.data.seller)
+      let responseFiveTicks = {}
+      console.log('initialFiveTicks.data.buyer: ', initialFiveTicks.data.buyer)
+      responseFiveTicks.buyer = formatFiveTicksArray(initialFiveTicks.data.buyer)
+      responseFiveTicks.seller = formatFiveTicksArray(initialFiveTicks.data.seller)
       console.log('getInitialFiveTicks: ', responseFiveTicks)
       setTicksInfo(responseFiveTicks)
     }

@@ -1,7 +1,35 @@
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import OrderHistoryList from "./OrderHistoryList"
+import { Socket } from '../../../global/Socket'
+import EditingWindow from './orderEditingWindow'
+
 
 const OrderHistory = ({ newOrderToHistory }) => {
+  const [editingShow, setEditingShow] = useState(false);
+
+
+
+  // let executionBuyer = {
+  //   executionID: executionID,
+  //   executionTime: executionTime,
+  //   orderID: order.orderID,
+  //   orderTime: order.orderTime,
+  //   stock: order.symbol,
+  //   price: bestSeller.price,
+  //   quantity: finalQTY,
+  //   orderStatus: order.orderStatus,
+  // }
+
+  // TODO:收到成交改變歷史記錄
+  // useEffect(() => {
+  //   if (Socket) {
+  //     Socket.on('execution', function (execution) {
+  //       console.log(execution)
+  //     });
+  //   }
+  // }, [Socket])
+
+
   useEffect(() => {
     console.log(newOrderToHistory);
   }, [newOrderToHistory])
@@ -19,13 +47,24 @@ const OrderHistory = ({ newOrderToHistory }) => {
       <tbody>
         {
           newOrderToHistory ?
-            newOrderToHistory.map(history => <OrderHistoryList status={history.status} quantity={history.quantity} price={history.price} executionCount={history.executionCount} orderTime={history.orderTime} />)
+            newOrderToHistory.map(history => <OrderHistoryList status={history.status} quantity={history.quantity} price={history.price} executionCount={history.executionCount} orderTime={history.orderTime} setEditingShow={setEditingShow} />)
             : null
         }
 
 
       </tbody>
     </table >
+    {/* <div className="editingWindow-section"> */}
+    {
+      // editingShow &&
+      <EditingWindow
+        editingShow={editingShow}
+      // onHide={() => setEditingShow()}
+      // orderID={orderId}
+      // quantity={quantity}
+      />
+    }
+    {/* </div> */}
 
   </div>
 }

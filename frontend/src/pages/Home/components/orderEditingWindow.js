@@ -1,31 +1,42 @@
-import { Button, Modal } from 'react-bootstrap';
+import { useState, useEffect } from "react"
 
-const EditingWindow = ({ onHide, show, state }) => (
-  <Modal
-    size="lg"
-    aria-labelledby="contained-modal-title-vcenter"
-    centered
-    {...{ onHide, show }}
+const EditingWindow = ({ onHide, editingShow, state }) => {
+  const [quantity, setQuantity] = useState(null)
+  const incrementQuantity = () => {
+    setQuantity(function (prev) {
+      if (prev === null) {
+        return prev = 1
+      }
+      return prev + 1
+    })
+  }
 
-  >
-    <Modal.Header closeButton>
-      <Modal.Title id="contained-modal-title-vcenter">
-        修改委託單
-      </Modal.Title>
-    </Modal.Header>
-    <Modal.Body>
-      <h4>Centered Modal</h4>
-      <p>
-        Cras mattis consectetur purus sit amet fermentum. Cras justo odio,
-        dapibus ac facilisis in, egestas eget quam. Morbi leo risus, porta ac
-        consectetur ac, vestibulum at eros.
-      </p>
-    </Modal.Body>
-    <Modal.Footer>
-      <Button variant="outline-secondary" onClick={onHide}>Close</Button>
-      <Button variant="outline-primary" onClick={() => console.log('送出')} > Save changes</Button>
-    </Modal.Footer>
-  </Modal>
-);
+  const decrementQuantity = () => {
+    setQuantity(function (prev) {
+      if (prev === null || prev === 0) {
+        return prev = 0
+      }
+      return prev - 1
+    })
+  }
+
+
+  return <div className="editingWindow">
+    <div className="editingWindowTitle">
+      委託單修改
+    </div>
+    <div className="editingWindowOrderInfo">
+      <a className="editingWindowSymbol">代碼: 2330</a>
+      <a className="editingWindowPrice">價格: 540</a>
+      <a className="editingWindowQuantity">剩餘數量: 50</a>
+    </div>
+    <div className="quantity-section">
+      <button className="inAndDe decrement" type="button" onClick={decrementQuantity}>-</button>
+      <input className="quantity" placeholder="數量" type="number" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
+      <button className="inAndDe increment" type="button" onClick={incrementQuantity}>+</button>
+    </div>
+    <button className="editingWindowButton">送出修改</button>
+  </div>
+};
 
 export default EditingWindow;

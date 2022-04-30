@@ -51,10 +51,25 @@ const NewOrder = ({ setNewOrderToHistory }) => {
       BS = 'seller'
     } else {
       window.alert('請點選 [買進] 或 [賣出]')
+      return
     }
 
-    if ({ price } === null || quantity === null)
-      console.log('BS', BS)
+
+    if (!price || !quantity) {
+      console.log('if price and quantity')
+      window.alert('請填寫價格與數量')
+      return
+    }
+    let newPrice = Number(price)
+    let newQuantity = Number(quantity)
+
+    if (newPrice <= 0 || newQuantity <= 0) {
+      console.log('if price and quantity')
+      window.alert('價格與數量不可為負數')
+      return
+    }
+
+    console.log('BS', BS)
     let reqBody = {
       account: '6', //後端會改int
       broker: 1030,
@@ -62,10 +77,12 @@ const NewOrder = ({ setNewOrderToHistory }) => {
       BS: BS,
       orderType: 'limit',
       duration: 'ROD',
-      price: { price }.price,
-      quantity: { quantity }.quantity,
+      price: price,
+      quantity: quantity,
       brokerName: '土銀',
       symbolName: '台積電',
+
+
     }
     console.log(reqBody);
     let newOrderResponse = await axios.post(`${API_POST_ORDER}`, reqBody);
