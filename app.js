@@ -5,7 +5,7 @@ const redisClient = require('./util/cache');
 const { rabbitmqPub } = require('./util/rabbitmq');
 const http = require('http');
 const server = http.createServer(app);
-let { mongodbNewOrder, mongodbUpdateOrder } = require('./util/mongodb');
+let { mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory } = require('./util/mongodb');
 
 require('./util/socket.js').config(server);
 require('./redisSub.js');
@@ -136,6 +136,24 @@ app.get('/fiveTicks/:symbol', async (req, res, next) => {
   console.log(fiveTicks)
   return res.send(fiveTicks)
 })
+
+
+
+// let kLineInfo = {
+//   stock: order.symbol,
+//   price: bestSeller.price,
+//   executionTime: executionTime,
+// }
+app.get('/kLine/:symbol', async (req, res, next) => {
+  let { symbol } = req.params;
+  let { time } = req.query;
+  symbol = parseInt(symbol)
+  time = parseInt(time);
+  const executionResult = await mongodbGetExecutionHistory(symbol, time)
+  console.debug('kLine History Result: ', executionResult)
+  return res.send(executionResult)
+})
+
 
 let getFiveTicks = async function (symbol) {
   // 取現在五檔

@@ -56,10 +56,10 @@ const OrderHistory = ({ newOrderToHistory }) => {
     </table >
     {/* <div className="editingWindow-section"> */}
     {
-      // editingShow &&
+      editingShow &&
       <EditingWindow
         editingShow={editingShow}
-      // onHide={() => setEditingShow()}
+        onHide={() => setEditingShow(false)}
       // orderID={orderId}
       // quantity={quantity}
       />
