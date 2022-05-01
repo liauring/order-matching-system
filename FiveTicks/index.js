@@ -1,4 +1,5 @@
-const { addNewOrderFiveTicks } = require('./update')
-const { getFiveTicks } = require('./get')
+const { CurrentFiveTicks } = require('./get')
+const { NewOrderFiveTicks } = require('./update')
 
-module.exports = { addNewOrderFiveTicks, getFiveTicks }
+
+module.exports = { CurrentFiveTicks, NewOrderFiveTicks }

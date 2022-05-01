@@ -2,7 +2,7 @@ require('dotenv').config();
 const redisClient = require('../util/cache');
 const { v4: uuidv4 } = require('uuid');
 let { rabbitmqSendToQueue } = require('../util/rabbitmq');
-let { addNewOrderFiveTicks, getFiveTicks } = require('../FiveTicks')
+let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks');
 
 class MatchLogic {
   constructor(order, dealerType, orderType) {
@@ -37,8 +37,8 @@ class MatchLogic {
   async haveBestDealer() {
     // let comparePriceResult = this.compareBestDealerPriceWithOrderPrice();
     if (this.bestDealerOrderID === undefined || this.compareBestDealerPriceWithOrderPrice()) {
-      await this.addNewDealer();
-      await addNewOrderFiveTicks(`${this.order.symbol}-${this.orderType}`, this.order.price, this.order.quantity, '+');
+      await this.#addNewDealer();
+      await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.orderType}`, this.order.price, this.order.quantity, '+');
       return false;
     }
     return true;
@@ -62,7 +62,7 @@ class MatchLogic {
       this.hasRemainingQuantity = false;
       this.order.orderStatus = '完全成交';
       this.bestDealer.orderStatus = '完全成交';
-      await addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
+      await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else if (this.order.quantity < this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity;
       this.bestDealer.quantity -= this.order.quantity;
@@ -71,14 +71,14 @@ class MatchLogic {
       this.hasRemainingQuantity = false;
       this.order.orderStatus = '完全成交';
       this.bestDealer.orderStatus = '部分成交';
-      await addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
+      await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else if (this.order.quantity > this.bestDealer.quantity) {
       this.finalQTY = this.bestDealer.quantity;
       this.order.quantity -= this.bestDealer.quantity;
       this.hasRemainingQuantity = true;
       this.order.orderStatus = '部分成交';
       this.bestDealer.orderStatus = '完全成交';
-      await addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
+      await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else {
       console.error('matchExecutionQuantity() Error');
     }
@@ -178,7 +178,7 @@ class MatchLogic {
     return await redisClient.publish('kLine', JSON.stringify(this.kLineInfo));
   }
 
-  async addNewDealer() {
+  async #addNewDealer() {
     let setScore = this.order.orderID;
     await redisClient.zadd(`${this.order.symbol}-${this.orderType}`, setScore, JSON.stringify(this.order.orderID));
     await redisClient.set(`${this.order.orderID}`, JSON.stringify(this.order));

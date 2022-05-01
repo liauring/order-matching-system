@@ -3,10 +3,7 @@ const redisClient = require('./util/cache');
 let { rabbitmqConn } = require('./util/rabbitmq');
 const BSLogicMap = require('./BSLogic');
 const CONSUMEQUEUE = 'matchNewOrder-stock-0';
-let { getFiveTicks } = require('./FiveTicks');
-
-
-// const BSClassMap = { buyer: BuyerMatchLogic, seller: SellerMatchLogic };
+let { CurrentFiveTicks, NewOrderFiveTicks } = require('./FiveTicks');
 
 (async () => {
   rabbitmqConn = await rabbitmqConn;
@@ -37,7 +34,8 @@ let { getFiveTicks } = require('./FiveTicks');
     } catch (error) {
       console.error(error)
     } finally {
-      let fiveTicks = await getFiveTicks(order.symbol);
+      let newFiveTicks = new CurrentFiveTicks(order.symbol);
+      let fiveTicks = await newFiveTicks.getFiveTicks();
       console.debug('[fiveTicks]', fiveTicks)
       await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks));
       rabbitmqConn.ack(newOrder);
