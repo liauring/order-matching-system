@@ -1,13 +1,12 @@
 require('dotenv').config();
 const redisClient = require('./util/cache');
 let { rabbitmqConn } = require('./util/rabbitmq');
-const { BuyerMatchLogic, SellerMatchLogic } = require('./BSClass');
+const BSLogicMap = require('./BSLogic');
 const CONSUMEQUEUE = 'matchNewOrder-stock-0';
-const PUBQUEUE = 'saveNewExec';
-let { addNewOrderFiveTicks, getFiveTicks } = require('./FiveTicks')
+let { getFiveTicks } = require('./FiveTicks');
 
 
-const BSClassMap = { buyer: BuyerMatchLogic, seller: SellerMatchLogic };
+// const BSClassMap = { buyer: BuyerMatchLogic, seller: SellerMatchLogic };
 
 (async () => {
   rabbitmqConn = await rabbitmqConn;
@@ -15,7 +14,7 @@ const BSClassMap = { buyer: BuyerMatchLogic, seller: SellerMatchLogic };
   rabbitmqConn.consume(CONSUMEQUEUE, async (newOrder) => {
     let order = JSON.parse(newOrder.content.toString());
     let { BS } = order;
-    let dealer = new BSClassMap[BS](order);
+    let dealer = new BSLogicMap[BS](order);
     try {
       do {
         await dealer.getBestDealerOrderID();
