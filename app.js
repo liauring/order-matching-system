@@ -46,8 +46,7 @@ const exchange = 'matchNewOrder';
 
 // TODO: 錯誤處理：1.找不到orderID 
 app.patch('/order', async (req, res, next) => { //patch用法對嗎？
-  let insertResult = await mongodbUpdateOrder(req.body);
-  console.log('Log-updateOrder: ', insertResult);
+  await mongodbUpdateOrder(req.body);
   let { orderID, symbol, quantity, BS } = req.body;
   orderID = parseInt(orderID);
   symbol = parseInt(symbol);
@@ -67,12 +66,10 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
 
 })
 
-
 //TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
 //不做：沒有這個broker/沒有這檔股票
 app.post('/newOrder', async (req, res, next) => {
-  let insertResult = await mongodbNewOrder(req.body);
-  console.log('Log-newOrder: ', insertResult);
+  await mongodbNewOrder(req.body);
   req.body.account = parseInt(req.body.account);
   req.body.broker = parseInt(req.body.broker);
   req.body.symbol = parseInt(req.body.symbol);
@@ -114,7 +111,6 @@ app.post('/newOrder', async (req, res, next) => {
   let { symbol } = req.body;
   let symbolSharding = symbol % 5;
   await rabbitmqPub(exchange, symbolSharding.toString(), JSON.stringify(req.body));
-  console.log(req.body)
   let response = {
     status: "委託成功",
     quantity: req.body.quantity,
@@ -124,11 +120,8 @@ app.post('/newOrder', async (req, res, next) => {
     orderID: req.body.orderID
   }
 
-  console.log(response)
-
   return res.send(response)
 })
-
 
 app.get('/fiveTicks/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
@@ -136,8 +129,6 @@ app.get('/fiveTicks/:symbol', async (req, res, next) => {
   console.log(fiveTicks)
   return res.send(fiveTicks)
 })
-
-
 
 // let kLineInfo = {
 //   stock: order.symbol,

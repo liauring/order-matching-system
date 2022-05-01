@@ -69,6 +69,8 @@ const pubQueue = 'saveNewExec';
 
           let executionID = uuidv4(); //下移
           let executionTime = (+new Date())
+
+
           let executionDetail = {
             executionID: executionID,
             executionTime: executionTime,
@@ -116,6 +118,7 @@ const pubQueue = 'saveNewExec';
           // sendExecutionToRabbitmqForStorage(pubQueue, executionDetail)
           await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
 
+
           let execBuyerMessage = { brokerID: order.broker, execution: executionBuyer };
           let execSellerMessage = { brokerID: bestSeller.broker, execution: executionSeller };
 
@@ -145,13 +148,12 @@ const pubQueue = 'saveNewExec';
           }
 
           bestBuyer = await redisClient.get(bestBuyerOrderID)
+          bestBuyer = JSON.parse(bestBuyer);
 
 
           await redisClient.zrem(`${symbol}-buyer`, bestBuyerOrderID);
           await redisClient.del(`${bestBuyerOrderID}`)
-          bestBuyer = JSON.parse(bestBuyer);
 
-          let executionID = uuidv4();
           let finalQTY
           if (quantity === bestBuyer.quantity) {
             finalQTY = quantity;
@@ -179,7 +181,12 @@ const pubQueue = 'saveNewExec';
           } else {
             console.error('matchNewOrderConsumer0-seller condition Error')
           }
-          let executionTime = (+new Date())
+
+
+          let executionID = uuidv4();
+          let executionTime = new Date();
+
+
           let executionDetail = {
             executionID: executionID,
             executionTime: executionTime,
@@ -227,8 +234,10 @@ const pubQueue = 'saveNewExec';
           await rabbitmqConn.sendToQueue(pubQueue, Buffer.from(JSON.stringify(executionDetail)), { deliveryMode: true });
           // console.log(order.broker)
           // console.log(executionSeller)
-          let execSellerMessage = { brokerID: order.broker, execution: executionSeller }
+
           let execBuyerMessage = { brokerID: bestBuyer.broker, execution: executionBuyer }
+          let execSellerMessage = { brokerID: order.broker, execution: executionSeller }
+
           // socket.sendExec(order.broker, executionSeller);
           // socket.sendExec(bestBuyer.broker, executionBuyer);
 
@@ -310,7 +319,7 @@ let getFiveTicks = async function (symbol) {
     seller: formattedSellerFiveTicks,
   }
 
-  console.log(FiveTicks)
+  // console.log(FiveTicks)
   return FiveTicks;
 }
 

@@ -21,8 +21,6 @@ const mongodbNewOrder = async function (data) {
   // await mongodbConn(); //TODO:檢查斷線
   const collection = db.collection('logsOfNewOrder')
   const insertResult = await collection.insertOne(data);
-  const test = await collection.find()
-  console.log('logsOfNewOrder:', test)
   return insertResult;
 };
 

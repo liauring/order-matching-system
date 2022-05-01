@@ -22,24 +22,17 @@ const redisClient = new redis({
   });
 
   redisClient.on("message", (channel, message) => {
-    console.log(`Received message from ${channel}`);
+    // console.log(`Received message from ${channel}`);
     message = JSON.parse(message);
     if (channel === 'sendExec') {
       socket.sendExec(message.brokerID, message.execution);
     } else if (channel === 'fiveTicks') {
-      // let fiveTicksInfo = {
-      //   buyer: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }],
-      //   seller: [{ size: 10, price: 90 }, { size: 20, price: 100 }, { size: 10, price: 110 }]
-      // }
-
-      // // let
       socket.sendFiveTicks(message);
-      // TODO:socket.sendKLine(fiveTicksInfo)
     } else if (channel === 'kLine') {
-      console.log('kLine in redisSub', message)
+      // console.log('kLine in redisSub', message)
       socket.sendKLine(message);
     } else {
-      //TODO: console.log
+      console.error('[redisSub] Cannot find redis channel')
     }
 
   });

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import OrderHistoryList from "./OrderHistoryList"
 import { Socket } from '../../../global/Socket'
-import EditingWindow from './orderEditingWindow'
+import EditingWindow from './OrderEditingWindow'
 
 
 const OrderHistory = ({ newOrderToHistory }) => {

@@ -15,9 +15,12 @@ async function rabbitmqPub(exchange, severity, message) {
 }
 //外面再close connection
 
-// rabbitmqPub('test', 'tasks', 'coco')
+async function rabbitmqSendToQueue(queue, message) {
+  let rabbitmqConnQueue = await rabbitmqConn;
+  await rabbitmqConnQueue.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true });
+}
 
-
+module.exports = { rabbitmqConn, rabbitmqPub, rabbitmqSendToQueue };
 
 
 // Publisher
@@ -45,4 +48,3 @@ async function rabbitmqPub(exchange, severity, message) {
 //   });
 // }).catch(console.warn);
 
-module.exports = { rabbitmqConn, rabbitmqPub };
