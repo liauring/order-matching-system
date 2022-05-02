@@ -1,4 +1,4 @@
-const BuyerLogic = require('./BuyerLogic')
-const SellerLogic = require('./SellerLogic')
+const { BuyerLogic, BuyerOrder } = require('./BuyerLogic')
+const { SellerLogic, SellerOrder } = require('./SellerLogic')
 
-module.exports = { buyer: BuyerLogic, seller: SellerLogic }
+module.exports = [{ buyer: BuyerOrder, seller: SellerOrder }, { buyer: BuyerLogic, seller: SellerLogic }]

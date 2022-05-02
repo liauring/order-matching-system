@@ -38,6 +38,12 @@ const mongodbGetExecutionHistory = async function (symbol, time) {
   return executionHistory;
 }
 
+// const mongodbGetOrderHistory = async function (dealerAccount, time) {
+//   let midnight = new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
+//   const collection = db.collection('logsOfNewOrder')
+//   const historyOrder = await .find({ $and: [{ account: { $eq: dealerAccount } }, { executionTime: { $gte: midnight } }] })
+// }
+
 
 
 module.exports = { mongodbExec, mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory };

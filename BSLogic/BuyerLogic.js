@@ -1,4 +1,4 @@
-const MatchLogic = require('./MatchLogic')
+const { MatchLogic, NewOrder } = require('./MatchLogic')
 
 class BuyerLogic extends MatchLogic {
   constructor(order) {
@@ -23,4 +23,17 @@ class BuyerLogic extends MatchLogic {
   }
 }
 
-module.exports = BuyerLogic
+class BuyerOrder extends NewOrder {
+  orderTimeInDayPeriod() {
+    this.time = new Date();
+    let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
+    let todayRestTime = midnight - this.time;
+    todayRestTime.toString().padStart(8, '0')
+    this.order.orderTime = todayRestTime.toString();
+    return;
+  }
+
+
+}
+
+module.exports = { BuyerLogic, BuyerOrder }

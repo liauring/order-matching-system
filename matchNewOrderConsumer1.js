@@ -1,9 +1,9 @@
 require('dotenv').config();
 const redisClient = require('./util/cache');
 let { rabbitmqConn } = require('./util/rabbitmq');
-const BSLogicMap = require('./BSLogic');
+const BSLogicMap = require('./BSLogic')[1];
 const CONSUMEQUEUE = 'matchNewOrder-stock-0';
-let { CurrentFiveTicks, NewOrderFiveTicks } = require('./FiveTicks');
+const { CurrentFiveTicks, NewOrderFiveTicks } = require('./FiveTicks');
 
 (async () => {
   rabbitmqConn = await rabbitmqConn;

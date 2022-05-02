@@ -1,7 +1,7 @@
 require('dotenv').config();
 const redisClient = require('../util/cache');
 const { v4: uuidv4 } = require('uuid');
-let { rabbitmqSendToQueue } = require('../util/rabbitmq');
+let { rabbitmqPub, rabbitmqSendToQueue } = require('../util/rabbitmq');
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks');
 
 class MatchLogic {
@@ -60,8 +60,8 @@ class MatchLogic {
     if (this.order.quantity === this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity;
       this.hasRemainingQuantity = false;
-      this.order.orderStatus = '完全成交';
-      this.bestDealer.orderStatus = '完全成交';
+      this.order.orderStatus = 3;
+      this.bestDealer.orderStatus = 3;
       await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else if (this.order.quantity < this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity;
@@ -69,15 +69,15 @@ class MatchLogic {
       await redisClient.zadd(`${this.order.symbol}-${this.dealerType}`, this.bestDealerScore, JSON.stringify(this.bestDealer.orderID));
       await redisClient.set(`${this.bestDealer.orderID}`, JSON.stringify(this.bestDealer));
       this.hasRemainingQuantity = false;
-      this.order.orderStatus = '完全成交';
-      this.bestDealer.orderStatus = '部分成交';
+      this.order.orderStatus = 3;
+      this.bestDealer.orderStatus = 2;
       await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else if (this.order.quantity > this.bestDealer.quantity) {
       this.finalQTY = this.bestDealer.quantity;
       this.order.quantity -= this.bestDealer.quantity;
       this.hasRemainingQuantity = true;
-      this.order.orderStatus = '部分成交';
-      this.bestDealer.orderStatus = '完全成交';
+      this.order.orderStatus = 2;
+      this.bestDealer.orderStatus = 3;
       await new NewOrderFiveTicks().addNewOrderFiveTicks(`${this.order.symbol}-${this.dealerType}`, this.bestDealer.price, this.finalQTY, '-');
     } else {
       console.error('matchExecutionQuantity() Error');
@@ -187,4 +187,49 @@ class MatchLogic {
 
 }
 
-module.exports = MatchLogic
+
+class NewOrder {
+  constructor(order) {
+    this.order = order;
+    this.orderID = null;
+    // this.todayRestTime = null
+  }
+
+  formatOrder() {
+    this.order.account = parseInt(this.order.account);
+    this.order.broker = parseInt(this.order.broker);
+    this.order.symbol = parseInt(this.order.symbol);
+    this.order.price = parseFloat(this.order.price);
+    this.order.quantity = parseInt(this.order.quantity);
+    this.order.orderStatus = 1;
+    return
+  }
+
+  createOrderID() {
+    this.order.orderID = parseInt('' + parseInt(parseFloat(this.order.price) * 100) + `${this.order.orderTime}`, 10);
+    return;
+  }
+
+  async shardingToRabbitmq() {
+    let symbolSharding = this.order.symbol % 5;
+    await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order));
+    return;
+  }
+
+  createOrderResponse() {
+    let orderResponse = {
+      orderStatus: 0,
+      symbol: this.order.symbol,
+      quantity: this.order.quantity,
+      price: this.order.price,
+      executionQuantity: 0,
+      orderTime: this.time.toLocaleString(),
+      orderID: this.order.orderID,
+      BS: this.order.BS
+    };
+    return orderResponse;
+  }
+
+}
+
+module.exports = { MatchLogic, NewOrder }

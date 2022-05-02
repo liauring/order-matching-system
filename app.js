@@ -3,13 +3,17 @@ const app = express();
 const cors = require('cors');
 const redisClient = require('./util/cache');
 const { rabbitmqPub } = require('./util/rabbitmq');
+const BSLogicMap = require('./BSLogic')[0];
+const { CurrentFiveTicks, NewOrderFiveTicks } = require('./FiveTicks');
 const http = require('http');
 const server = http.createServer(app);
 let { mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory } = require('./util/mongodb');
 
+
 require('./util/socket.js').config(server);
 require('./redisSub.js');
 const socket = require('./util/socket');
+const internal = require('stream');
 
 app.use(cors());
 app.use(express.static('public'));
@@ -17,7 +21,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 const TIME_FILLTER = '00000';
-const exchange = 'matchNewOrder';
+const EXCHANGE = 'matchNewOrder';
 
 // newOrder.body {
 //   account: '3', //改int
@@ -62,70 +66,70 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
     return res.send('Your order has been deleted.');
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo));
-  return res.send(`Your order has been updated. Your remaining quantity is ${orderInfo.quantity}`,);
+  return res.send(`Your order has been updated. Your remaining quantity is ${orderInfo.quantity}`);
 
 })
+
+// postOrder.body {
+//   account: int,
+//   time: int
+// }
+
+app.post('/order', async (req, res, next) => {
+  // let { account, time } = req.body;
+  // account = parseInt(account);2p5d ;
+  // time = parseInt(time);
+  let response = [{
+    orderStatus: "部分成交",
+    quantity: 4,
+    price: 543,
+    executionCount: 3,
+    orderTime: new Date(),
+    orderID: 1234321
+  },
+  {
+    orderStatus: "委託成功",
+    quantity: 2,
+    price: 523.5,
+    executionCount: 0,
+    orderTime: new Date(),
+    orderID: 4567654
+  },
+  {
+    orderStatus: "完全成交",
+    quantity: 4,
+    price: 530,
+    executionCount: 4,
+    orderTime: new Date(),
+    orderID: 78987654
+  }]
+
+  return res.send(response)
+
+})
+
+
 
 //TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
 //不做：沒有這個broker/沒有這檔股票
+// app.post('/newOrder', async (req, res, next) => {
+//   let time = new Date(); //TODO: middleware: logs-time
+
 app.post('/newOrder', async (req, res, next) => {
-  await mongodbNewOrder(req.body);
-  req.body.account = parseInt(req.body.account);
-  req.body.broker = parseInt(req.body.broker);
-  req.body.symbol = parseInt(req.body.symbol);
-  req.body.price = parseFloat(req.body.price);
-  req.body.quantity = parseInt(req.body.quantity);
-  req.body.orderStatus = '未成交';
-  let orderID, time
-  if (req.body.BS === 'buyer') {
-    time = new Date();
-    let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
-    let todayRestTime = midnight - time;
-    if (todayRestTime.toString().length < 8) {
-      todayRestTime = ((TIME_FILLTER + todayRestTime).slice(-8)).toString();
-    }
-    req.body.orderTime = todayRestTime.toString();
-
-    orderID = parseInt('' + parseInt(parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
-    req.body.orderID = orderID;
-
-  } else if (req.body.BS === 'seller') {
-
-    time = new Date();
-    let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime();
-    let todayRestTime = time - midnight;
-    if (todayRestTime.toString().length < 8) {
-      todayRestTime = ((TIME_FILLTER + todayRestTime).slice(-8)).toString();
-    }
-    req.body.orderTime = todayRestTime.toString();
-
-    orderID = parseInt('' + parseInt(parseFloat(req.body.price) * 100) + `${todayRestTime}`, 10);
-    req.body.orderID = orderID;
-
-  } else {
-    //TODO: console.log
-  }
-  //TODO:要先進redis嗎？還是直接進queue?感覺應該不能先進redis，這樣在撮合前redis就會有他的資料，但又還沒輪到他
-  // 但五檔應該要先進，object也要先進
-  //TODO:刪單的話，已進zset的也要刪
-  let { symbol } = req.body;
-  let symbolSharding = symbol % 5;
-  await rabbitmqPub(exchange, symbolSharding.toString(), JSON.stringify(req.body));
-  let response = {
-    status: "委託成功",
-    quantity: req.body.quantity,
-    price: req.body.price,
-    executionCount: 0,
-    orderTime: time.toLocaleString(),
-    orderID: req.body.orderID
-  }
-
-  return res.send(response)
+  let dealer = new BSLogicMap[req.body.BS](req.body);
+  dealer.formatOrder();
+  dealer.orderTimeInDayPeriod();
+  dealer.createOrderID();
+  await dealer.shardingToRabbitmq();
+  let orderResponse = dealer.createOrderResponse();
+  return res.send(orderResponse)
 })
+
+
 
 app.get('/fiveTicks/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
-  let fiveTicks = await getFiveTicks(parseInt(symbol));
+  let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
   console.log(fiveTicks)
   return res.send(fiveTicks)
 })
@@ -146,39 +150,6 @@ app.get('/kLine/:symbol', async (req, res, next) => {
 })
 
 
-let getFiveTicks = async function (symbol) {
-  // 取現在五檔
-  let buyerfiveTicks = await redisClient.zrange(`${symbol}-buyer-fiveTicks`, -5, -1, 'WITHSCORES');
-  let sellerFiveTicks = await redisClient.zrange(`${symbol}-seller-fiveTicks`, 0, 4, 'WITHSCORES');
-  let formattedBuyerFiveTicks = formatFiveTicks(buyerfiveTicks).reverse();
-  let formattedSellerFiveTicks = formatFiveTicks(sellerFiveTicks);
-  let FiveTicks = {
-    buyer: formattedBuyerFiveTicks,
-    seller: formattedSellerFiveTicks,
-  }
-
-  console.log(FiveTicks)
-  return FiveTicks;
-}
-
-let formatFiveTicks = function (fiveTicks) {
-  let formattedFiveTicks = fiveTicks.reduce((accumulator, currentValue, currentIndex) => {
-
-    let tick = {};
-    if (currentIndex % 2 === 1) {
-      parseInt(currentValue)
-      originalPrice = currentValue / 100;
-      accumulator[Math.floor(currentIndex / 2)].price = originalPrice;
-    } else {
-      originalSize = parseInt(currentValue.slice(5));
-      tick.size = originalSize;
-      accumulator.push(tick);
-    }
-
-    return accumulator;
-  }, [])
-  return formattedFiveTicks
-}
 
 
 
