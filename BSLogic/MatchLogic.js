@@ -201,7 +201,7 @@ class NewOrder {
     this.order.symbol = parseInt(this.order.symbol);
     this.order.price = parseFloat(this.order.price);
     this.order.quantity = parseInt(this.order.quantity);
-    this.order.orderStatus = 1;
+    this.order.orderStatus = 1;  //委託成功: 1, 部分成交: 2, 完全成交:3
     return
   }
 

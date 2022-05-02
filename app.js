@@ -12,8 +12,6 @@ let { mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory } = requir
 
 require('./util/socket.js').config(server);
 require('./redisSub.js');
-const socket = require('./util/socket');
-const internal = require('stream');
 
 app.use(cors());
 app.use(express.static('public'));
