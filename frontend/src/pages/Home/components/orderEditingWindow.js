@@ -41,6 +41,7 @@ const EditingWindow = ({ symbol, price, count, updateOrder }) => {
       <input className="quantity" placeholder="數量" type="number" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
       <button className="inAndDe increment" type="button" onClick={incrementQuantity}>+</button>
     </div>
+    <button className="editingWindowButton">取消</button>
     <button className="editingWindowButton" onClick={clickUpdate}>送出修改</button>
   </div>
 };
