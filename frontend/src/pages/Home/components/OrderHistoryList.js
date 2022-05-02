@@ -14,7 +14,19 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
       case 3:
         return '完全成交'
       default:
-        return 'unknown'
+        return '委託失敗'
+    }
+
+  }
+
+  const getBS = () => {
+    switch (order.BS) {
+      case "buyer":
+        return "買"
+      case "seller":
+        return "賣"
+      default:
+        return '委託失敗'
     }
   }
 
@@ -25,11 +37,11 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
 
 
     <td className='tableOrderStatus'> {getStatus()}</td >
-    <td className='tableOrder'>{order.BS}</td>
+    <td className='tableOrderBS'>{getBS()}</td>
     <td className='tableOrder'>{order.quantity}</td>
     <td className='tableOrder'>{order.price}</td>
     <td className='tableOrder'>{order.executionQuantity}</td>
-    <td className='tableOrderTime'>{order.orderTime}</td>
+    <td className='tableOrderTime tableOrderTimeText'>{order.orderTime}</td>
 
 
   </tr>

@@ -38,7 +38,7 @@ const OrderHistory = ({ orders }) => {
       <thead>
         <tr>
           <th className='tableOrderStatus'>狀態</th>
-          <th className='tableOrder'>買賣</th>
+          <th className='tableOrderBS'>買賣</th>
           <th className='tableOrder'>數量</th>
           <th className='tableOrder'>價格</th>
           <th className='tableOrder'>成交數</th>
@@ -65,6 +65,7 @@ const OrderHistory = ({ orders }) => {
           price={selectedOrder.price}
           count={selectedOrder.quantity}
           updateOrder={(quantity) => updateAndCloseOrder(quantity)}
+          setSelectedOrder={setSelectedOrder}
         />
       }
     </div>

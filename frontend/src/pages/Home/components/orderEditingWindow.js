@@ -1,11 +1,15 @@
 import { useState, useEffect } from "react"
 import { Socket } from '../../../global/Socket'
 
-const EditingWindow = ({ symbol, price, count, updateOrder }) => {
+const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) => {
   const [quantity, setQuantity] = useState(null)
 
   const clickUpdate = () => {
     updateOrder(quantity)
+  }
+
+  const clickCancel = () => {
+    setSelectedOrder(null)
   }
 
   const incrementQuantity = () => {
@@ -28,21 +32,25 @@ const EditingWindow = ({ symbol, price, count, updateOrder }) => {
 
 
   return <div className="editingWindow">
+
     <div className="editingWindowTitle">
       委託單修改
     </div>
     <div className="editingWindowOrderInfo">
-      <a className="editingWindowSymbol">代碼: {symbol}</a>
-      <a className="editingWindowPrice">價格: {price}</a>
-      <a className="editingWindowQuantity">剩餘數量: {count}</a>
+      <a className="editingInfoText editingWindowSymbol">代碼：{symbol}</a>
+      <a className="editingInfoText editingWindowPrice">價格：{price}</a>
+      <a className="editingInfoText editingWindowQuantity">剩餘數量：{count}</a>
     </div>
-    <div className="quantity-section">
+    <div className="quantity-section editing-quantity-section">
       <button className="inAndDe decrement" type="button" onClick={decrementQuantity}>-</button>
-      <input className="quantity" placeholder="數量" type="number" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
+      <input className="quantity editingQuantity" placeholder="數量" type="number" value={quantity} onChange={(e) => { setQuantity(e.target.value) }} />
       <button className="inAndDe increment" type="button" onClick={incrementQuantity}>+</button>
     </div>
-    <button className="editingWindowButton">取消</button>
-    <button className="editingWindowButton" onClick={clickUpdate}>送出修改</button>
+    <div className="editingWindowButton-section">
+      <button className="editingWindowButton button-unselected editingWindowButtonCancel" onClick={clickCancel}>取消</button>
+      <button className="editingWindowButton button-selected editingWindowButtonUpdate" onClick={clickUpdate}>送出修改</button>
+    </div>
+
   </div>
 };
 

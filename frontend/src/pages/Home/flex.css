@@ -64,9 +64,3 @@ main {
   display: flex;
   flex-direction: column;
 }
-
-
-.editingWindowOrderInfo,
-.quantity-section {
-  flex: 0.5
-}

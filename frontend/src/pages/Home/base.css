@@ -240,15 +240,24 @@ table td {
 }
 
 .tableOrderStatus {
-  width: 25%
+  width: 20%
 }
 
 .tableOrderTime {
-  width: 30%
+  width: 30%;
+
+}
+
+.tableOrderTimeText {
+  font-size: 10pt !important;
+}
+
+.tableOrderBS {
+  width: 10%;
 }
 
 .tableOrder {
-  width: 15%
+  width: 13.5%
 }
 
 
@@ -315,33 +324,55 @@ table td {
 /*--------------*/
 
 
-
+/* rgb(94, 112, 166) */
 
 
 .editingWindow {
-  background-color: rgb(94, 112, 166);
+  background-color: rgb(39, 47, 71);
   position: fixed;
-  width: 400px;
-  height: 300px;
+  width: 450px;
+  height: 350px;
   top: 50%;
   right: 42.5%;
-  margin-top: -290px;
-  margin-right: -75px;
+  margin-top: -175px;
+  margin-right: -118px;
   font-size: 14pt;
   text-align: center;
+  border-radius: 5px;
+  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 30%);
 }
+
+.editing-quantity-section {
+  margin: 0 30px;
+}
+
+.editingQuantity {
+  width: 250px;
+}
+
 
 .editingWindowButton {
   height: 60px;
-  width: 50%;
+  width: 40%;
   cursor: pointer;
   font-size: 18px;
   border-radius: 5px;
-  margin: auto;
+  margin: auto 15px;
   border: none;
 
 }
 
+.editingWindowButtonUpdate {
+  border: solid 1px #979797;
+}
+
+.editingWindowButtonCancel {
+  border: solid 1px #3a3a3a;
+}
+
+.editingWindowButton-section {
+  margin: auto 0;
+}
 
 
 .editingWindowTitle,
@@ -350,9 +381,23 @@ table td {
   color: #fff;
 }
 
-.editingWindowTitle {
-  font-size: 20pt
+.editingWindowOrderInfo {
+  margin: auto;
 }
+
+.editingWindowTitle {
+  margin: auto;
+  margin-bottom: 0;
+  font-size: 20pt;
+  font-weight: bold;
+}
+
+.editingInfoText {
+  margin: 10px
+}
+
+
+
 
 .quantity-section button {
   height: 45px;
