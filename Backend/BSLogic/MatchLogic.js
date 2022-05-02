@@ -87,7 +87,7 @@ class MatchLogic {
 
   createExecutionIDAndTime() {
     this.executionID = uuidv4();
-    this.executionTime = new Date();
+    this.executionTime = new Date().getTime();
     return;
   }
 
@@ -113,7 +113,7 @@ class MatchLogic {
       buyer: this.getBuyer().account,
       buyerOrderID: this.getBuyer().orderID,
       buyerOrderTime: this.getBuyer().orderTime,
-      stock: this.order.symbol,
+      symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
     };
@@ -126,7 +126,7 @@ class MatchLogic {
       executionTime: this.executionTime,
       orderID: this.getBuyer().orderID,
       orderTime: this.getBuyer().orderTime,
-      stock: this.order.symbol,
+      symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
@@ -140,7 +140,7 @@ class MatchLogic {
       executionTime: this.executionTime,
       orderID: this.getSeller().orderID,
       orderTime: this.getSeller().orderTime,
-      stock: this.order.symbol,
+      symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
@@ -156,7 +156,7 @@ class MatchLogic {
 
   createkLineInfo() {
     this.kLineInfo = {
-      stock: this.order.symbol,
+      symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionTime: this.executionTime,
     };
@@ -206,7 +206,10 @@ class NewOrder {
   }
 
   createOrderID() {
+    console.log('orderTime: ', this.order.orderTime)
     this.order.orderID = parseInt('' + parseInt(parseFloat(this.order.price) * 100) + `${this.order.orderTime}`, 10);
+    console.log('price: ', parseInt(parseFloat(this.order.price) * 100))
+    console.log('orderID: ', this.order.orderID)
     return;
   }
 

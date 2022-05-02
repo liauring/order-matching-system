@@ -68,7 +68,7 @@ const pubQueue = 'saveNewExec';
           }
 
           let executionID = uuidv4(); //下移
-          let executionTime = (+new Date())
+          let executionTime = new Date().getTime()
 
 
           let executionDetail = {
@@ -139,8 +139,6 @@ const pubQueue = 'saveNewExec';
         do {
 
           [bestBuyerOrderID, bestBuyerScore] = await redisClient.zrange(`${symbol}-buyer`, -1, -1, 'WITHSCORES'); //TODO: race condition
-
-
           if (bestBuyerOrderID === undefined || parseInt(bestBuyerScore.toString().slice(0, -8)) < price * 100) {
             await addNewSeller(order);
             await addNewOrderFiveTicks(`${order.symbol}-seller`, order.price, order.quantity, '+')
@@ -173,7 +171,7 @@ const pubQueue = 'saveNewExec';
           } else if (quantity > bestBuyer.quantity) {
             finalQTY = bestBuyer.quantity;
             quantity -= bestBuyer.quantity;
-            newOrder.quantity = quantity;
+            order.quantity = quantity;
             hasRemainingQuantity = true;
             order.orderStatus = '部分成交';
             bestBuyer.orderStatus = '完全成交';
@@ -184,7 +182,7 @@ const pubQueue = 'saveNewExec';
 
 
           let executionID = uuidv4();
-          let executionTime = new Date();
+          let executionTime = new Date().getTime();
 
 
           let executionDetail = {

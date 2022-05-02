@@ -18,8 +18,6 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-const TIME_FILLTER = '00000';
-const EXCHANGE = 'matchNewOrder';
 
 // newOrder.body {
 //   account: '3', //改int
@@ -133,7 +131,7 @@ app.get('/fiveTicks/:symbol', async (req, res, next) => {
 })
 
 // let kLineInfo = {
-//   stock: order.symbol,
+//   symbol: order.symbol,
 //   price: bestSeller.price,
 //   executionTime: executionTime,
 // }

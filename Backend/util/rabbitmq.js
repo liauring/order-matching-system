@@ -1,4 +1,3 @@
-// var q = 'tasks';
 require('dotenv').config();
 
 let rabbitmq = require('amqplib').connect(`amqp://${process.env.rabbitmqUser}:${process.env.rabbitmqPW}@${process.env.rabbitmqHost}:${process.env.rabbitmqPort}/`);

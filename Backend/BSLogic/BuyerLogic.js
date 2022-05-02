@@ -28,7 +28,8 @@ class BuyerOrder extends NewOrder {
     this.time = new Date();
     let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime();
     let todayRestTime = midnight - this.time;
-    todayRestTime.toString().padStart(8, '0')
+    todayRestTime = todayRestTime.toString().padStart(8, '0')
+    console.log('buyerOrder ', todayRestTime)
     this.order.orderTime = todayRestTime.toString();
     return;
   }
