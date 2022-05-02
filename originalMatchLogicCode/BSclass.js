@@ -1,9 +1,9 @@
 //市價api切在哪
 require('dotenv').config();
-const redisClient = require('./util/cache');
+const redisClient = require('../util/cache');
 const { v4: uuidv4 } = require('uuid');
-let { rabbitmqSendToQueue } = require('./util/rabbitmq');
-let { addNewOrderFiveTicks, getFiveTicks } = require('./FiveTicks')
+let { rabbitmqSendToQueue } = require('../util/rabbitmq');
+let { addNewOrderFiveTicks, getFiveTicks } = require('../FiveTicks')
 
 
 

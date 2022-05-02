@@ -1,9 +1,10 @@
 import io from 'socket.io-client'
 import { useState } from "react"
+import { BROKER } from "./Constants"
 
 const Socket = io.connect('http://localhost:7000')
 
-const BROKERID = 1020
+const BROKERID = BROKER
 Socket.on('connect', () => {
   Socket.emit('brokerID', BROKERID)
   console.log(`I am ${BROKERID} after emit`)

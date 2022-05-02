@@ -115,7 +115,7 @@ class MatchLogic {
       buyerOrderTime: this.getBuyer().orderTime,
       stock: this.order.symbol,
       price: this.bestDealer.price,
-      quantity: this.finalQTY,
+      executionQuantity: this.finalQTY,
     };
     return;
   }
@@ -128,7 +128,7 @@ class MatchLogic {
       orderTime: this.getBuyer().orderTime,
       stock: this.order.symbol,
       price: this.bestDealer.price,
-      quantity: this.finalQTY,
+      executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
     }
     return;
@@ -142,7 +142,7 @@ class MatchLogic {
       orderTime: this.getSeller().orderTime,
       stock: this.order.symbol,
       price: this.bestDealer.price,
-      quantity: this.finalQTY,
+      executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
     };
     return;
@@ -218,7 +218,7 @@ class NewOrder {
 
   createOrderResponse() {
     let orderResponse = {
-      orderStatus: 0,
+      orderStatus: 1,
       symbol: this.order.symbol,
       quantity: this.order.quantity,
       price: this.order.price,

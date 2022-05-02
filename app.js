@@ -78,7 +78,7 @@ app.post('/order', async (req, res, next) => {
   // account = parseInt(account);2p5d ;
   // time = parseInt(time);
   let response = [{
-    orderStatus: "部分成交",
+    orderStatus: 2,
     quantity: 4,
     price: 543,
     executionCount: 3,
@@ -86,7 +86,7 @@ app.post('/order', async (req, res, next) => {
     orderID: 1234321
   },
   {
-    orderStatus: "委託成功",
+    orderStatus: 1,
     quantity: 2,
     price: 523.5,
     executionCount: 0,
@@ -94,7 +94,7 @@ app.post('/order', async (req, res, next) => {
     orderID: 4567654
   },
   {
-    orderStatus: "完全成交",
+    orderStatus: 3,
     quantity: 4,
     price: 530,
     executionCount: 4,

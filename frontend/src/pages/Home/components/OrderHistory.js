@@ -1,43 +1,44 @@
 import { useState, useEffect } from "react"
 import OrderHistoryList from "./OrderHistoryList"
-import { Socket } from '../../../global/Socket'
 import EditingWindow from './OrderEditingWindow'
+import axios from "axios"
+import { API_PATCH_ORDER } from "../../../global/Constants"
 
 
-const OrderHistory = ({ newOrderToHistory }) => {
-  const [editingShow, setEditingShow] = useState(false);
+const OrderHistory = ({ orders }) => {
+  //當視窗開著 不處裡資料即時更新
+  const [selectedOrder, setSelectedOrder] = useState(null);
+
+  const updateAndCloseOrder = (quantity) => {
+    sendUpdatedOrder(selectedOrder, quantity)
+    setSelectedOrder(null)
+
+  }
 
 
+  const sendUpdatedOrder = async (selectedOrder, quantity) => {
+    let reqBody = {
+      orderID: selectedOrder.orderID,
+      symbol: selectedOrder.symbol,
+      quantity: quantity,
+      BS: selectedOrder.BS
+    }
+    console.log(reqBody);
+    let response = await axios.patch(`${API_PATCH_ORDER}`, reqBody);
+    console.log('Update order', response)
+  }
 
-  // let executionBuyer = {
-  //   executionID: executionID,
-  //   executionTime: executionTime,
-  //   orderID: order.orderID,
-  //   orderTime: order.orderTime,
-  //   stock: order.symbol,
-  //   price: bestSeller.price,
-  //   quantity: finalQTY,
-  //   orderStatus: order.orderStatus,
-  // }
-
-  // TODO:收到成交改變歷史記錄
-  // useEffect(() => {
-  //   if (Socket) {
-  //     Socket.on('execution', function (execution) {
-  //       console.log(execution)
-  //     });
-  //   }
-  // }, [Socket])
 
 
   useEffect(() => {
-    console.log(newOrderToHistory);
-  }, [newOrderToHistory])
+    console.log(orders);
+  }, [orders])
   return <div id="orderHistory-section">
     <table className='orderHistory'>
       <thead>
         <tr>
           <th className='tableOrderStatus'>狀態</th>
+          <th className='tableOrder'>買賣</th>
           <th className='tableOrder'>數量</th>
           <th className='tableOrder'>價格</th>
           <th className='tableOrder'>成交數</th>
@@ -46,25 +47,28 @@ const OrderHistory = ({ newOrderToHistory }) => {
       </thead>
       <tbody>
         {
-          newOrderToHistory ?
-            newOrderToHistory.map(history => <OrderHistoryList status={history.status} quantity={history.quantity} price={history.price} executionCount={history.executionCount} orderTime={history.orderTime} setEditingShow={setEditingShow} />)
+          orders ?
+            orders.map(order => <OrderHistoryList
+              order={order}
+              setSelectedOrder={setSelectedOrder} />)
             : null
         }
 
 
       </tbody>
     </table >
-    {/* <div className="editingWindow-section"> */}
-    {
-      editingShow &&
-      <EditingWindow
-        editingShow={editingShow}
-        onHide={() => setEditingShow(false)}
-      // orderID={orderId}
-      // quantity={quantity}
-      />
-    }
-    {/* </div> */}
+    <div className="editingWindow-section">
+      {
+        selectedOrder != null &&
+        <EditingWindow
+          symbol={selectedOrder.symbol}
+          price={selectedOrder.price}
+          count={selectedOrder.quantity}
+          updateOrder={(quantity) => updateAndCloseOrder(quantity)}
+        />
+      }
+    </div>
+
 
   </div>
 }

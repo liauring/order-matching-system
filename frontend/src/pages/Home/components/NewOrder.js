@@ -1,8 +1,9 @@
-import { useState, useEffect } from "react"
-import { API_POST_ORDER } from "../../../global/Constants"
+import { useState, useEffect, useRef } from "react"
+import { API_POST_ORDER, BROKER } from "../../../global/Constants"
 import axios from "axios"
+import { Socket } from '../../../global/Socket'
 
-const NewOrder = ({ setNewOrderToHistory }) => {
+const NewOrder = ({ setSentOrder }) => {
   const [price, setPrice] = useState(null)
   const incrementPrice = () => {
     setPrice(function (prev) {
@@ -44,11 +45,11 @@ const NewOrder = ({ setNewOrderToHistory }) => {
   }
 
   const sendOrder = async (dealer) => {
-    let BS
+    let type
     if (dealer === '買進') {
-      BS = 'buyer'
+      type = 'buyer'
     } else if (dealer === '賣出') {
-      BS = 'seller'
+      type = 'seller'
     } else {
       window.alert('請點選 [買進] 或 [賣出]')
       return
@@ -69,25 +70,22 @@ const NewOrder = ({ setNewOrderToHistory }) => {
       return
     }
 
-    console.log('BS', BS)
+    console.log('type', type)
     let reqBody = {
       account: '6', //後端會改int
-      broker: 1030,
+      broker: BROKER,
       symbol: '2330',  //後端會改int
-      BS: BS,
+      BS: type,
       orderType: 'limit',
       duration: 'ROD',
       price: price,
       quantity: quantity,
       brokerName: '土銀',
       symbolName: '台積電',
-
-
     }
     console.log(reqBody);
-    let newOrderResponse = await axios.post(`${API_POST_ORDER}`, reqBody);
-    console.log(newOrderResponse.data);
-    setNewOrderToHistory((prev) => [...prev, newOrderResponse.data])
+    let response = await axios.post(`${API_POST_ORDER}`, reqBody);
+    setSentOrder(response.data)
 
   }
 
