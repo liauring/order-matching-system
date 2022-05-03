@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useStatus } from '../../../global/useStatus'
 
-const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) => {
+const EditingWindow = ({ symbol, price, count, remainingQuantity, updateOrder, setSelectedOrder }) => {
   const { socket } = useStatus()
 
   const [quantity, setQuantity] = useState(null)
@@ -43,7 +43,7 @@ const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) 
     <div className="editingWindowOrderInfo">
       <a className="editingInfoText editingWindowSymbol">代碼：{symbol}</a>
       <a className="editingInfoText editingWindowPrice">價格：{price}</a>
-      <a className="editingInfoText editingWindowQuantity">剩餘數量：{count}</a>
+      <a className="editingInfoText editingWindowQuantity">剩餘數量：{remainingQuantity}</a>
     </div>
     <div className="quantity-section editing-quantity-section">
       <button className="inAndDe decrement" type="button" onClick={decrementQuantity}>-</button>

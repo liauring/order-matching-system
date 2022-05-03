@@ -64,6 +64,7 @@ const OrderHistory = ({ orders }) => {
           symbol={selectedOrder.symbol}
           price={selectedOrder.price}
           count={selectedOrder.quantity}
+          remainingQuantity={selectedOrder.quantity - selectedOrder.executionQuantity}
           updateOrder={(quantity) => updateAndCloseOrder(quantity)}
           setSelectedOrder={setSelectedOrder}
         />
