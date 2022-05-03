@@ -2,12 +2,12 @@ import React from "react";
 import dayjs from 'dayjs'
 import ReactApexChart from "react-apexcharts";
 import { useEffect, useState } from "react"
-import { Socket } from "../../../global/Socket";
+import { useStatus } from '../../../global/useStatus'
 import { API_KLINE } from "../../../global/Constants"
 import axios from "axios"
 
 const CandleStick = (symbol) => {
-
+  const { socket } = useStatus()
   const [kInfo, setKInfo] = useState({
     series:
       [{
@@ -108,9 +108,9 @@ const CandleStick = (symbol) => {
 
   useEffect(() => {
     console.log("Socket effect");
-    if (Socket) {
+    if (socket) {
       let lowestPrice, highestPrice, firstPrice, lastPrice, periodMinute;
-      Socket.on('kLine', function (kLineInfo) {
+      socket.on('kLine', function (kLineInfo) {
 
         // console.log('kLineInfo.executionTime', kLineInfo.executionTime)
         let currentMinute = new Date(kLineInfo.executionTime).setSeconds(0, 0);
@@ -151,7 +151,7 @@ const CandleStick = (symbol) => {
 
       });
     }
-  }, [Socket])
+  }, [socket])
 
 
 

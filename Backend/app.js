@@ -18,6 +18,12 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
+app.get('/fiveTicks/:symbol', async (req, res, next) => {
+  let { symbol } = req.params;
+  let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
+  console.log(fiveTicks)
+  return res.send(fiveTicks)
+})
 
 // newOrder.body {
 //   account: '3', //改int
@@ -62,7 +68,15 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
     return res.send('Your order has been deleted.');
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo));
-  return res.send(`Your order has been updated. Your remaining quantity is ${orderInfo.quantity}`);
+  let response = {
+    orderStatus: orderInfo.orderStatus,
+    quantity: orderInfo.quantity,
+    price: orderInfo.price,
+    executionCount: 3,
+    orderTime: orderInfo.orderTime,
+    orderID: orderInfo.orderID
+  }
+  return res.send(response);
 
 })
 
@@ -75,30 +89,32 @@ app.post('/order', async (req, res, next) => {
   // let { account, time } = req.body;
   // account = parseInt(account);2p5d ;
   // time = parseInt(time);
-  let response = [{
-    orderStatus: 2,
-    quantity: 4,
-    price: 543,
-    executionCount: 3,
-    orderTime: new Date(),
-    orderID: 1234321
-  },
-  {
-    orderStatus: 1,
-    quantity: 2,
-    price: 523.5,
-    executionCount: 0,
-    orderTime: new Date(),
-    orderID: 4567654
-  },
-  {
-    orderStatus: 3,
-    quantity: 4,
-    price: 530,
-    executionCount: 4,
-    orderTime: new Date(),
-    orderID: 78987654
-  }]
+  let response = [
+    //   {
+    //   orderStatus: 2,
+    //   quantity: 4,
+    //   price: 543,
+    //   executionCount: 3,
+    //   orderTime: new Date(),
+    //   orderID: 1234321
+    // },
+    // {
+    //   orderStatus: 1,
+    //   quantity: 2,
+    //   price: 523.5,
+    //   executionCount: 0,
+    //   orderTime: new Date(),
+    //   orderID: 4567654
+    // },
+    // {
+    //   orderStatus: 3,
+    //   quantity: 4,
+    //   price: 530,
+    //   executionCount: 4,
+    //   orderTime: new Date(),
+    //   orderID: 78987654
+    // }
+  ]
 
   return res.send(response)
 
@@ -123,12 +139,6 @@ app.post('/newOrder', async (req, res, next) => {
 
 
 
-app.get('/fiveTicks/:symbol', async (req, res, next) => {
-  let { symbol } = req.params;
-  let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
-  console.log(fiveTicks)
-  return res.send(fiveTicks)
-})
 
 // let kLineInfo = {
 //   symbol: order.symbol,

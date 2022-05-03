@@ -16,6 +16,7 @@ function config(server) {
         brokerConnectList[brokerID] = []
       }
       socket.join(roomID);
+      console.log(io.sockets.adapter.rooms);
       brokerConnectList[brokerID].push(socket);
 
     })
@@ -23,18 +24,18 @@ function config(server) {
 
 
     //監聽disconnecting
-    socket.on('disconnecting', async (reason) => {
-      try {
-        let disconnectIndex = brokerConnectList[socket.brokerID].findIndex((sk) => sk.id === socket.id);
-        brokerConnectList[socket.brokerID].splice(disconnectIndex, 1);
-        if (brokerConnectList[socket.brokerID].length === 0) {
-          delete brokerConnectList[socket.brokerID];
-        }
-      } catch (error) {
-        console.error(error);
-        return error;
-      }
-    });
+    // socket.on('disconnecting', async (reason) => {
+    //   try {
+    //     let disconnectIndex = brokerConnectList[socket.brokerID].findIndex((sk) => sk.id === socket.id);
+    //     brokerConnectList[socket.brokerID].splice(disconnectIndex, 1);
+    //     if (brokerConnectList[socket.brokerID].length === 0) {
+    //       delete brokerConnectList[socket.brokerID];
+    //     }
+    //   } catch (error) {
+    //     console.error(error);
+    //     return error;
+    //   }
+    // });
 
   })
 }
@@ -44,6 +45,8 @@ function sendMsg(event) {
 }
 
 function sendExec(brokerID, event) {
+  console.log('----------------------');
+  console.log(io.sockets.adapter.rooms);
   io.to(brokerID).emit('execution', event);
 }
 

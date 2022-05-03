@@ -1,10 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Home from './pages/Home';
-
+import { StatusProvider } from './global/useStatus'
 ReactDOM.render(
-  <React.StrictMode>
+  // <React.StrictMode>
+  <StatusProvider>
     <Home />
-  </React.StrictMode>,
+  </StatusProvider>
+  // </React.StrictMode>
+  ,
   document.getElementById('root')
 );

@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react"
-import { Socket } from '../../../global/Socket'
+import { useStatus } from '../../../global/useStatus'
 
 const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) => {
+  const { socket } = useStatus()
+
   const [quantity, setQuantity] = useState(null)
 
   const clickUpdate = () => {

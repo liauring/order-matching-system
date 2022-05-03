@@ -2,11 +2,12 @@
 import BuyerTick from './BuyerTick'
 import SellerTick from './SellerTick'
 import { useEffect, useState } from "react"
-import { Socket } from '../../../global/Socket'
+import { useStatus } from '../../../global/useStatus'
 import axios from "axios"
 import { API_POST_FIVETICKS } from "../../../global/Constants"
 
 const FiveTicks = () => {
+  const { socket } = useStatus()
 
   // const [time, setTime] = useState(new Date())
   const [ticksInfo, setTicksInfo] = useState({
@@ -15,7 +16,7 @@ const FiveTicks = () => {
   })
 
   function formatFiveTicksArray(dealer) {
-    console.log('enter format')
+
     if (dealer.length < 5) {
       let addLength = 5 - dealer.length;
       for (let i = 1; i <= addLength; i++) {
@@ -26,9 +27,9 @@ const FiveTicks = () => {
   }
 
   useEffect(() => {
-    if (Socket) {
+    if (socket) {
 
-      Socket.on('fiveTicks', function (fiveTicks) {
+      socket.on('fiveTicks', function (fiveTicks) {
         // await fiveTicks.buyer.reverse();
         let maxSize = fiveTicks.buyer.reduce((acc, cur) => {
           if (cur.size > acc) {
@@ -48,8 +49,8 @@ const FiveTicks = () => {
         fiveTicks.seller.forEach(item => {
           item.percent = item.size * 100 / maxSize;
         })
-        console.log('fiveTicksBuyer', { ...fiveTicks.buyer });
-        console.log('fiveTicksSeller', { ...fiveTicks.seller });
+        // console.log('fiveTicksBuyer', { ...fiveTicks.buyer });
+        // console.log('fiveTicksSeller', { ...fiveTicks.seller });
 
         fiveTicks.buyer = (formatFiveTicksArray(fiveTicks.buyer))
         fiveTicks.seller = (formatFiveTicksArray(fiveTicks.seller))
@@ -72,16 +73,16 @@ const FiveTicks = () => {
         setTicksInfo(fiveTicks)
       });
     }
-  }, [Socket])
+  }, [socket])
 
   useEffect(() => {
-    console.log('fiveTicks of useEffect')
+    console.log('testing');
     const getInitialFiveTicks = async function () {
       let initialFiveTicks = await axios.get(`${API_POST_FIVETICKS}/2330`)
-      console.log('initialFiveTicks: ', initialFiveTicks)
-      console.log(initialFiveTicks.data)
+
+
       let responseFiveTicks = {}
-      console.log('initialFiveTicks.data.buyer: ', initialFiveTicks.data.buyer)
+
       responseFiveTicks.buyer = formatFiveTicksArray(initialFiveTicks.data.buyer)
       responseFiveTicks.seller = formatFiveTicksArray(initialFiveTicks.data.seller)
       console.log('getInitialFiveTicks: ', responseFiveTicks)

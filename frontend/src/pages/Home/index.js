@@ -3,14 +3,14 @@ import FiveTicks from './components/FiveTicks'
 import StockInfo from './components/StockInfo'
 import NewOrder from './components/NewOrder'
 import OrderHistory from './components/OrderHistory'
-import { Socket } from '../../global/Socket'
+import { useStatus } from '../../global/useStatus'
 import { useEffect, useState, useRef } from "react"
 
 import './base.css'
 import './flex.css'
 
 const Home = () => {
-
+  const { socket } = useStatus()
   const [orders, setOrders] = useState([])
   const [sentOrder, setSentOrder] = useState({})
   const [updateOrder, setUpdateOrder] = useState({})
@@ -19,16 +19,15 @@ const Home = () => {
   const didMountSentEffect = useRef(false);
 
   useEffect(() => {
-    if (Socket) {
+    if (socket) {
       function handle(executionInfo) {
+
         setUpdateOrder(executionInfo)
       }
-      Socket.on('execution', handle);
-      return () => {
-        Socket.off('execution', handle);
-      };
+
+      socket.on('execution', handle);
     }
-  }, [Socket])
+  }, [socket])
 
 
   useEffect(() => {

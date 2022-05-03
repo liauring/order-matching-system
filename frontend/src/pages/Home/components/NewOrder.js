@@ -1,9 +1,11 @@
 import { useState, useEffect, useRef } from "react"
 import { API_POST_ORDER, BROKER } from "../../../global/Constants"
 import axios from "axios"
-import { Socket } from '../../../global/Socket'
+import { useStatus } from '../../../global/useStatus'
 
 const NewOrder = ({ setSentOrder }) => {
+  const { socket } = useStatus()
+
   const [price, setPrice] = useState(null)
   const incrementPrice = () => {
     setPrice(function (prev) {
@@ -70,7 +72,6 @@ const NewOrder = ({ setSentOrder }) => {
       return
     }
 
-    console.log('type', type)
     let reqBody = {
       account: '6', //後端會改int
       broker: BROKER,
