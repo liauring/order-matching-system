@@ -1,0 +1,35 @@
+footer {
+  display: flex;
+  justify-content: center;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+
+}
+
+main {
+  display: flex;
+  flex: 1;
+  justify-content: center
+}
+
+
+.fiveTicksAndSheets-section {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+}
+
+.main-footer {
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.footer-info {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
