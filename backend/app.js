@@ -19,7 +19,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/fiveTicks/:symbol', async (req, res, next) => {
+app.get('/api/fiveTicks/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
   let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
   console.log(fiveTicks)
@@ -52,7 +52,7 @@ app.get('/fiveTicks/:symbol', async (req, res, next) => {
 
 
 // TODO: 錯誤處理：1.找不到orderID 
-app.patch('/order', async (req, res, next) => { //patch用法對嗎？
+app.patch('/api/order', async (req, res, next) => { //patch用法對嗎？
   await mongodbUpdateOrder(req.body);
   let { orderID, symbol, quantity, BS } = req.body;
   orderID = parseInt(orderID);
@@ -86,7 +86,7 @@ app.patch('/order', async (req, res, next) => { //patch用法對嗎？
 //   time: int
 // }
 
-app.post('/order', async (req, res, next) => {
+app.post('/api/order', async (req, res, next) => {
   // let { account, time } = req.body;
   // account = parseInt(account);2p5d ;
   // time = parseInt(time);
@@ -128,7 +128,7 @@ app.post('/order', async (req, res, next) => {
 // app.post('/newOrder', async (req, res, next) => {
 //   let time = new Date(); //TODO: middleware: logs-time
 
-app.post('/newOrder', async (req, res, next) => {
+app.post('/api/newOrder', async (req, res, next) => {
   let dealer = new BSLogicMap[req.body.BS](req.body);
   dealer.formatOrder();
   dealer.orderTimeInDayPeriod();
@@ -146,7 +146,7 @@ app.post('/newOrder', async (req, res, next) => {
 //   price: bestSeller.price,
 //   executionTime: executionTime,
 // }
-app.get('/kLine/:symbol', async (req, res, next) => {
+app.get('/api/kLine/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
   let { time } = req.query;
   symbol = parseInt(symbol)
