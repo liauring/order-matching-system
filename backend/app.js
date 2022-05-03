@@ -18,7 +18,7 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/fiveTicks/:symbol', async (req, res, next) => {
+app.get('/api/fiveTicks/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
   let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
   console.log(fiveTicks)
