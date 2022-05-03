@@ -55,6 +55,7 @@ const EditingWindow = ({ symbol, price, count, remainingQuantity, updateOrder, s
       <button className="editingWindowButton button-selected editingWindowButtonUpdate" onClick={clickUpdate}>送出修改</button>
     </div>
 
+
   </div>
 };
 
