@@ -19,7 +19,7 @@ const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) 
   const incrementQuantity = () => {
     setQuantity(function (prev) {
       if (prev === null) {
-        return prev = 1
+        return prev = 0
       }
       return prev + 1
     })
@@ -27,7 +27,7 @@ const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) 
 
   const decrementQuantity = () => {
     setQuantity(function (prev) {
-      if (prev === null || prev === 0) {
+      if (prev === null) {
         return prev = 0
       }
       return prev - 1

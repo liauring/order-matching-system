@@ -32,6 +32,9 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
 
 
   return <tr className='orderHistoryTabletr' onClick={() => {
+    if (order.orderStatus === 3) {
+      return;
+    }
     setSelectedOrder(order)
   }}>
 

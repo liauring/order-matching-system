@@ -24,7 +24,7 @@ const OrderHistory = ({ orders }) => {
       BS: selectedOrder.BS
     }
     console.log(reqBody);
-    // let response = await axios.patch(`${API_PATCH_ORDER}`, reqBody);
+    let response = await axios.patch(`${API_PATCH_ORDER}`, reqBody);
     // console.log('Update order', response)
   }
 
