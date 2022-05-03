@@ -11,6 +11,7 @@ const EditingWindow = ({ symbol, price, count, updateOrder, setSelectedOrder }) 
   }
 
 
+
   const clickCancel = () => {
     setSelectedOrder(null)
   }
