@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config('../.env')
 let { rabbitmqConn } = require('./util/rabbitmq');
 
 (async () => {

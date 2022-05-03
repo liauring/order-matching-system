@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config('../.env')
 const socket = require('./util/socket');
 const redis = require('ioredis');
 const redisClient = new redis({

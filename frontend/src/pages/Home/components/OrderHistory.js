@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react"
 import OrderHistoryList from "./OrderHistoryList"
-import EditingWindow from './OrderEditingWindow'
+import EditingWindow from './OrderEditWindow'
 import axios from "axios"
 import { API_PATCH_ORDER } from "../../../global/Constants"
 

@@ -12,6 +12,7 @@ let { mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory } = requir
 
 require('./util/socket.js').config(server);
 require('./redisSub.js');
+require('dotenv').config('../.env')
 
 app.use(cors());
 app.use(express.static('public'));

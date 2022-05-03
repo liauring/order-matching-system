@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config('../.env')
 const redisClient = require('./util/cache');
 let { rabbitmqConn } = require('./util/rabbitmq');
 const BSLogicMap = require('./BSLogic')[1];
