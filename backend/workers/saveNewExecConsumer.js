@@ -1,6 +1,6 @@
-require('dotenv').config('../.env')
-let { rabbitmqConn } = require('./util/rabbitmq');
-let { mongodbExec } = require('./util/mongodb');
+require('dotenv').config({path:__dirname + '/./../.env'})
+let { rabbitmqConn } = require('../util/rabbitmq');
+let { mongodbExec } = require('../util/mongodb');
 
 (async () => {
   rabbitmqConn = await rabbitmqConn;

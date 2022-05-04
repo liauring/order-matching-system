@@ -1,5 +1,5 @@
-require('dotenv').config('../.env')
-const socket = require('./util/socket');
+require('dotenv').config({path:__dirname + '/./../.env'})
+const socket = require('../util/socket');
 const redis = require('ioredis');
 const redisClient = new redis({
   port: process.env.redisPort,

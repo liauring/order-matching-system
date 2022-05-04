@@ -1,4 +1,3 @@
-require('dotenv').config();
 const redisClient = require('../../util/cache');
 const { v4: uuidv4 } = require('uuid');
 let { rabbitmqPub, rabbitmqSendToQueue } = require('../../util/rabbitmq');

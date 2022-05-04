@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({path:__dirname + '/./../.env'});
 
 let rabbitmq = require('amqplib').connect(`amqp://${process.env.rabbitmqUser}:${process.env.rabbitmqPW}@${process.env.rabbitmqHost}:${process.env.rabbitmqPort}/`);
 
@@ -20,30 +20,3 @@ async function rabbitmqSendToQueue(queue, message) {
 }
 
 module.exports = { rabbitmqConn, rabbitmqPub, rabbitmqSendToQueue };
-
-
-// Publisher
-// rabbitmq.then(function (conn) {
-//   return conn.createChannel();
-// }).then(function (ch) {
-//   return ch.assertQueue(q).then(function (ok) {
-//     return ch.sendToQueue(q, Buffer.from('something to do'));
-//   });
-// }).catch(console.warn);
-
-
-
-// // Consumer
-// rabbitmq.then(function (conn) {
-//   return conn.createChannel();
-// }).then(function (ch) {
-//   return ch.assertQueue(q).then(function (ok) {
-//     return ch.consume(q, function (msg) {
-//       if (msg !== null) {
-//         console.log(msg.content.toString());
-//         ch.ack(msg);
-//       }
-//     });
-//   });
-// }).catch(console.warn);
-

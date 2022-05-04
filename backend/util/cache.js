@@ -1,6 +1,6 @@
 const redis = require('ioredis');
 
-require('dotenv').config()
+require('dotenv').config({path:__dirname + '/./../.env'})
 
 const redisClient = new redis({
   port: process.env.redisPort,

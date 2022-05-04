@@ -6,6 +6,23 @@ const wrapAsync = (fn) => {
   };
 };
 
-module.exports = {
-  wrapAsync
+let { db } = require('./mongodb');
+const saveLogs = (logCollection) => {
+  return async (req, res, next) => {
+    try {
+      const time = new Date().getTime();
+      req.body.createTime = time;
+      const collection = db.collection(logCollection);
+      await collection.insertOne(req.body);
+      return next();
+    }catch(error){
+      next(error);
+    }
+  };
 };
+
+module.exports = {
+  wrapAsync,
+  saveLogs
+};
+

@@ -1,4 +1,4 @@
-const { CurrentFiveTicks, NewOrderFiveTicks } = require('../../core/FiveTicks');
+const { CurrentFiveTicks } = require('../../core/FiveTicks');
 
 const getFiveTicks = async (req, res) => {
   let { symbol } = req.params;
