@@ -1,4 +1,4 @@
-const redisClient = require('../util/cache');
+const redisClient = require('../../util/cache');
 
 class NewOrderFiveTicks {
   async addNewOrderFiveTicks(redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {

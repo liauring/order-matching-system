@@ -103,6 +103,50 @@ const CandleStick = (symbol) => {
   }, [])
 
 
+  // let oldestTimestamp = kLineList.reduce(function (prev, curr) {
+    //   return prev.executionTime < curr.executionTime ? prev : curr;
+    // }).executionTime;
+
+    // const minuteToMilliseconds = 60000
+    // let minuteStartTimestamp = new Date(oldestTimestamp).setSeconds(0, 0);
+    // let minuteEndTimestamp = new Date().setSeconds(0, 0);
+    // let timeSlotCount = (minuteEndTimestamp - minuteStartTimestamp) / minuteToMilliseconds
+    // var timeSlotKLineDataArray = Array(timeSlotCount).fill([])
+
+    // kLineList.forEach(element => {
+    //   let index = Math.floor((element.executionTime - minuteStartTimestamp) / minuteToMilliseconds)
+    //   let array = timeSlotKLineDataArray[index]
+    //   timeSlotKLineDataArray[index] = [...array, element]
+    // });
+
+    // let displayKLineArray = timeSlotKLineDataArray.map((kLineDatas, index) => {
+    //   let startTime = new Date(index * 60000 + minuteStartTimestamp)
+    //   let y = []
+    //   if (kLineDatas.length > 0) {
+    //     let first = kLineDatas.reduce(function (prev, curr) {
+    //       return prev.executionTime < curr.executionTime ? prev : curr;
+    //     }).price;
+    //     let mostExpensive = kLineDatas.reduce(function (prev, curr) {
+    //       return prev.price > curr.price ? prev : curr;
+    //     }).price;
+
+    //     let cheapest = kLineDatas.reduce(function (prev, curr) {
+    //       return prev.price < curr.price ? prev : curr;
+    //     }).price;
+
+    //     let last = kLineDatas.reduce(function (prev, curr) {
+    //       return prev.executionTime > curr.executionTime ? prev : curr;
+    //     }).price;
+
+    //     y = [first, mostExpensive, cheapest, last]
+    //   }
+    //   return {
+    //     x: startTime,
+    //     y: y
+    //   }
+    // })
+
+
 
 
 

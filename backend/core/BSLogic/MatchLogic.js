@@ -1,7 +1,7 @@
 require('dotenv').config();
-const redisClient = require('../util/cache');
+const redisClient = require('../../util/cache');
 const { v4: uuidv4 } = require('uuid');
-let { rabbitmqPub, rabbitmqSendToQueue } = require('../util/rabbitmq');
+let { rabbitmqPub, rabbitmqSendToQueue } = require('../../util/rabbitmq');
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks');
 
 class MatchLogic {

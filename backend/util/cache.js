@@ -1,6 +1,6 @@
 const redis = require('ioredis');
 
-require('dotenv').config();
+require('dotenv').config()
 
 const redisClient = new redis({
   port: process.env.redisPort,
@@ -9,6 +9,8 @@ const redisClient = new redis({
   password: process.env.redisPW,
   db: 0,
 });
+
+console.log('Redis connects successfully.')
 
 
 redisClient.on('error', (err) => {

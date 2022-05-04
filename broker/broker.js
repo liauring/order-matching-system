@@ -1,22 +1,18 @@
-require('dotenv').config()
 const express = require('express');
 const app = express();
 const cors = require('cors');
 const redisClient = require('./util/cache');
 const { rabbitmqPub } = require('./util/rabbitmq');
-const BSLogicMap = require('./core/BSLogic')[0];
-const { CurrentFiveTicks, NewOrderFiveTicks } = require('./core/FiveTicks');
+const BSLogicMap = require('./BSLogic')[0];
+const { CurrentFiveTicks, NewOrderFiveTicks } = require('./FiveTicks');
 const http = require('http');
 const server = http.createServer(app);
 let { mongodbNewOrder, mongodbUpdateOrder, mongodbGetExecutionHistory } = require('./util/mongodb');
 
-const { PORT_TEST, port } = process.env;
-
 
 require('./util/socket.js').config(server);
 require('./redisSub.js');
-
-
+require('dotenv').config('../.env')
 
 app.use(cors());
 // app.use(express.static('public'))
@@ -25,17 +21,13 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 
-app.use('/api/', [
-  require('./server/routes/fiveTicks_route')
-  // require('./server/routes/product_route'),
-  // require('./server/routes/marketing_route'),
-  // require('./server/routes/user_route'),
-  // require('./server/routes/order_route'),
-  // require('./server/routes/limitedDiscount_route'),
-  // require('./server/models/dashboard_model'),
-  // require('./util/presignURP'),
-  // require('./server/models/orderlist_model'),
-]);
+
+app.get('/api/fiveTicks/:symbol', async (req, res, next) => {
+  let { symbol } = req.params;
+  let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
+  console.log(fiveTicks)
+  return res.send(fiveTicks)
+})
 
 // newOrder.body {
 //   account: '3', //改int
@@ -167,30 +159,7 @@ app.get('/api/kLine/:symbol', async (req, res, next) => {
   return res.send(executionResult)
 })
 
-
-
-
-
-
-
-//--------------------------------------------
-//--------------------------------------------
-app.use(function (req, res, next) {
-  res.sendStatus(404);
-});
-
-// Error handling
-app.use(function (err, req, res, next) {
-  console.log(err);
-  res.status(500).send('Internal Server Error');
-});
-
-
-server.listen(port, async () => {
-  console.log(`Listening on port: ${port}`);
-});
-
-
-
-module.exports = app;
+server.listen(8000, () => {
+  console.log('Server runs on port 8000.')
+})
 
