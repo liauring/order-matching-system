@@ -15,9 +15,12 @@ require('./redisSub.js');
 require('dotenv').config('../.env')
 
 app.use(cors());
-app.use(express.static('public'));
+// app.use(express.static('public'))
+app.use(express.static(__dirname + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+
+
 
 app.get('/api/fiveTicks/:symbol', async (req, res, next) => {
   let { symbol } = req.params;
@@ -156,11 +159,23 @@ app.get('/api/kLine/:symbol', async (req, res, next) => {
   return res.send(executionResult)
 })
 
-
-
-
-
-
-server.listen(7000, () => {
-  console.log('Server runs on port 7000.')
+server.listen(8080, () => {
+  console.log('Server runs on port 8080.')
 })
+
+// const express = require('express');
+// const app = express();
+// const http = require('http');
+// const server = http.createServer(app);
+
+
+// require('./util/socket.js').config(server);
+// app.use(express.static('public'))
+
+// // io.on('connection', (socket) => {
+// //   console.log('a user connected');
+// // });
+
+// server.listen(8080, () => {
+//   console.log('listening on:8080');
+// });

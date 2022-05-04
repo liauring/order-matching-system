@@ -8,8 +8,9 @@ function config(server) {
     },
   });
 
-  io.on('connect', async (socket) => {
-    socket.on('brokerID', async (brokerID) => {
+  io.on('connection', (socket) => {
+    console.log('user connected');
+    socket.on('brokerID', (brokerID) => {
       socket.brokerID = brokerID;
       let roomID = brokerID;
       if (!(brokerID in brokerConnectList)) {

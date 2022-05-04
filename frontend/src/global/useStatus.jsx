@@ -12,10 +12,16 @@ const StatusProvider = (props) => {
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
-    const socket = io(API_HOST);
+    const socket = io(API_HOST, {
+      transports: ['websocket']
+    });
+    // const socket = io(API_HOST, {
+    //   transports: ['websocket']
+    // });
     setSocket(socket);
   }, []);
   useEffect(() => {
+    console.log(socket);
     if (socket)
       socket.emit('brokerID', BROKER)
   }, [socket])
