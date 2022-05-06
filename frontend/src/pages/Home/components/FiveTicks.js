@@ -4,7 +4,7 @@ import SellerTick from './SellerTick'
 import { useEffect, useState } from "react"
 import { useStatus } from '../../../global/useStatus'
 import axios from "axios"
-import { API_POST_FIVETICKS } from "../../../global/Constants"
+import {API_POST_FIVETICKS } from "../../../global/Constants"
 
 const FiveTicks = () => {
   const { socket } = useStatus()

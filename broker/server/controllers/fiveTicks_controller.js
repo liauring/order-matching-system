@@ -1,10 +1,9 @@
-const { CurrentFiveTicks } = require('../../core/FiveTicks');
+const axios = require('axios')
 
 const getFiveTicks = async (req, res) => {
-  let { symbol } = req.params;
-  let fiveTicks = await new CurrentFiveTicks(parseInt(symbol)).getFiveTicks();
-  console.log(fiveTicks)
-  res.status(200).json(fiveTicks);
+  let { symbol } = req.params
+  let initialFiveTicks = await axios.get(`${process.env.apiHost}/api/fiveTicks/${symbol}`)
+  res.status(200).json(initialFiveTicks.data)
 }
 
-module.exports = { getFiveTicks };
+module.exports = { getFiveTicks }

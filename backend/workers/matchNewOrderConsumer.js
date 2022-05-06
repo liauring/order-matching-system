@@ -31,14 +31,16 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks');
         dealer.createkLineInfo();
         await dealer.emitKLine();
       } while (dealer.hasRemainingQuantity)
+      rabbitmqConn.ack(newOrder);
     } catch (error) {
       console.error(error)
+      //TODO:rabbitmqConn.ack false
+
     } finally {
       let newFiveTicks = new CurrentFiveTicks(order.symbol);
       let fiveTicks = await newFiveTicks.getFiveTicks();
       console.debug('[fiveTicks]', fiveTicks)
       await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks));
-      rabbitmqConn.ack(newOrder);
     }
   }, { noAck: false })
 })();

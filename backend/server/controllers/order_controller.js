@@ -1,43 +1,5 @@
 const redisClient = require('../../util/cache');
 
-const getOrder = async (req, res) => {
-  let response = [
-    {
-    orderStatus: 2,
-    quantity: 4,
-    price: 543,
-    executionCount: 3,
-    orderTime: new Date(),
-    orderID: 1234321
-  },
-  {
-    orderStatus: 1,
-    quantity: 2,
-    price: 523.5,
-    executionCount: 0,
-    orderTime: new Date(),
-    orderID: 4567654
-  },
-  {
-    orderStatus: 3,
-    quantity: 4,
-    price: 530,
-    executionCount: 4,
-    orderTime: new Date(),
-    orderID: 78987654
-  }
-]
-  res.status(200).json(response);
-}
-
-// postOrder.body {
-//   account: int,
-//   time: int
-// }
-
-
-
-
 
 // TODO: 錯誤處理：1.找不到orderID 
 const updateOrder = async (req, res) => {
@@ -50,7 +12,7 @@ const updateOrder = async (req, res) => {
   orderInfo = JSON.parse(orderInfo);
   await redisClient.del(`${orderID}`);
   orderInfo.quantity = parseInt(orderInfo.quantity)
-  orderInfo.quantity += quantity; //quantity為負也可以
+  orderInfo.quantity -= quantity;
   if (orderInfo.quantity <= 0) {
     // 刪除redis裏zset的order
     await redisClient.zrem(`${symbol}-${BS}`, orderID.toString());
@@ -58,7 +20,6 @@ const updateOrder = async (req, res) => {
       orderStatus: 0, //剩餘委託刪除
       quantity: 0,
       price: orderInfo.price,
-      executionCount: -1,
       orderTime: orderInfo.orderTime,
       orderID: orderInfo.orderID
     }
@@ -69,7 +30,6 @@ const updateOrder = async (req, res) => {
     orderStatus: orderInfo.orderStatus,
     quantity: orderInfo.quantity,
     price: orderInfo.price,
-    executionCount: -1,
     orderTime: orderInfo.orderTime,
     orderID: orderInfo.orderID
   }
@@ -85,4 +45,4 @@ const updateOrder = async (req, res) => {
 // }
 
 
-module.exports = { getOrder, updateOrder };
+module.exports = { updateOrder };

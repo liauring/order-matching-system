@@ -1,88 +1,40 @@
-const redisClient = require('../../util/cache');
+const axios = require('axios').default
+const { getOrderInfo, getOrderInfoSingle, updateOrderInfo, createOrderHistory } = require('../modals/order_modal')
 
 const getOrder = async (req, res) => {
-  let response = [
-    {
-    orderStatus: 2,
-    quantity: 4,
-    price: 543,
-    executionCount: 3,
-    orderTime: new Date(),
-    orderID: 1234321
-  },
-  {
-    orderStatus: 1,
-    quantity: 2,
-    price: 523.5,
-    executionCount: 0,
-    orderTime: new Date(),
-    orderID: 4567654
-  },
-  {
-    orderStatus: 3,
-    quantity: 4,
-    price: 530,
-    executionCount: 4,
-    orderTime: new Date(),
-    orderID: 78987654
-  }
-]
-  res.status(200).json(response);
+  let { account, symbol } = req.body
+  let response = getOrderInfo(account, symbol)
+  res.status(200).json(response.data)
 }
 
 // postOrder.body {
 //   account: int,
-//   time: int
+//   symbol: int
 // }
 
-
-
-
-
-// TODO: 錯誤處理：1.找不到orderID 
+// TODO: 錯誤處理：1.找不到orderID
 const updateOrder = async (req, res) => {
-
-  let { orderID, symbol, quantity, BS } = req.body;
-  orderID = parseInt(orderID);
-  symbol = parseInt(symbol);
-  quantity = parseInt(quantity);
-  let orderInfo = await redisClient.get(`${orderID}`);
-  orderInfo = JSON.parse(orderInfo);
-  await redisClient.del(`${orderID}`);
-  orderInfo.quantity = parseInt(orderInfo.quantity)
-  orderInfo.quantity += quantity; //quantity為負也可以
-  if (orderInfo.quantity <= 0) {
-    // 刪除redis裏zset的order
-    await redisClient.zrem(`${symbol}-${BS}`, orderID.toString());
-    let response = {
-      orderStatus: 0, //剩餘委託刪除
-      quantity: 0,
-      price: orderInfo.price,
-      executionCount: -1,
-      orderTime: orderInfo.orderTime,
-      orderID: orderInfo.orderID
-    }
-    return res.send(response);
-  }
-  await redisClient.set(`${orderID}`, JSON.stringify(orderInfo));
-  let response = {
-    orderStatus: orderInfo.orderStatus,
-    quantity: orderInfo.quantity,
-    price: orderInfo.price,
-    executionCount: -1,
-    orderTime: orderInfo.orderTime,
-    orderID: orderInfo.orderID
-  }
-  
-  res.status(200).json(response);
+  let reqBody = req.body
+  let updateResponse = await axios.patch(`${process.env.apiHost}/api/order`, reqBody)
+  await updateOrderInfo(updateResponse)
+  await createOrderHistory(reqBody, updateResponse)
+  let response = await getOrderInfoSingle(updateResponse.orderID)
+  res.status(200).json(response.data)
 }
 
 // updateOrder.body {
 //   orderID: int
-//   symbol:  int
+//   price: float
 //   quantity:  int
-//   BS:  string
 // }
 
+// patch.res  = {
+//   orderStatus: orderInfo.orderStatus,
+//   quantity: orderInfo.quantity,
+//   price: orderInfo.price,
+//   executionCount: -1,
+//   orderTime: orderInfo.orderTime,
+//   orderID: orderInfo.orderID
+// }
 
-module.exports = { getOrder, updateOrder };
+module.exports = { getOrder, updateOrder }

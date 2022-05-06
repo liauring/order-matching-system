@@ -1,16 +1,12 @@
-const BSLogicMap = require('../../core/BSLogic')[0];
-
-//TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
-//不做：沒有這個broker/沒有這檔股票
+const axios = require('axios').default
+const { createNewOrder, createNewOrderHistory } = require('../modals/newOrder_modal')
 
 const postNewOrder = async (req, res, next) => {
-  let dealer = new BSLogicMap[req.body.BS](req.body);
-  dealer.formatOrder();
-  dealer.orderTimeInDayPeriod();
-  dealer.createOrderID();
-  await dealer.shardingToRabbitmq();
-  let orderResponse = dealer.createOrderResponse();
-  res.status(200).json(orderResponse);
+  let reqBody = req.body
+  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, reqBody)
+  await createNewOrder(response.data)
+  await createNewOrderHistory(response.data)
+  res.status(200).json(response.data)
 }
 
 // newOrder.body {
@@ -26,8 +22,18 @@ const postNewOrder = async (req, res, next) => {
 //   symbolName: '台積電',
 // x orderTime: 836452,
 // x orderID: 10500836452,
-// x orderStatus: '未成交'
+// x orderStatus: 1
 // }
 
+//  postAPI.res = {
+//       orderStatus: 1,
+//       symbol: this.order.symbol,
+//       quantity: this.order.quantity,
+//       price: this.order.price,
+//       executionQuantity: 0,
+//       orderTime: this.time.toLocaleString(),
+//       orderID: this.order.orderID,
+//       BS: this.order.BS
+//  }
 
-module.exports = { postNewOrder };
+module.exports = { postNewOrder }
