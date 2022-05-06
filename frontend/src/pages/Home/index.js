@@ -4,7 +4,7 @@ import StockInfo from './components/StockInfo'
 import NewOrder from './components/NewOrder'
 import OrderHistory from './components/OrderHistory'
 import { useStatus } from '../../global/useStatus'
-import { useEffect, useState, useRef } from "react"
+import { useEffect, useState, useRef } from 'react'
 
 import './base.css'
 import './flex.css'
@@ -15,20 +15,19 @@ const Home = () => {
   const [sentOrder, setSentOrder] = useState({})
   const [updateOrder, setUpdateOrder] = useState({})
   const executionMap = useRef({}) //key:OrderID, value: executionInfo
-  const didMountSocketEffect = useRef(false);
-  const didMountSentEffect = useRef(false);
+  const didMountSocketEffect = useRef(false)
+  const didMountSentEffect = useRef(false)
 
   useEffect(() => {
     if (socket) {
       function handle(executionInfo) {
-
+        console.log('Socket got execution: ', executionInfo)
         setUpdateOrder(executionInfo)
       }
 
-      socket.on('execution', handle);
+      socket.on('execution', handle)
     }
   }, [socket])
-
 
   useEffect(() => {
     if (!didMountSocketEffect.current) {
@@ -63,17 +62,19 @@ const Home = () => {
     }
   }, [sentOrder])
 
-  return <div>
-    <CandleStick />
-    <div className='blocks fiveTicksAndInfo-section'>
-      <FiveTicks />
-      <StockInfo />
+  return (
+    <div>
+      <CandleStick />
+      <div className="blocks fiveTicksAndInfo-section">
+        <FiveTicks />
+        <StockInfo />
+      </div>
+      <div className="blocks newOrderAndOrderHistory-section">
+        <NewOrder setSentOrder={setSentOrder} />
+        <OrderHistory orders={orders} />
+      </div>
     </div>
-    <div className='blocks newOrderAndOrderHistory-section'>
-      <NewOrder setSentOrder={setSentOrder} />
-      <OrderHistory orders={orders} />
-    </div>
-  </div >
+  )
 }
 
 export default Home

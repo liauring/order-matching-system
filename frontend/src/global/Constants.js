@@ -5,3 +5,4 @@ export const API_POST_FIVETICKS = `${API_HOST}/api/fiveTicks`
 export const API_PATCH_ORDER = `${API_HOST}/api/order`
 export const API_KLINE = `${API_HOST}/api/kLine`
 export const BROKER = 1030
+export const CLIENT = 6

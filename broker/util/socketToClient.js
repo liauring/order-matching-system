@@ -9,8 +9,8 @@ function config(server) {
   })
 
   io.on('connection', (socket) => {
-    console.log('user connected')
     socket.on('clientID', (clientID) => {
+      console.log('[8000 socketToClient] client connect ', clientID)
       socket.clientID = clientID
       let roomID = clientID
       if (!(clientID in clientConnectList)) {

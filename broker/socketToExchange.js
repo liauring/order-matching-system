@@ -4,23 +4,25 @@ const { updateOrderInfo, createOrderHistory } = require('./server/modals/socketE
 
 let socketToExchange = io('http://127.0.0.1:8080') //TODO:nginx要改
 
-const BROKERID = 1030
+const BROKERID = 6666
 socketToExchange.on('connect', () => {
   socketToExchange.emit('brokerID', BROKERID)
   console.log(`I am ${BROKERID} after emit`)
 })
 
 socketToExchange.on('fiveTicks', function (message) {
+  // console.log('[8000 socketToExchange] fiveTicks: ', message)
   socketToClient.sendFiveTicks(message)
 })
 
 socketToExchange.on('execution', async function (message) {
-  console.log('[socketToExchange] execution: ', message)
+  console.log('[8000 socketToExchange] execution: ', message)
   await updateOrderInfo(message)
   await createOrderHistory(message)
   socketToClient.sendExec(message.dealer, message)
 })
 
-socketToExchange.on('kLine', function (kLineInfo) {
-  socketToClient.sendKLine(kLineInfo)
+socketToExchange.on('kLine', function (message) {
+  // console.log('[8000 socketToExchange] kLine: ', message)
+  socketToClient.sendKLine(message)
 })

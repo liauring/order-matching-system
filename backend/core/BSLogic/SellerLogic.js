@@ -31,7 +31,7 @@ class SellerOrder extends NewOrder {
     let todayRestTime = this.time - midnight
     todayRestTime = todayRestTime.toString().padStart(8, '0')
     console.log('sellerOrder ', todayRestTime)
-    this.order.orderTime = todayRestTime.toString()
+    this.order.orderTime = this.time
     return
   }
 }

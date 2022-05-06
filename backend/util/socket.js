@@ -1,28 +1,24 @@
-const { Server } = require('socket.io');
-let io;
-let brokerConnectList = {};
+const { Server } = require('socket.io')
+let io
+let brokerConnectList = {}
 function config(server) {
   io = new Server(server, {
     cors: {
       origin: '*',
     },
-  });
+  })
 
   io.on('connection', (socket) => {
-    console.log('user connected');
     socket.on('brokerID', (brokerID) => {
-      socket.brokerID = brokerID;
-      let roomID = brokerID;
+      console.log('[8080 socket] user connected is ', brokerID)
+      socket.brokerID = brokerID
+      let roomID = brokerID
       if (!(brokerID in brokerConnectList)) {
         brokerConnectList[brokerID] = []
       }
-      socket.join(roomID);
-      console.log(io.sockets.adapter.rooms);
-      brokerConnectList[brokerID].push(socket);
-
+      socket.join(roomID)
+      brokerConnectList[brokerID].push(socket)
     })
-
-
 
     //監聽disconnecting
     // socket.on('disconnecting', async (reason) => {
@@ -37,26 +33,24 @@ function config(server) {
     //     return error;
     //   }
     // });
-
   })
 }
 
 function sendMsg(event) {
-  io.emit(event);
+  io.emit(event)
 }
 
 function sendExec(brokerID, event) {
-  console.log('----------------------');
-  console.log(io.sockets.adapter.rooms);
-  io.to(brokerID).emit('execution', event);
+  console.log('----------------------')
+  io.to(brokerID).emit('execution', event)
 }
 
 function sendFiveTicks(event) {
-  io.emit('fiveTicks', event);
+  io.emit('fiveTicks', event)
 }
 
 function sendKLine(event) {
-  io.emit('kLine', event);
+  io.emit('kLine', event)
 }
 
-module.exports = { config, sendMsg, sendExec, sendFiveTicks, sendKLine };
+module.exports = { config, sendMsg, sendExec, sendFiveTicks, sendKLine }

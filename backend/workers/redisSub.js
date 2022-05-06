@@ -1,39 +1,49 @@
-require('dotenv').config({path:__dirname + '/./../.env'})
-const socket = require('../util/socket');
-const redis = require('ioredis');
+require('dotenv').config({ path: __dirname + '/./../.env' })
+const socket = require('../util/socket')
+const redis = require('ioredis')
 const redisClient = new redis({
   port: process.env.redisPort,
   host: process.env.redisHost,
   username: process.env.redisUser,
   password: process.env.redisPW,
   db: 0,
-});
-
-
-(() => {
+})
+;(() => {
   redisClient.subscribe('sendExec', 'fiveTicks', 'kLine', (err, count) => {
     if (err) {
-      console.error("Failed to subscribe: %s", err.message);
+      console.error('Failed to subscribe: %s', err.message)
     } else {
-      console.log(
-        'Subscribed  sendExec successfully!'
-      );
+      console.log('Subscribed  sendExec successfully!')
     }
-  });
+  })
 
-  redisClient.on("message", (channel, message) => {
+  redisClient.on('message', (channel, message) => {
     // console.log(`Received message from ${channel}`);
-    message = JSON.parse(message);
+    message = JSON.parse(message)
     if (channel === 'sendExec') {
-      socket.sendExec(message.brokerID, message.execution);
+      try {
+        socket.sendExec(message.brokerID, message.execution)
+        console.log('[redisSub] send transation from 8080!!!!!!!!!!!')
+      } catch (error) {
+        console.error(error)
+      }
     } else if (channel === 'fiveTicks') {
-      socket.sendFiveTicks(message);
+      try {
+        console.log(message)
+        socket.sendFiveTicks(message)
+        console.log('[redisSub] send fiveTicks from 8080!!!!!!!!!!!')
+      } catch (error) {
+        console.error(error)
+      }
     } else if (channel === 'kLine') {
-      // console.log('kLine in redisSub', message)
-      socket.sendKLine(message);
+      try {
+        socket.sendKLine(message)
+        console.log('[redisSub] send kLine from 8080!!!!!!!!!!!')
+      } catch (error) {
+        console.error(error)
+      }
     } else {
       console.error('[redisSub] Cannot find redis channel')
     }
-
-  });
-})();
+  })
+})()

@@ -1,6 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { API_HOST, BROKER } from './Constants'
+import { API_HOST, CLIENT } from './Constants'
 
 const StatusContext = createContext({
   socket: null,
@@ -21,8 +21,8 @@ const StatusProvider = (props) => {
   useEffect(() => {
     console.log(socket);
     if (socket) {
-      console.log('My brokerID is ', BROKER)
-      socket.emit('brokerID', BROKER)
+      console.log('My clientID is ', CLIENT)
+      socket.emit('clientID', CLIENT)
     }
   }, [socket])
   return (
