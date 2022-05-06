@@ -23,14 +23,14 @@ DROP TABLE IF EXISTS `order_history`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `order_history` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
   `orderID` bigint unsigned NOT NULL,
   `status` int unsigned NOT NULL,
   `quantity` int unsigned NOT NULL,
   `price` float unsigned NOT NULL,
-  `create_time` bigint unsigned NOT NULL,
-  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `create_time` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -51,11 +51,11 @@ CREATE TABLE `orderInfo` (
   `remaining_quantity` int unsigned DEFAULT NULL,
   `execution_quantity` int unsigned DEFAULT NULL,
   `order_price` float NOT NULL,
-  `create_time` bigint NOT NULL,
-  `last_update_time` timestamp NULL DEFAULT NULL ON UPDATE CURRENT_TIMESTAMP,
+  `create_time` datetime DEFAULT CURRENT_TIMESTAMP,
+  `last_update_time` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `orderID_UNIQUE` (`orderID`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -67,4 +67,4 @@ CREATE TABLE `orderInfo` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2022-05-06 19:36:08
+-- Dump completed on 2022-05-06 21:21:34
