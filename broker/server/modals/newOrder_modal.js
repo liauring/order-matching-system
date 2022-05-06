@@ -12,7 +12,6 @@ const createNewOrder = async (exchangeResult) => {
     remaining_quantity: exchangeResult.quantity,
     execution_quantity: exchangeResult.executionQuantity, //0
     order_price: exchangeResult.price,
-    create_time: exchangeResult.orderTime,
   }
   await mysqldb.query(sqlSyntax, columns)
   return
@@ -25,7 +24,6 @@ const createNewOrderHistory = async (exchangeResult) => {
     status: exchangeResult.orderStatus, //1: 委託成功, 2: 部分成交, 3: 完全成交 4: 減量成功
     quantity: exchangeResult.quantity,
     price: exchangeResult.price,
-    create_time: exchangeResult.orderTime,
   }
   await mysqldb.query(sqlSyntax, columns)
   return

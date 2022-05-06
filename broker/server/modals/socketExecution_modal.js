@@ -25,7 +25,6 @@ const createOrderHistory = async (updateResult) => {
     status: 3, //1: 委託成功, 3: 已成交 4: 減量成功
     quantity: updateResult.executionQuantity,
     price: updateResult.price,
-    create_time: updateResult.orderTime,
   }
   let sqlSyntax = `INSERT INTO order_history SET ? `
   await mysqldb.query(sqlSyntax, columns)

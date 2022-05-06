@@ -25,12 +25,12 @@ class BuyerLogic extends MatchLogic {
 
 class BuyerOrder extends NewOrder {
   orderTimeInDayPeriod() {
-    this.time = new Date().getTime()
+    this.time = new Date()
     let midnight = new Date(new Date().setHours(23, 59, 59, 999)).getTime()
     let todayRestTime = midnight - this.time
     todayRestTime = todayRestTime.toString().padStart(8, '0')
     console.log('buyerOrder ', todayRestTime)
-    this.order.orderTime = this.time
+    this.order.orderTime = todayRestTime.toString()
     return
   }
 }
