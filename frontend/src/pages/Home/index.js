@@ -64,7 +64,7 @@ const Home = () => {
 
   return (
     <div>
-      <CandleStick />
+      {/* <CandleStick /> */}
       <div className="blocks fiveTicksAndInfo-section">
         <FiveTicks />
         <StockInfo />
