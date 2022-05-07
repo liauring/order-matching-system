@@ -6,8 +6,8 @@ const http = require('http')
 const server = http.createServer(app)
 
 require('./util/socket.js').config(server)
-require('./workers/redisSub')
-require('./initScripts/rabbitmqInit')
+require('./workers/redisSub.js')
+require('./initScripts/rabbitmqInit.js')
 
 app.use(cors())
 app.use(express.static(__dirname + '/public'))
