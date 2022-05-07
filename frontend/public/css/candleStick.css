@@ -1,0 +1,14 @@
+@import url(https://fonts.googleapis.com/css?family=Roboto);
+
+body {
+    font-family: Roboto, sans-serif;
+}
+
+#chart {
+    max-width: 1200px;
+    margin: 35px auto;
+}
+
+.apexcharts-canvas {
+    background-color: #202130
+}
