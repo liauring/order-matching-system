@@ -40,7 +40,7 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       } finally {
         let newFiveTicks = new CurrentFiveTicks(order.symbol)
         let fiveTicks = await newFiveTicks.getFiveTicks()
-        console.debug('[fiveTicks]', fiveTicks)
+        // console.debug('[fiveTicks]', fiveTicks)
         await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks))
         rabbitmqConn.ack(newOrder)
       }

@@ -192,8 +192,7 @@ class MatchLogic {
   }
 
   async sendExecutionToRabbitmqForStorage() {
-    //TODO:sharding多個consumer，各自定義const再帶入？
-    console.debug('[executionDetail]', this.executionDetail)
+    //console.debug('[executionDetail]', this.executionDetail)
     return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
   }
 
