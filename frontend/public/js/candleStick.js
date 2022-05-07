@@ -26,7 +26,7 @@ var options = {
   xaxis: {
     type: 'datetime',
     labels: {
-      format: 'HH:mm:ss',
+      format: 'HH:mm',
       datetimeUTC: false,
       style: {
         colors: '#FFF',
@@ -42,6 +42,13 @@ var options = {
       style: {
         colors: '#FFF',
       },
+    },
+  },
+  tooltip: {
+    x: {
+      show: true,
+      format: 'HH:mm',
+      formatter: undefined,
     },
   },
 }

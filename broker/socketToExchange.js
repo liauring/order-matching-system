@@ -1,52 +1,32 @@
-const { io } = require("socket.io-client");
-const socketToClient = require("./util/socketToClient");
-const {
-  updateOrderInfo,
-  createOrderHistory,
-} = require("./server/modals/socketExecution_modal");
+const { io } = require('socket.io-client')
+const socketToClient = require('./util/socketToClient')
+const { updateOrderInfo, createOrderHistory } = require('./server/modals/socketExecution_modal')
 
-let socketToExchange = io("http://127.0.0.1:8080"); //TODO:nginx要改
+let socketToExchange = io('http://127.0.0.1:8080') //TODO:nginx要改
 
-const BROKERID = 1030;
-socketToExchange.on("connect", () => {
-  socketToExchange.emit("brokerID", BROKERID);
-  console.log(`I am ${BROKERID} after emit`);
-  let test = 0;
-  socketToExchange.on("fiveTicks", function (message) {
-    console.log("[8000 socketToExchange] fiveTicks: ", message);
-    socketToClient.sendFiveTicks(message);
-  });
+const BROKERID = 1030
+socketToExchange.on('connect', () => {
+  socketToExchange.emit('brokerID', BROKERID)
+  console.log(`I am ${BROKERID} after emit`)
+  let test = 0
+  socketToExchange.on('fiveTicks', function (message) {
+    // console.log("[8000 socketToExchange] fiveTicks: ", message);
+    socketToClient.sendFiveTicks(message)
+  })
 
-  socketToExchange.on("execution", async function (message) {
-    console.log("[8000 socketToExchange] execution: ", message);
+  socketToExchange.on('execution', async function (message) {
+    // console.log("[8000 socketToExchange] execution: ", message);
     try {
-      await updateOrderInfo(message);
-      await createOrderHistory(message);
+      await updateOrderInfo(message)
+      await createOrderHistory(message)
     } catch (error) {
-      console.error(error);
+      console.error(error)
     }
-    socketToClient.sendExec(message.dealer, message);
-  });
+    socketToClient.sendExec(message.dealer, message)
+  })
 
-  socketToExchange.on("kLine", function (message) {
+  socketToExchange.on('kLine', function (message) {
     // console.log('[8000 socketToExchange] kLine: ', message)
-    socketToClient.sendKLine(message);
-  });
-});
-
-// socketToExchange.on("fiveTicks", function (message) {
-//   console.log("[8000 socketToExchange] fiveTicks: ", message);
-//   socketToClient.sendFiveTicks(message);
-// });
-
-// socketToExchange.on("execution", async function (message) {
-//   console.log("[8000 socketToExchange] execution: ", message);
-//   await updateOrderInfo(message);
-//   await createOrderHistory(message);
-//   socketToClient.sendExec(message.dealer, message);
-// });
-
-// socketToExchange.on("kLine", function (message) {
-//   // console.log('[8000 socketToExchange] kLine: ', message)
-//   socketToClient.sendKLine(message);
-// });
+    socketToClient.sendKLine(message)
+  })
+})

@@ -41,7 +41,6 @@ function sendMsg(event) {
 }
 
 function sendExec(brokerID, event) {
-  console.log('----------------------')
   io.to(brokerID).emit('execution', event)
 }
 

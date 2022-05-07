@@ -13,7 +13,6 @@ const rabbitmqConn = rabbitmq
 async function rabbitmqPub(exchange, severity, message) {
   let rabbitmqConnCh = await rabbitmqConn
   await rabbitmqConnCh.publish(exchange, severity, Buffer.from(message))
-  // console.log('[o] rabbitmq sent %s: %s', severity, message);
 }
 //外面再close connection
 

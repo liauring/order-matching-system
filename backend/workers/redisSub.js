@@ -23,22 +23,19 @@ const redisClient = new redis({
     if (channel === 'sendExec') {
       try {
         socket.sendExec(message.brokerID, message.execution)
-        console.log('[redisSub] send transation from 8080!!!!!!!!!!!')
       } catch (error) {
         console.error(error)
       }
     } else if (channel === 'fiveTicks') {
       try {
-        console.log(message)
+        // console.log(message)
         socket.sendFiveTicks(message)
-        console.log('[redisSub] send fiveTicks from 8080!!!!!!!!!!!')
       } catch (error) {
         console.error(error)
       }
     } else if (channel === 'kLine') {
       try {
         socket.sendKLine(message)
-        console.log('[redisSub] send kLine from 8080!!!!!!!!!!!')
       } catch (error) {
         console.error(error)
       }

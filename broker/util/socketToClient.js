@@ -17,7 +17,6 @@ function config(server) {
         clientConnectList[clientID] = []
       }
       socket.join(roomID)
-      console.log(io.sockets.adapter.rooms)
       clientConnectList[clientID].push(socket)
     })
 
@@ -42,7 +41,6 @@ function sendMsg(event) {
 }
 
 function sendExec(clientID, event) {
-  console.log('----------------------')
   io.to(clientID).emit('execution', event)
 }
 

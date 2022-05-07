@@ -130,8 +130,6 @@ class MatchLogic {
   }
 
   createExecutionDetail() {
-    // console.log('This is getSeller: ', this.getSeller())
-    // console.log('This is getBuyer: ', this.getBuyer())
     this.executionDetail = {
       executionID: this.executionID,
       executionTime: this.executionTime,
@@ -235,10 +233,7 @@ class NewOrder {
   }
 
   createOrderID() {
-    console.log('orderTime: ', this.order.orderTime)
     this.order.orderID = parseInt('' + parseInt(parseFloat(this.order.price) * 100) + `${this.order.orderTime}`, 10)
-    console.log('price: ', parseInt(parseFloat(this.order.price) * 100))
-    console.log('orderID: ', this.order.orderID)
     return
   }
 
