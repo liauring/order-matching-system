@@ -1,13 +1,12 @@
-let { mongodbGetExecutionHistory } = require('../modals/kLine_modal');
-
+let { mongodbGetExecutionHistory } = require('../modals/kLine_modal')
 
 const getkLineHistory = async (req, res) => {
-  let { symbol } = req.params;
-  let { time } = req.query;
+  let { symbol } = req.params
+  let { time } = req.query
   symbol = parseInt(symbol)
-  time = parseInt(time);
+  time = parseInt(time)
   const executionResult = await mongodbGetExecutionHistory(symbol, time)
-  res.status(200).json(executionResult);
+  res.status(200).json(executionResult)
 }
 
 // let kLineInfo = {
@@ -16,5 +15,4 @@ const getkLineHistory = async (req, res) => {
 //   executionTime: executionTime,
 // }
 
-
-module.exports = { getkLineHistory };
+module.exports = { getkLineHistory }

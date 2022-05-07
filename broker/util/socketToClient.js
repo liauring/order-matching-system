@@ -1,25 +1,25 @@
-const { Server } = require("socket.io");
-let io;
-let clientConnectList = {};
+const { Server } = require('socket.io')
+let io
+let clientConnectList = {}
 function config(server) {
   io = new Server(server, {
     cors: {
-      origin: "*",
+      origin: '*',
     },
-  });
+  })
 
-  io.on("connection", (socket) => {
-    socket.on("clientID", (clientID) => {
-      console.log("[8000 socketToClient] client connect ", clientID);
-      socket.clientID = clientID;
-      let roomID = clientID;
+  io.on('connection', (socket) => {
+    socket.on('clientID', (clientID) => {
+      console.log('[8000 socketToClient] client connect ', clientID)
+      socket.clientID = clientID
+      let roomID = clientID
       if (!(clientID in clientConnectList)) {
-        clientConnectList[clientID] = [];
+        clientConnectList[clientID] = []
       }
-      socket.join(roomID);
-      console.log(io.sockets.adapter.rooms);
-      clientConnectList[clientID].push(socket);
-    });
+      socket.join(roomID)
+      console.log(io.sockets.adapter.rooms)
+      clientConnectList[clientID].push(socket)
+    })
 
     //監聽disconnecting
     // socket.on('disconnecting', async (reason) => {
@@ -34,24 +34,24 @@ function config(server) {
     //     return error;
     //   }
     // });
-  });
+  })
 }
 
 function sendMsg(event) {
-  io.emit(event);
+  io.emit(event)
 }
 
 function sendExec(clientID, event) {
-  console.log("----------------------");
-  io.to(clientID).emit("execution", event);
+  console.log('----------------------')
+  io.to(clientID).emit('execution', event)
 }
 
 function sendFiveTicks(event) {
-  io.emit("fiveTicks", event);
+  io.emit('fiveTicks', event)
 }
 
 function sendKLine(event) {
-  io.emit("kLine", event);
+  io.emit('kLine', event)
 }
 
-module.exports = { config, sendMsg, sendExec, sendFiveTicks, sendKLine };
+module.exports = { config, sendMsg, sendExec, sendFiveTicks, sendKLine }

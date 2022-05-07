@@ -5,8 +5,10 @@ body {
 }
 
 #chart {
+
     max-width: 1200px;
     margin: 35px auto;
+    width: 100%
 }
 
 .apexcharts-canvas {
