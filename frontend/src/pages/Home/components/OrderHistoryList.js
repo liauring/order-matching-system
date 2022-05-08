@@ -24,7 +24,11 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
         return '委託失敗'
     }
   }
-
+  function getLocalTime() {
+    let localTime = new Date(order.orderTime)
+    console.log(localTime.toLocaleTimeString())
+    return localTime.toLocaleTimeString()
+  }
   return (
     <tr
       className="orderHistoryTabletr"
@@ -40,7 +44,7 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
       <td className="tableOrder">{order.quantity}</td>
       <td className="tableOrder">{order.price}</td>
       <td className="tableOrder">{order.executionQuantity}</td>
-      <td className="tableOrderTime tableOrderTimeText">{order.orderTime}</td>
+      <td className="tableOrderTime tableOrderTimeText">{getLocalTime()}</td>
     </tr>
   )
 }

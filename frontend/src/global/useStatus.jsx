@@ -1,14 +1,16 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { io } from 'socket.io-client';
-import { API_HOST, CLIENT } from './Constants'
+import { API_HOST } from './Constants'
 
 const StatusContext = createContext({
+  clientID: null,
+  setClientID: () => { },
   socket: null,
   setSocket: () => { }
 });
 
 const StatusProvider = (props) => {
-
+  const [clientID, setClientID] = useState(null);
   const [socket, setSocket] = useState(null);
 
   useEffect(() => {
@@ -20,14 +22,15 @@ const StatusProvider = (props) => {
   }, []);
   useEffect(() => {
     console.log(socket);
-    if (socket) {
-      console.log('My clientID is ', CLIENT)
-      socket.emit('clientID', CLIENT)
+    if (socket && clientID) {
+      console.log('My clientID is ', clientID)
+      socket.emit('clientID', clientID)
     }
-  }, [socket])
+  }, [socket, clientID])
   return (
     <StatusContext.Provider
       value={{
+        clientID, setClientID,
         socket, setSocket
       }}
       {...props}

@@ -362,9 +362,7 @@ table td {
 
 }
 
-.editingWindowButtonUpdate {
-  border: solid 1px #979797;
-}
+
 
 .editingWindowButtonCancel {
   border: solid 1px #3a3a3a;
@@ -408,4 +406,8 @@ table td {
   cursor: pointer;
   font-size: 18px;
   border-radius: 5px;
+}
+
+.clientID {
+  margin-left: 100px;
 }

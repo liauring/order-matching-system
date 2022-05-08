@@ -4,7 +4,7 @@ import SellerTick from './SellerTick'
 import { useEffect, useState } from 'react'
 import { useStatus } from '../../../global/useStatus'
 import axios from 'axios'
-import { API_POST_FIVETICKS } from '../../../global/Constants'
+import { API_FIVETICKS } from '../../../global/Constants'
 
 const FiveTicks = () => {
   const { socket } = useStatus()
@@ -77,7 +77,7 @@ const FiveTicks = () => {
   useEffect(() => {
     console.log('testing')
     const getInitialFiveTicks = async function () {
-      let initialFiveTicks = await axios.get(`${API_POST_FIVETICKS}/2330`)
+      let initialFiveTicks = await axios.get(`${API_FIVETICKS}/2330`)
 
       let responseFiveTicks = {}
 

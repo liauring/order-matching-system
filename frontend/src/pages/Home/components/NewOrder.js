@@ -1,46 +1,33 @@
 import { useState, useEffect, useRef } from 'react'
-import { API_POST_ORDER, BROKER } from '../../../global/Constants'
+import { API_NEWORDER, BROKERID } from '../../../global/Constants'
 import axios from 'axios'
 import { useStatus } from '../../../global/useStatus'
 
 const NewOrder = ({ setSentOrder }) => {
-  const { socket } = useStatus()
+  const { clientID } = useStatus()
 
   const [price, setPrice] = useState(null)
   const incrementPrice = () => {
     setPrice(function (prev) {
-      console.log(prev)
-      if (prev === null) {
-        return (prev = 1)
-      }
-      return prev + 1
+      return (prev ?? 0) + 1
     })
   }
   const decrementPrice = () => {
     setPrice(function (prev) {
-      if (prev === null || prev === 0) {
-        return (prev = 0)
-      }
-      return prev - 1
+      return prev > 0 ? prev - 1 : 0
     })
   }
 
   const [quantity, setQuantity] = useState(null)
   const incrementQuantity = () => {
     setQuantity(function (prev) {
-      if (prev === null) {
-        return (prev = 1)
-      }
-      return prev + 1
+      return (prev ?? 0) + 1
     })
   }
 
   const decrementQuantity = () => {
     setQuantity(function (prev) {
-      if (prev === null || prev === 0) {
-        return (prev = 0)
-      }
-      return prev - 1
+      return prev > 0 ? prev - 1 : 0
     })
   }
 
@@ -70,8 +57,8 @@ const NewOrder = ({ setSentOrder }) => {
     }
 
     let reqBody = {
-      account: '6', //後端會改int
-      broker: BROKER,
+      account: clientID,
+      broker: BROKERID,
       symbol: '2330', //後端會改int
       BS: type,
       orderType: 'limit',
@@ -82,7 +69,7 @@ const NewOrder = ({ setSentOrder }) => {
       symbolName: '台積電',
     }
     console.log(reqBody)
-    let response = await axios.post(`${API_POST_ORDER}`, reqBody)
+    let response = await axios.post(`${API_NEWORDER}`, reqBody)
     setSentOrder(response.data)
   }
 
@@ -92,6 +79,7 @@ const NewOrder = ({ setSentOrder }) => {
         <div className="stockInfo">
           <div className="stockName">台積電</div>
           <div className="stockID">2330</div>
+          <div className="clientID">{clientID}</div>
         </div>
         <div className="stockPriceInfo">
           <div className="stockCurrentPrice"></div>
