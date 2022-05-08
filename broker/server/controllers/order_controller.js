@@ -3,8 +3,10 @@ const { getOrderInfo, getOrderInfoSingle, updateOrderInfo, createOrderHistory } 
 
 const getOrder = async (req, res) => {
   let { account, symbol } = req.body
-  let response = getOrderInfo(account, symbol)
-  res.status(200).json(response.data)
+  account = parseInt(account)
+  symbol = parseInt(symbol)
+  let response = await getOrderInfo(account, symbol)
+  res.status(200).json(response)
 }
 
 // postOrder.body {

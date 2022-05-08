@@ -1,5 +1,5 @@
-export const API_HOST = 'https://connieplayground.site'
-// export const API_HOST = 'http://localhost:8000'
+// export const API_HOST = 'https://connieplayground.site'
+export const API_HOST = 'http://localhost:8000'
 export const API_POST_ORDER = `${API_HOST}/api/newOrder`
 export const API_POST_FIVETICKS = `${API_HOST}/api/fiveTicks`
 export const API_PATCH_ORDER = `${API_HOST}/api/order`

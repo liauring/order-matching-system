@@ -1,8 +1,14 @@
 const { MongoClient } = require('mongodb')
 
-const url = `mongodb://${process.env.mongodbUser}:${process.env.mongodbPW}@${process.env.mongodbHost}:${process.env.mongodbPort}/?maxPoolSize=20&w=majority`
+const uri = `mongodb://${process.env.mongodbUser}:${process.env.mongodbPW}@${process.env.mongodbHost}:${process.env.mongodbPort}/?maxPoolSize=20&w=majority`
 
-const client = new MongoClient(url)
+const client = new MongoClient(
+  uri,
+  { useUnifiedTopology: true },
+  { useNewUrlParser: true },
+  { connectTimeoutMS: 30000 },
+  { keepAlive: 1 }
+)
 
 ;(async () => {
   //TODO:接error
