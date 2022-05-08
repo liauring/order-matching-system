@@ -1,6 +1,7 @@
 const { io } = require('socket.io-client')
 const socketToClient = require('./util/socketToClient')
 const { updateOrderInfo, createOrderHistory } = require('./server/modals/socketExecution_modal')
+const { getOrderInfoSingle } = require('./server/modals/order_modal')
 
 let socketToExchange = io('http://127.0.0.1:8080') //TODO:nginx要改
 
@@ -16,13 +17,15 @@ socketToExchange.on('connect', () => {
 
   socketToExchange.on('execution', async function (message) {
     // console.log("[8000 socketToExchange] execution: ", message);
+
     try {
       await updateOrderInfo(message)
       await createOrderHistory(message)
+      let result = await getOrderInfoSingle(message.orderID)
+      socketToClient.sendExec(message.dealer, result)
     } catch (error) {
       console.error(error)
     }
-    socketToClient.sendExec(message.dealer, message)
   })
 
   socketToExchange.on('kLine', function (message) {
