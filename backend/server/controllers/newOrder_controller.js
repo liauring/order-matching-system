@@ -6,6 +6,11 @@ const BSLogicMap = require('../../core/BSLogic')[0]
 const getNewOrderID = async (req, res, next) => {
   console.log('getNewOrderID')
   let dealer = new BSLogicMap[req.body.BS](req.body)
+
+  //----- for stress test -----
+  // dealer.getRequestTime()
+  //----------
+
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()
