@@ -21,7 +21,7 @@ const updateOrder = async (req, res) => {
   await updateOrderInfo(updateResponse.data)
   await createOrderHistory(reqBody, updateResponse.data)
   let response = await getOrderInfoSingle(updateResponse.data.orderID)
-  res.status(200).json(response)
+  res.status(200).json(response[0])
 }
 
 // updateOrder.body {
