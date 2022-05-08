@@ -22,7 +22,7 @@ socketToExchange.on('connect', () => {
       await updateOrderInfo(message)
       await createOrderHistory(message)
       let result = await getOrderInfoSingle(message.orderID)
-      socketToClient.sendExec(message.dealer, result)
+      socketToClient.sendExec(message.dealer, result[0])
     } catch (error) {
       console.error(error)
     }
