@@ -21,7 +21,6 @@ const updateOrderInfo = async (updateResult) => {
   let columns = {
     status: updateResult.orderStatus, //1: 委託成功, 2: 部分成交, 3: 完全成交
     remaining_quantity: updateResult.quantity,
-    // execution_quantity: updateResult.executionQuantity, //TODO: Socket拿到成交單要來更新
   }
   await mysqldb.query(sqlSyntax, [columns, updateResult.orderID])
   return
@@ -41,10 +40,10 @@ const createOrderHistory = async (originalReq, updateResult) => {
   let columns = {
     orderID: updateResult.orderID,
     status: 4, //1: 委託成功, 3: 已成交 4: 減量成功
-    quantity: originalReq.quantity,
-    order_price: updateResult.price,
+    quantity: parseInt(originalReq.quantity),
+    price: updateResult.price,
   }
-  await mysqldb.query(sqlSyntax, [columns, condition])
+  await mysqldb.query(sqlSyntax, columns)
   return
 }
 

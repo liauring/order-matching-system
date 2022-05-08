@@ -18,10 +18,10 @@ const getOrder = async (req, res) => {
 const updateOrder = async (req, res) => {
   let reqBody = req.body
   let updateResponse = await axios.patch(`${process.env.apiHost}/api/order`, reqBody)
-  await updateOrderInfo(updateResponse)
-  await createOrderHistory(reqBody, updateResponse)
-  let response = await getOrderInfoSingle(updateResponse.orderID)
-  res.status(200).json(response.data)
+  await updateOrderInfo(updateResponse.data)
+  await createOrderHistory(reqBody, updateResponse.data)
+  let response = await getOrderInfoSingle(updateResponse.data.orderID)
+  res.status(200).json(response)
 }
 
 // updateOrder.body {
