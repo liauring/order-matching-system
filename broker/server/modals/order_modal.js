@@ -1,7 +1,8 @@
 let { mysqldb } = require('../../util/mysql')
 
 const getOrderInfo = async (account, symbol) => {
-  let sqlSyntax = 'SELECT * FROM orderInfo WHERE account = ? AND symbol = ?'
+  let sqlSyntax =
+    'SELECT status as orderStatus, BS, order_quantity as quantity, order_price as price, execution_quantity as executionQuantity, create_time as orderTime FROM orderInfo WHERE account = ? AND symbol = ?'
   let [result] = await mysqldb.query(sqlSyntax, [account, symbol])
   return result
 }
