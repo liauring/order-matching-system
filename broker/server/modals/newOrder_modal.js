@@ -29,20 +29,4 @@ const createNewOrderHistory = async (exchangeResult) => {
   return
 }
 
-const formatOrder = (newOrder) => {
-  newOrder.account = parseInt(newOrder.account)
-  newOrder.broker = parseInt(newOrder.broker)
-  newOrder.symbol = parseInt(newOrder.symbol)
-  newOrder.price = parseFloat(newOrder.price)
-  newOrder.quantity = parseInt(newOrder.quantity)
-  newOrder.orderStatus = 1 //1: 委託成功, 2: 部分成交, 3: 完全成交
-  return newOrder
-}
-
-const createOrderID = (price) => {
-  let currentTime = new Date().getTime()
-  let orderID = parseInt('' + parseInt(parseFloat(price) * 100) + `${currentTime}`, 10)
-  return orderID
-}
-
-module.exports = { createNewOrder, createNewOrderHistory, formatOrder, createOrderID }
+module.exports = { createNewOrder, createNewOrderHistory }

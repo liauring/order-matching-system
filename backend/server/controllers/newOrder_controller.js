@@ -7,7 +7,7 @@ const postNewOrder = async (req, res, next) => {
   let dealer = new BSLogicMap[req.body.BS](req.body)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
-  // dealer.createOrderID()
+  dealer.createOrderID()
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
   res.status(200).json(orderResponse)
