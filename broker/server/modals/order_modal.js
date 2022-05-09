@@ -11,6 +11,7 @@ const getOrderInfoSingle = async (orderID) => {
   let sqlSyntax =
     'SELECT orderID, symbol, status as orderStatus, BS, remaining_quantity as quantity, order_price as price, execution_quantity as executionQuantity, create_time as orderTime FROM orderInfo WHERE orderID = ?'
   let [result] = await mysqldb.query(sqlSyntax, orderID)
+  console.log('[Broker-socketToExchange-order-selectOrderInfoSingle]: ', result[0])
   return result
 }
 

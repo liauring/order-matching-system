@@ -4,6 +4,7 @@ const updateOrderInfo = async (updateResult) => {
   let [result] = await mysqldb.query(
     `SELECT remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID}`
   )
+  console.log('[broker-socketExecution-updateOrderInfo-selectOrderInfo]: ', result[0])
 
   let remaining_quantity = result[0].remaining_quantity - updateResult.executionQuantity
   if (remaining_quantity < 0) {

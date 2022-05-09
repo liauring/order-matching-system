@@ -192,7 +192,7 @@ class MatchLogic {
   }
 
   async sendExecutionToRabbitmqForStorage() {
-    //console.debug('[executionDetail]', this.executionDetail)
+    console.debug('[Exchange-MatchLogic-executionDetail]: ', this.executionDetail)
     return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
   }
 
