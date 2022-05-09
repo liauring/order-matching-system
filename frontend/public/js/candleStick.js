@@ -74,7 +74,7 @@ function listenKLineData() {
     //   price: 538.9
     //   symbol: 2330
     // }
-    console.log('Receive kLine:', kLineInfo)
+    // console.log('Receive kLine:', kLineInfo)
     receiveKLineInfo(kLineInfo)
   })
 }

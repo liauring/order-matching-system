@@ -2,7 +2,7 @@ let { mysqldb } = require('../../util/mysql')
 
 const updateOrderInfo = async (updateResult) => {
   let [result] = await mysqldb.query(
-    `SELECT remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID}`
+    `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID}`
   )
   console.log('[broker-socketExecution-updateOrderInfo-selectOrderInfo]: ', result[0])
 

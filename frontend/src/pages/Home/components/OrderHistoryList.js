@@ -2,6 +2,10 @@ import { useState } from 'react'
 
 const OrderHistoryList = ({ order, setSelectedOrder }) => {
   const getStatus = () => {
+    console.log('orderHistoryList:', order)
+    if (!order) {
+      return
+    }
     switch (order.orderStatus) {
       case 1:
         return '委託成功'
@@ -26,7 +30,6 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
   }
   function getLocalTime() {
     let localTime = new Date(order.orderTime)
-    console.log(localTime.toLocaleTimeString())
     return localTime.toLocaleTimeString()
   }
   return (
