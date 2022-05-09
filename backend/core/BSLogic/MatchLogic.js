@@ -1,5 +1,4 @@
 const redisClient = require('../../util/cache')
-const fs = require('fs')
 const { v4: uuidv4 } = require('uuid')
 let { rabbitmqPub, rabbitmqSendToQueue } = require('../../util/rabbitmq')
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks')
@@ -23,23 +22,6 @@ class MatchLogic {
     this.execSellerMessage = {}
     this.kLineInfo = {}
   }
-
-  //----- for stress test -----
-  getOrderFromRabbitMQTime() {
-    this.order.matchingTime = []
-    let currentTime = new Date()
-    this.order.matchingTime.push(currentTime)
-    return
-  }
-
-  getMatchFinishTime() {
-    let currentTime = new Date()
-    this.order.matchingTime.push(currentTime)
-    return
-  }
-
-  writeFile() {}
-  //----------
 
   async getBestDealerOrderIDUtil(head, tail) {
     ;[this.bestDealerOrderID, this.bestDealerScore] = await redisClient.zrange(
@@ -160,7 +142,6 @@ class MatchLogic {
       symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
-      stressTestRecord: this.order.stressTestRecord,
     }
     return
   }
@@ -240,15 +221,6 @@ class NewOrder {
     // this.todayRestTime = null
   }
 
-  //----- for stress test -----
-  getRequestTime() {
-    this.order.stressTestRecord = []
-    let currentTime = new Date()
-    this.order.stressTestRecord.push(currentTime)
-    return
-  }
-  //----------
-
   formatOrder() {
     this.order.account = parseInt(this.order.account)
     this.order.broker = parseInt(this.order.broker)
@@ -266,10 +238,6 @@ class NewOrder {
 
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
-    //----- for stress test -----
-    let currentTime = new Date()
-    this.order.stressTestRecord.push(currentTime)
-    //----------
     await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return
   }
