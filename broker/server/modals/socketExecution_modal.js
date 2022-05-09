@@ -1,7 +1,7 @@
 let { mysqldb } = require('../../util/mysql')
 
 const updateOrderInfo = async (updateResult) => {
-  let conn = mysqldb.getConnection()
+  let conn = await mysqldb.getConnection()
   await conn.query('START TRANSACTION')
   let [result] = await conn.query(
     `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID} for update`
