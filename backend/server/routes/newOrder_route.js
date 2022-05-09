@@ -3,7 +3,7 @@ const { wrapAsync, saveLogs } = require('../../util/util')
 
 const { getNewOrderID, postNewOrder } = require('../controllers/newOrder_controller')
 
-router.route('/newOrder').get(wrapAsync(getNewOrderID))
+router.route('/newOrder/orderID').post(wrapAsync(getNewOrderID))
 router.route('/newOrder').post(saveLogs('logsOfNewOrder'), wrapAsync(postNewOrder))
 
 module.exports = router
