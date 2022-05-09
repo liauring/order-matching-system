@@ -4,6 +4,7 @@ const BSLogicMap = require('../../core/BSLogic')[0]
 //不做：沒有這個broker/沒有這檔股票
 
 const getNewOrderID = async (req, res, next) => {
+  console.log('getNewOrderID')
   let dealer = new BSLogicMap[req.body.BS](req.body)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
