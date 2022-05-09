@@ -6,7 +6,7 @@ const postNewOrder = async (req, res, next) => {
   let getNewBody = await axios.post(`${process.env.apiHost}/api/newOrder/orderID`, reqBody)
   await createNewOrder(getNewBody.data)
   await createNewOrderHistory(getNewBody.data)
-  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, getNewBody)
+  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, getNewBody.data)
 
   res.status(200).json(response.data)
 }

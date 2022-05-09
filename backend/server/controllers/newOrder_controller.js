@@ -14,6 +14,7 @@ const getNewOrderID = async (req, res, next) => {
 }
 
 const postNewOrder = async (req, res, next) => {
+  console.log('postNewOrder')
   let dealer = new BSLogicMap[req.body.BS](req.body)
   // dealer.formatOrder()
   // dealer.orderTimeInDayPeriod()
