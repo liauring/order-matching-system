@@ -1,5 +1,5 @@
 const redisClient = require('../../util/cache')
-const fs = require('fs')
+const createCsvWriter = require('csv-writer').createArrayCsvWriter
 const { v4: uuidv4 } = require('uuid')
 let { rabbitmqPub, rabbitmqSendToQueue } = require('../../util/rabbitmq')
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks')
@@ -22,23 +22,48 @@ class MatchLogic {
     this.execBuyerMessage = {}
     this.execSellerMessage = {}
     this.kLineInfo = {}
+    this.csvWriter = null
   }
 
   //----- for stress test -----
+  createFile() {
+    const csvWriter = createCsvWriter({
+      header: ['orderID', 'consumeFromRabbitmq', 'matchFinish', 'allExecutionFinish'],
+      // header: false,
+      path: 'matchLogicTime.csv',
+      append: true,
+    })
+
+    csvWriter
+      .writeRecords([this.order.matchingTime]) // returns a promise
+      .then(() => {
+        console.log(`[writeFile] ${this.orderID} is done.`)
+      })
+  }
+
   getOrderFromRabbitMQTime() {
     this.order.matchingTime = []
-    let currentTime = new Date()
+    let currentTime = new Date().getTime()
+    this.order.matchingTime.push(this.order.orderID)
     this.order.matchingTime.push(currentTime)
     return
   }
 
   getMatchFinishTime() {
-    let currentTime = new Date()
+    let currentTime = new Date().getTime()
     this.order.matchingTime.push(currentTime)
     return
   }
 
-  writeFile() {}
+  getExecutionFinishTime() {
+    let currentTime = new Date().getTime()
+    this.order.matchingTime.push(currentTime)
+    return
+  }
+
+  cleanMatchingTime() {
+    this.order.matchingTime = []
+  }
   //----------
 
   async getBestDealerOrderIDUtil(head, tail) {
@@ -267,8 +292,8 @@ class NewOrder {
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
     //----- for stress test -----
-    let currentTime = new Date()
-    this.order.stressTestRecord.push(currentTime)
+    // let currentTime = new Date()
+    // this.order.stressTestRecord.push(currentTime)
     //----------
     await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return

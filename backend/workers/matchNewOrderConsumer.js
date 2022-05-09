@@ -15,27 +15,27 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       let { BS } = order
       let dealer = new BSLogicMap[BS](order)
 
-      //----- for stress test -----
-      dealer.getOrderFromRabbitMQTime()
-      //----------
-
       try {
         do {
+          //----- for stress test -----
+          dealer.getOrderFromRabbitMQTime()
+          //----------
+
           await dealer.getBestDealerOrderID()
           if (!(await dealer.haveBestDealer())) {
             //----- for stress test -----
             dealer.getMatchFinishTime()
             //----------
-
             return
           }
+
           await dealer.getBestDealerOrderInfo()
           await dealer.deleteBestDealer()
           await dealer.matchExecutionQuantity()
-          dealer.createExecutionIDAndTime()
           //----- for stress test -----
           dealer.getMatchFinishTime()
           //----------
+          dealer.createExecutionIDAndTime()
           dealer.createExecutionDetail()
           dealer.createExecutionBuyer()
           dealer.createExecutionSeller()
@@ -44,6 +44,14 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           await dealer.emitExeuction()
           dealer.createkLineInfo()
           await dealer.emitKLine()
+
+          //----- for stress test -----
+
+          await dealer.getExecutionFinishTime()
+          await dealer.createFile()
+          // await dealer.writeFile()
+          dealer.cleanMatchingTime()
+          //----------
         } while (dealer.hasRemainingQuantity)
       } catch (error) {
         console.error(error)
