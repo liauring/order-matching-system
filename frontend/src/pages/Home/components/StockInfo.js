@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from 'react'
 
 const StockInfo = () => {
   const { socket } = useStatus()
-  const [lastPrice, setLastPrice] = useState(null)
-  const highestPrice = useRef(null)
-  const lowestPrice = useRef(null)
+  const [lastPrice, setLastPrice] = useState(531.9)
+  const highestPrice = useRef(550)
+  const lowestPrice = useRef(532)
 
   useEffect(() => {
     if (socket) {
@@ -40,7 +40,7 @@ const StockInfo = () => {
         <tbody>
           <tr>
             <td>成交</td>
-            <td className="downs">{lastPrice}}</td>
+            <td className="downs">{lastPrice}</td>
           </tr>
           <tr>
             <td>開盤</td>
