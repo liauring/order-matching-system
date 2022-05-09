@@ -14,16 +14,28 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       let order = JSON.parse(newOrder.content.toString())
       let { BS } = order
       let dealer = new BSLogicMap[BS](order)
+
+      //----- for stress test -----
+      dealer.getOrderFromRabbitMQTime()
+      //----------
+
       try {
         do {
           await dealer.getBestDealerOrderID()
           if (!(await dealer.haveBestDealer())) {
+            //----- for stress test -----
+            dealer.getMatchFinishTime()
+            //----------
+
             return
           }
           await dealer.getBestDealerOrderInfo()
           await dealer.deleteBestDealer()
           await dealer.matchExecutionQuantity()
           dealer.createExecutionIDAndTime()
+          //----- for stress test -----
+          dealer.getMatchFinishTime()
+          //----------
           dealer.createExecutionDetail()
           dealer.createExecutionBuyer()
           dealer.createExecutionSeller()
@@ -33,7 +45,6 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           dealer.createkLineInfo()
           await dealer.emitKLine()
         } while (dealer.hasRemainingQuantity)
-        // rabbitmqConn.ack(newOrder)
       } catch (error) {
         console.error(error)
         //TODO:rabbitmqConn.ack false
