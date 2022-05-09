@@ -79,8 +79,8 @@ const NewOrder = ({ setSentOrder }) => {
         <div className="stockInfo">
           <div className="stockName">台積電</div>
           <div className="stockID">2330</div>
-          <div className="clientID">{clientID}</div>
         </div>
+        <div className="clientID">用戶ID：{clientID}</div>
         <div className="stockPriceInfo">
           <div className="stockCurrentPrice"></div>
         </div>

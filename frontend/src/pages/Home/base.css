@@ -409,5 +409,10 @@ table td {
 }
 
 .clientID {
-  margin-left: 100px;
+  color:#979797;
+  font-size: 18px;
+  margin-bottom: 0px;
+  padding: 8px 0 0 0;
+  margin-right:6px;
+  margin-left: auto;
 }
