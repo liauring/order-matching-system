@@ -21,18 +21,18 @@ function config(server) {
     })
 
     //監聽disconnecting
-    // socket.on('disconnecting', async (reason) => {
-    //   try {
-    //     let disconnectIndex = brokerConnectList[socket.brokerID].findIndex((sk) => sk.id === socket.id);
-    //     brokerConnectList[socket.brokerID].splice(disconnectIndex, 1);
-    //     if (brokerConnectList[socket.brokerID].length === 0) {
-    //       delete brokerConnectList[socket.brokerID];
-    //     }
-    //   } catch (error) {
-    //     console.error(error);
-    //     return error;
-    //   }
-    // });
+    socket.on('disconnecting', async (reason) => {
+      try {
+        let disconnectIndex = brokerConnectList[socket.brokerID].findIndex((sk) => sk.id === socket.id)
+        brokerConnectList[socket.brokerID].splice(disconnectIndex, 1)
+        if (brokerConnectList[socket.brokerID].length === 0) {
+          delete brokerConnectList[socket.brokerID]
+        }
+      } catch (error) {
+        console.error(error)
+        return error
+      }
+    })
   })
 }
 
