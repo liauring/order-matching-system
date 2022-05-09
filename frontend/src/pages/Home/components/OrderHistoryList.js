@@ -1,7 +1,7 @@
 import { useState } from 'react'
 
 const OrderHistoryList = ({ order, setSelectedOrder }) => {
-  const getStatus = () => {
+  const getStatus = (order) => {
     console.log('orderHistoryList:', order)
     if (!order) {
       return
@@ -18,7 +18,10 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
     }
   }
 
-  const getBS = () => {
+  const getBS = (order) => {
+    if (!order) {
+      return
+    }
     switch (order.BS) {
       case 'buyer':
         return '買'
@@ -28,7 +31,10 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
         return '委託失敗'
     }
   }
-  function getLocalTime() {
+  function getLocalTime(order) {
+    if (!order) {
+      return
+    }
     let localTime = new Date(order.orderTime)
     return localTime.toLocaleTimeString()
   }
@@ -42,12 +48,12 @@ const OrderHistoryList = ({ order, setSelectedOrder }) => {
         setSelectedOrder(order)
       }}
     >
-      <td className="tableOrderStatus"> {getStatus()}</td>
-      <td className="tableOrderBS">{getBS()}</td>
-      <td className="tableOrder">{order.quantity}</td>
-      <td className="tableOrder">{order.price}</td>
-      <td className="tableOrder">{order.executionQuantity}</td>
-      <td className="tableOrderTime tableOrderTimeText">{getLocalTime()}</td>
+      <td className="tableOrderStatus"> {getStatus(order)}</td>
+      <td className="tableOrderBS tableOrder">{getBS(order)}</td>
+      <td className="tableOrderQuant tableOrder">{order.quantity}</td>
+      <td className="tableOrderPrice tableOrder">{order.price}</td>
+      <td className="tableOrderExecQuant tableOrder">{order.executionQuantity}</td>
+      <td className="tableOrderTime tableOrderTimeText">{getLocalTime(order)}</td>
     </tr>
   )
 }

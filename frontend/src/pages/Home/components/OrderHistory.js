@@ -38,10 +38,10 @@ const OrderHistory = ({ orders, setUpdateOrder }) => {
         <thead>
           <tr>
             <th className="tableOrderStatus">狀態</th>
-            <th className="tableOrderBS">買賣</th>
-            <th className="tableOrder">剩餘數量</th>
-            <th className="tableOrder">價格</th>
-            <th className="tableOrder">成交數</th>
+            <th className="tableOrderBS tableOrder">買賣</th>
+            <th className="tableOrderQuant tableOrder">剩餘</th>
+            <th className="tableOrderPrice tableOrder">價格</th>
+            <th className="tableOrderExecQuant tableOrder">成交數</th>
             <th className="tableOrderTime">委託時間</th>
           </tr>
         </thead>

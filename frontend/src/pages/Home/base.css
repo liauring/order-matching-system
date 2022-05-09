@@ -244,21 +244,23 @@ table td {
 }
 
 .tableOrderTime {
-  width: 30%;
+  width: 20%;
+  padding: 15px 25px 15px 0px !important
 
 }
 
 .tableOrderTimeText {
   font-size: 10pt !important;
-}
-
-.tableOrderBS {
-  width: 10%;
+  
 }
 
 .tableOrder {
-  width: 13.5%
+  width: 12%;
 }
+
+
+
+
 
 
 .inAndDe {
@@ -306,7 +308,7 @@ table td {
 }
 
 .orderHistory td {
-  font-size: 16px;
+  font-size: 12pt;
 }
 
 .orderListAndEdit-section {
@@ -415,4 +417,8 @@ table td {
   padding: 8px 0 0 0;
   margin-right:6px;
   margin-left: auto;
+}
+
+.tableOrderStatus{
+  padding: 15px 0px 15px 25px !important
 }

@@ -1,11 +1,46 @@
+import { useStatus } from '../../../global/useStatus'
+import { useEffect, useState, useRef } from 'react'
+
 const StockInfo = () => {
+  const { socket } = useStatus()
+  const [lastPrice, setLastPrice] = useState(null)
+  const highestPrice = useRef(null)
+  const lowestPrice = useRef(null)
+
+  useEffect(() => {
+    if (socket) {
+      function handle(executionOrder) {
+        console.log('Socket got execution: ', executionOrder)
+        let price = executionOrder.price
+        updateHighestPrice(price)
+        updateLowestPrice(price)
+        setLastPrice(price)
+      }
+      socket.on('execution', handle)
+    }
+  }, [socket])
+
+  function updateHighestPrice(price) {
+    let currentPrice = parseInt(price)
+    if (!highestPrice.current || currentPrice > highestPrice.current) {
+      highestPrice.current = currentPrice
+    }
+  }
+
+  function updateLowestPrice(price) {
+    let currentPrice = parseInt(price)
+    if (!lowestPrice.current || currentPrice < lowestPrice.current) {
+      lowestPrice.current = currentPrice
+    }
+  }
+
   return (
     <div id="stockInfo-section">
       <table className="stockInfo-leftBlock">
         <tbody>
           <tr>
             <td>成交</td>
-            <td className="downs">546</td>
+            <td className="downs">{lastPrice}}</td>
           </tr>
           <tr>
             <td>開盤</td>
@@ -13,11 +48,11 @@ const StockInfo = () => {
           </tr>
           <tr>
             <td>最高</td>
-            <td className="ups">551</td>
+            <td className="ups">{highestPrice.current}</td>
           </tr>
           <tr>
             <td>最低</td>
-            <td className="downs">544</td>
+            <td className="downs">{lowestPrice.current}</td>
           </tr>
           <tr>
             <td>均價</td>
