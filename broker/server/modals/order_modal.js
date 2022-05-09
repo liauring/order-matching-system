@@ -16,7 +16,9 @@ const getOrderInfoSingle = async (orderID) => {
 }
 
 const updateOrderInfo = async (updateResult) => {
-  let sqlSyntax = `UPDATE orderInfo SET ? WHERE orderID = ?`
+  let conn = mysql.getConnection()
+  await conn.query('START TRANSACTION')
+  let sqlSyntax = `UPDATE orderInfo SET ? WHERE orderID = ? for update`
   if (updateResult.orderStatus === 0) {
     updateResult.orderStatus = 3
   }
@@ -24,8 +26,9 @@ const updateOrderInfo = async (updateResult) => {
     status: updateResult.orderStatus, //1: 委託成功, 2: 部分成交, 3: 完全成交
     remaining_quantity: updateResult.quantity,
   }
-  await mysqldb.query(sqlSyntax, [columns, updateResult.orderID])
-  return
+  await conn.query(sqlSyntax, [columns, updateResult.orderID])
+  await conn.query('COMMIT')
+  await conn.release()
 }
 
 // patch.res  = {

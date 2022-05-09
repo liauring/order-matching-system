@@ -1,8 +1,10 @@
 let { mysqldb } = require('../../util/mysql')
 
 const updateOrderInfo = async (updateResult) => {
-  let [result] = await mysqldb.query(
-    `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID}`
+  let conn = mysql.getConnection()
+  await conn.query('START TRANSACTION')
+  let [result] = await conn.query(
+    `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID} for update`
   )
   console.log('[broker-socketExecution-updateOrderInfo-selectOrderInfo]: ', result[0])
 
@@ -17,7 +19,9 @@ const updateOrderInfo = async (updateResult) => {
     execution_quantity: execution_quantity,
   }
   let sqlSyntax = `UPDATE orderInfo SET ? WHERE orderID = ?`
-  await mysqldb.query(sqlSyntax, [columns, updateResult.orderID])
+  await conn.query(sqlSyntax, [columns, updateResult.orderID])
+  await conn.query('COMMIT')
+  await conn.release()
 }
 
 const createOrderHistory = async (updateResult) => {
