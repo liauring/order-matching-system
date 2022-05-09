@@ -3,11 +3,20 @@ const BSLogicMap = require('../../core/BSLogic')[0]
 //TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
 //不做：沒有這個broker/沒有這檔股票
 
-const postNewOrder = async (req, res, next) => {
+const getNewOrderID = async (req, res, next) => {
   let dealer = new BSLogicMap[req.body.BS](req.body)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()
+  dealer.createGetOrderResponse()
+  res.status(200).json(dealer.order)
+}
+
+const postNewOrder = async (req, res, next) => {
+  let dealer = new BSLogicMap[req.body.BS](req.body)
+  // dealer.formatOrder()
+  // dealer.orderTimeInDayPeriod()
+  // dealer.createOrderID()
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
   res.status(200).json(orderResponse)
@@ -29,4 +38,4 @@ const postNewOrder = async (req, res, next) => {
 // x orderStatus: '未成交'
 // }
 
-module.exports = { postNewOrder }
+module.exports = { getNewOrderID, postNewOrder }

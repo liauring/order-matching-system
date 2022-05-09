@@ -242,6 +242,11 @@ class NewOrder {
     return
   }
 
+  createGetOrderResponse() {
+    this.order.orderStatus = 1
+    this.order.executionQuantity = 0
+  }
+
   createOrderResponse() {
     let orderResponse = {
       orderStatus: 1,
