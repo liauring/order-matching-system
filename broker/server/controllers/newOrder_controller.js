@@ -1,10 +1,13 @@
 const axios = require('axios').default
-const { createNewOrder, createNewOrderHistory } = require('../modals/newOrder_modal')
+const { createNewOrder, createNewOrderHistory, formatOrder, createOrderID } = require('../modals/newOrder_modal')
 
 const postNewOrder = async (req, res, next) => {
-  let reqBody = req.body
-  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, reqBody)
-  await createNewOrder(response.data)
+  req.body = formatOrder(req.body)
+  let orderID = createOrderID(req.body.price)
+  req.body.orderID = orderID
+  req.body.executionQuantity = 0
+  await createNewOrder(req.body)
+  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, req.body)
   await createNewOrderHistory(response.data)
   res.status(200).json(response.data)
 }
