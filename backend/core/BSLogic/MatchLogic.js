@@ -255,7 +255,7 @@ class NewOrder {
       quantity: this.order.quantity,
       price: this.order.price,
       executionQuantity: 0,
-      orderTime: this.time,
+      orderTime: this.order.createTime,
       orderID: this.order.orderID,
       BS: this.order.BS,
     }
