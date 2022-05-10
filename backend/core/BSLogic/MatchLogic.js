@@ -241,10 +241,14 @@ class MatchLogic {
 
   async sendExecutionToRabbitmqForStorage() {
     console.log('[Execution send to RabbitMQ]: ', this.executionDetail)
-    return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
+    let execResult = await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
+    console.log('[Execution send to RabbitMQ end]: ', execResult)
+    return
   }
 
   async emitExeuction() {
+    console.log('[emitExecution - this.execSellerMessage]', this.execSellerMessage)
+    console.log('[emitExecution - this.execBuyerMessage]', this.execBuyerMessage)
     await redisClient.publish('sendExec', JSON.stringify(this.execSellerMessage))
     await redisClient.publish('sendExec', JSON.stringify(this.execBuyerMessage))
     return
