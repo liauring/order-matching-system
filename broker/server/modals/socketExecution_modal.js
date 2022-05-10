@@ -5,9 +5,8 @@ const updateOrderInfo = async (updateResult) => {
   try {
     conn = await mysqldb.getConnection()
     await conn.query('START TRANSACTION')
-    let [result] = await conn.query(
-      `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ${updateResult.orderID} for update`
-    )
+    let sqlSyntaxSelectOrder = `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ? for update`
+    let [result] = await conn.query(sqlSyntaxSelectOrder, updateResult.orderID)
     console.log('[broker-socketExecution-updateOrderInfo-selectOrderInfo]: ', result[0])
 
     let remaining_quantity = result[0].remaining_quantity - updateResult.executionQuantity
@@ -25,6 +24,7 @@ const updateOrderInfo = async (updateResult) => {
     await conn.query('COMMIT')
     await conn.release()
   } catch (error) {
+    await conn.query('ROLLBACK')
     await conn.query('COMMIT')
     await conn.release()
     throw err

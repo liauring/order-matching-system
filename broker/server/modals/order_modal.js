@@ -32,6 +32,7 @@ const updateOrderInfo = async (updateResult) => {
     await conn.query('COMMIT')
     await conn.release()
   } catch (error) {
+    await conn.query('ROLLBACK')
     await conn.query('COMMIT')
     await conn.release()
     throw err
