@@ -50,7 +50,8 @@ const postNewOrderStressTest = async (req, res, next) => {
 //   quantity: 20,
 //   brokerName: '土銀' (1020:合庫),
 //   symbolName: '台積電',
-// x createTime: 836452,
+//   createTime -> for mysql only
+// x orderTime: 836452,
 // x orderID: 10500836452,
 // x orderStatus: '未成交'
 // }

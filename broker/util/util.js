@@ -11,7 +11,7 @@ const saveLogs = (logCollection) => {
   return async (req, res, next) => {
     try {
       const time = new Date().getTime()
-      req.body.createTime = time
+      req.body.logCreateTime = time
       const collection = db.collection(logCollection)
       await collection.insertOne(req.body)
       return next()

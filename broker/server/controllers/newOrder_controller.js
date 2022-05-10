@@ -6,8 +6,7 @@ const postNewOrder = async (req, res, next) => {
   let getNewBody = await axios.post(`${process.env.apiHost}/api/newOrder/orderID`, reqBody)
   await createNewOrder(getNewBody.data)
   await createNewOrderHistory(getNewBody.data)
-  reqBody.orderID = getNewBody.data.orderID
-  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, reqBody)
+  let response = await axios.post(`${process.env.apiHost}/api/newOrder`, getNewBody.data)
 
   res.status(200).json(response.data)
 }
@@ -23,7 +22,8 @@ const postNewOrder = async (req, res, next) => {
 //   quantity: 20,
 //   brokerName: '土銀' (1020:合庫),
 //   symbolName: '台積電',
-// x createTime: 836452,
+//   createTime -> for mysql only
+// x orderTime: 836452,
 // x orderID: 10500836452,
 // x orderStatus: 1
 // }

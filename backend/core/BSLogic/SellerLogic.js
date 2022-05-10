@@ -26,9 +26,9 @@ class SellerLogic extends MatchLogic {
 
 class SellerOrder extends NewOrder {
   orderTimeInDayPeriod() {
-    this.time = new Date()
+    this.order.createTime = new Date().getTime()
     let midnight = new Date(new Date().setHours(0, 0, 0, 0)).getTime()
-    let todayRestTime = this.time - midnight
+    let todayRestTime = this.order.createTime - midnight
     todayRestTime = todayRestTime.toString().padStart(8, '0')
     this.order.orderTime = todayRestTime.toString()
     return

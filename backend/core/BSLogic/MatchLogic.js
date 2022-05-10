@@ -271,7 +271,7 @@ class MatchLogic {
 class NewOrder {
   constructor(order) {
     this.order = order
-    this.orderID = order.orderID
+    this.orderID = null
     // this.todayRestTime = null
   }
 
@@ -322,7 +322,7 @@ class NewOrder {
       quantity: this.order.quantity,
       price: this.order.price,
       executionQuantity: 0,
-      orderTime: this.order.createTime,
+      orderTime: this.order.orderTime,
       orderID: this.order.orderID,
       BS: this.order.BS,
     }
