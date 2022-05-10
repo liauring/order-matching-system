@@ -26,8 +26,8 @@ const updateOrder = async (req, res) => {
 
 // updateOrder.body {
 //   orderID: int
-//   price: float
 //   quantity:  int
+//   symbol: int
 // }
 
 // patch.res  = {

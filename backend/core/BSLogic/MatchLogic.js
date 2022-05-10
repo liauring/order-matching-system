@@ -240,7 +240,7 @@ class MatchLogic {
   }
 
   async sendExecutionToRabbitmqForStorage() {
-    console.debug('[Exchange-MatchLogic-executionDetail]: ', this.executionDetail)
+    console.log('[Execution send to RabbitMQ]: ', this.executionDetail)
     return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
   }
 
@@ -256,8 +256,10 @@ class MatchLogic {
 
   async #addNewDealer() {
     let setScore = this.order.orderID
+    console.log('[addNewOrderToRedisStart] ', this.order)
     await redisClient.zadd(`${this.order.symbol}-${this.orderType}`, setScore, JSON.stringify(this.order.orderID))
     await redisClient.set(`${this.order.orderID}`, JSON.stringify(this.order))
+    console.log('[addNewOrderToRedisEnd]')
     return
   }
 }

@@ -29,6 +29,16 @@ const postNewOrder = async (req, res, next) => {
   res.status(200).json(orderResponse)
 }
 
+const postNewOrderStressTest = async (req, res, next) => {
+  let dealer = new BSLogicMap[req.body.BS](req.body)
+  dealer.formatOrder()
+  dealer.orderTimeInDayPeriod()
+  dealer.createOrderID()
+  await dealer.shardingToRabbitmq()
+  let orderResponse = dealer.createOrderResponse()
+  res.status(200).json(orderResponse)
+}
+
 // newOrder.body {
 //   account: '3', //改int
 //   broker: 1030,
@@ -45,4 +55,4 @@ const postNewOrder = async (req, res, next) => {
 // x orderStatus: '未成交'
 // }
 
-module.exports = { getNewOrderID, postNewOrder }
+module.exports = { getNewOrderID, postNewOrder, postNewOrderStressTest }
