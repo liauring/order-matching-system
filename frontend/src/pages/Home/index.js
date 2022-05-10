@@ -1,4 +1,3 @@
-import CandleStick from './components/CandleStick'
 import FiveTicks from './components/FiveTicks'
 import StockInfo from './components/StockInfo'
 import NewOrder from './components/NewOrder'
@@ -28,7 +27,7 @@ const Home = () => {
     }
     console.log(reqBody)
     let response = await axios.post(`${API_ORDER}`, reqBody)
-    setOrders(response.data)
+    setOrders(response.data.reverse())
   }
 
   useEffect(() => {
@@ -72,9 +71,9 @@ const Home = () => {
 
     let copySentOrder = sentOrder
     if (executionMap.current[copySentOrder.orderID] == null) {
-      setOrders((prev) => [...prev, copySentOrder])
+      setOrders((prev) => [copySentOrder, ...prev])
     } else {
-      setOrders((prev) => [...prev, executionMap.current[copySentOrder.orderID]])
+      setOrders((prev) => [executionMap.current[copySentOrder.orderID], ...prev])
       executionMap.current[copySentOrder.orderID] = null
     }
   }, [sentOrder])

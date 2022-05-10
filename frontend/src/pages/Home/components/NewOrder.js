@@ -1,6 +1,7 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState } from 'react'
 import { API_NEWORDER, BROKERID } from '../../../global/Constants'
 import axios from 'axios'
+import Swal from 'sweetalert2'
 import { useStatus } from '../../../global/useStatus'
 
 const NewOrder = ({ setSentOrder }) => {
@@ -38,13 +39,13 @@ const NewOrder = ({ setSentOrder }) => {
     } else if (dealer === '賣出') {
       type = 'seller'
     } else {
-      window.alert('請點選 [買進] 或 [賣出]')
+      Swal.fire('請點選 [買進] 或 [賣出]')
       return
     }
 
     if (!price || !quantity) {
       console.log('if price and quantity')
-      window.alert('請填寫價格與數量')
+      Swal.fire('請填寫價格與數量')
       return
     }
     let newPrice = Number(price)
@@ -52,7 +53,7 @@ const NewOrder = ({ setSentOrder }) => {
 
     if (newPrice <= 0 || newQuantity <= 0) {
       console.log('if price and quantity')
-      window.alert('價格與數量不可為負數')
+      Swal.fire('價格與數量不可為負數')
       return
     }
 
@@ -70,7 +71,15 @@ const NewOrder = ({ setSentOrder }) => {
     }
     console.log(reqBody)
     let response = await axios.post(`${API_NEWORDER}`, reqBody)
-    setSentOrder(response.data)
+
+    let statusCode = response.status
+    if (statusCode >= 200 && statusCode < 300) {
+      setSentOrder(response.data)
+      Swal.fire('委託成功')
+    } else {
+      Swal.fire(`委託失敗，請重新下單`)
+      console.error(statusCode)
+    }
   }
 
   return (

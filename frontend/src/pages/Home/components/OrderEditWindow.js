@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react'
-import { useStatus } from '../../../global/useStatus'
+import { useState } from 'react'
 
 const EditingWindow = ({ symbol, price, remainingQuantity, updateOrder, setSelectedOrder }) => {
   const [quantity, setQuantity] = useState(null)
