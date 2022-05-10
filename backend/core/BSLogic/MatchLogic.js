@@ -26,44 +26,48 @@ class MatchLogic {
   }
 
   //----- for stress test -----
-  createFile() {
-    const csvWriter = createCsvWriter({
-      header: ['orderID', 'consumeFromRabbitmq', 'matchFinish', 'allExecutionFinish'],
-      // header: false,
-      path: 'matchLogicTime.csv',
-      append: true,
-    })
+  // createFile() {
+  //   const csvWriter = createCsvWriter({
+  //     header: ['orderID', 'consumeFromRabbitmq', 'matchFinish', 'allExecutionFinish'],
+  //     // header: false,
+  //     path: 'matchLogicTime.csv',
+  //     append: true,
+  //   })
 
-    csvWriter
-      .writeRecords([this.order.matchingTime]) // returns a promise
-      .then(() => {
-        console.log(`[writeFile] ${this.orderID} is done.`)
-      })
-  }
+  //   csvWriter
+  //     .writeRecords([this.order.matchingTime]) // returns a promise
+  //     .then(() => {
+  //       console.log(`[writeFile] ${this.orderID} is done.`)
+  //     })
+  // }
 
-  getOrderFromRabbitMQTime() {
-    this.order.matchingTime = []
-    let currentTime = new Date().getTime()
-    this.order.matchingTime.push(this.order.orderID)
-    this.order.matchingTime.push(currentTime)
-    return
-  }
+  // sendOrderTimeToRabbitMQ() {
+  //   return await rabbitmqSendToQueue('matchTime', this.order.matchingTime)
+  // }
 
-  getMatchFinishTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchingTime.push(currentTime)
-    return
-  }
+  // getOrderFromRabbitMQTime() {
+  //   this.order.matchingTime = []
+  //   let currentTime = new Date().getTime()
+  //   this.order.matchingTime.push(this.order.orderID)
+  //   this.order.matchingTime.push(currentTime)
+  //   return
+  // }
 
-  getExecutionFinishTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchingTime.push(currentTime)
-    return
-  }
+  // getMatchFinishTime() {
+  //   let currentTime = new Date().getTime()
+  //   this.order.matchingTime.push(currentTime)
+  //   return
+  // }
 
-  cleanMatchingTime() {
-    this.order.matchingTime = []
-  }
+  // getExecutionFinishTime() {
+  //   let currentTime = new Date().getTime()
+  //   this.order.matchingTime.push(currentTime)
+  //   return
+  // }
+
+  // cleanMatchingTime() {
+  //   this.order.matchingTime = []
+  // }
   //----------
 
   async getBestDealerOrderIDUtil(head, tail) {
@@ -261,7 +265,7 @@ class MatchLogic {
 class NewOrder {
   constructor(order) {
     this.order = order
-    this.orderID = null
+    this.orderID = order.orderID
     // this.todayRestTime = null
   }
 

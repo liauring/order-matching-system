@@ -15,6 +15,7 @@ let { rabbitmqConn } = require('../util/rabbitmq')
     }
 
     await rabbitmqConn.assertQueue('saveNewExec')
+    await rabbitmqConn.assertQueue('matchTime')
 
     rabbitmqConn.close()
     process.exit(0)
