@@ -5,12 +5,14 @@ body {
 }
 
 #chart {
-
-    max-width: 1200px;
-    margin: 35px auto;
+    margin: auto;
     width: 100%
 }
 
 .apexcharts-canvas {
     background-color: #202130
+}
+
+.chart-section {
+    margin: 35px 90px
 }

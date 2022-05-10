@@ -3,9 +3,9 @@ import { useEffect, useState, useRef } from 'react'
 
 const StockInfo = () => {
   const { socket } = useStatus()
-  const [lastPrice, setLastPrice] = useState(531.9)
-  const highestPrice = useRef(550)
-  const lowestPrice = useRef(532)
+  const [lastPrice, setLastPrice] = useState(536)
+  const highestPrice = useRef(536)
+  const lowestPrice = useRef(536)
 
   useEffect(() => {
     if (socket) {

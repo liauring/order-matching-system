@@ -31,7 +31,7 @@ li a {
 
 
 .main-header {
-  margin: 0 0 50px 0;
+  margin: 0 0 25px 0;
   height: 115px;
   background-color: rgb(32, 33, 48);
   box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
@@ -421,4 +421,32 @@ table td {
 
 .tableOrderStatus{
   padding: 15px 0px 15px 25px !important
+}
+
+.swal2-popup {
+  background: #272f47 !important;
+  color: #fff !important; 
+  width: 300px !important;
+  box-shadow: 0px 1px 3px 1px rgb(0 0 0 / 30%) !important;
+}
+
+.swal2-confirm{
+  background-color: #5e70a6!important;
+  font-size: 14px !important;
+}
+
+
+
+.swal2-input{
+  background-color: rgb(17, 17, 26) !important;
+  color: #fff !important;
+  border: solid 1px #3a3a3a !important;
+  border-radius: 5px !important;
+  text-align: center !important;
+  margin-top: 30px !important;
+
+}
+
+.swal2-title{
+  font-size: 16pt !important;
 }

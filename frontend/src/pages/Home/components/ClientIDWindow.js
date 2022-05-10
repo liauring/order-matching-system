@@ -10,8 +10,8 @@ const ClientIDWindow = () => {
   if (!clientID) {
     Swal.fire({
       title: '請輸入用戶ID',
-      text: '(1~99)',
       input: 'text',
+      inputPlaceholder: '(1~99)',
       inputAttributes: {
         autocapitalize: 'off',
       },
