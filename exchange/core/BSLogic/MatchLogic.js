@@ -51,19 +51,19 @@ class MatchLogic {
 
   getOrderFromRabbitMQTime() {
     let currentTime = new Date().getTime()
-    this.order.matchTime.push(currentTime)
+    this.order.matchTime.push({ pubRabbitmq: currentTime })
     return
   }
 
   getMatchFinishTime() {
     let currentTime = new Date().getTime()
-    this.order.matchTime.push(currentTime)
+    this.order.matchTime.push({ matchFinish: currentTime })
     return
   }
 
   getExecutionFinishTime() {
     let currentTime = new Date().getTime()
-    this.order.matchTime.push(currentTime)
+    this.order.matchTime.push({ execFinish: currentTime })
     return
   }
 
@@ -78,7 +78,8 @@ class MatchLogic {
   }
 
   deleteMatchTime() {
-    this.order.matchTime.splice(-2)
+    // this.order.matchTime.splice(-4)
+    delete this.order.matchTime
   }
 
   //----------
@@ -216,7 +217,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
-      matchTime: this.order.matchTime,
+      matchTime: this.getBuyer().matchTime, //TODO:
     }
     return
   }
@@ -232,7 +233,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
-      matchTime: this.order.matchTime,
+      matchTime: this.getSeller().matchTime, //TODO:
     }
     return
   }
@@ -314,10 +315,6 @@ class NewOrder {
 
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
-    //----- for stress test -----
-    // let currentTime = new Date()
-    // this.order.stressTestRecord.push(currentTime)
-    //----------
     await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return
   }

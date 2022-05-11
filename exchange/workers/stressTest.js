@@ -14,10 +14,10 @@ let { rabbitmqConn } = require('../util/rabbitmq')
       async (matchTime) => {
         // console.log(JSON.parse(matchTime.content))
         let matchTimeData = JSON.parse(matchTime.content)
-        let pubRabbitmqToSub = matchTimeData[2] - matchTimeData[1]
-        let rabbitmqToMatch = matchTimeData[3] - matchTimeData[2]
-        let matchToRabbitmq = matchTimeData[4] - matchTimeData[3]
-        let rabbitmqToSocket = matchTimeData[5] - matchTimeData[4]
+        let pubRabbitmqToSub = matchTimeData[2].pubRabbitmq - matchTimeData[1]
+        let rabbitmqToMatch = matchTimeData[3].matchFinish - matchTimeData[2].pubRabbitmq
+        let matchToRabbitmq = matchTimeData[4].execFinish - matchTimeData[3].matchFinish
+        let rabbitmqToSocket = matchTimeData[5].socketEmit - matchTimeData[4].execFinish
 
         if (count === 0) {
           count += 1
@@ -32,6 +32,7 @@ let { rabbitmqConn } = require('../util/rabbitmq')
 
         count += 1
 
+        console.log(matchTimeData)
         console.log(
           (totalPubRabbitmqToSub / count).toFixed(2),
           (totalrabbitmqToMatch / count).toFixed(2),
@@ -39,6 +40,7 @@ let { rabbitmqConn } = require('../util/rabbitmq')
           (totalRabbitmqToSocket / count).toFixed(2),
           count
         )
+
         // console.log(
         //   'pubRabbitmqToSub: ',
         //   pubRabbitmqToSub,

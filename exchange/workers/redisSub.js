@@ -19,7 +19,7 @@ const redisClient = new redis({
     }
   })
 
-  redisClient.on('message', (channel, message) => {
+  redisClient.on('message', async (channel, message) => {
     // console.log(`Received message from ${channel}`);
     message = JSON.parse(message)
     if (channel === 'sendExec') {
@@ -27,9 +27,13 @@ const redisClient = new redis({
         socket.sendExec(message.brokerID, message.execution)
 
         //----- for stress test -----
-        let currentTime = new Date().getTime()
-        message.matchTime.push(currentTime)
-        rabbitmqSendToQueue('matchTime', this.order.matchTime)
+        if (message.execution.matchTime.length === 5) {
+          let currentTime = new Date().getTime()
+          message.execution.matchTime.push({ socketEmit: currentTime })
+          await rabbitmqSendToQueue('matchTime', message.execution.matchTime)
+          console.log(message.execution.matchTime)
+        }
+
         //----------
       } catch (error) {
         console.error(error)

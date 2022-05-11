@@ -25,11 +25,11 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           await dealer.getBestDealerOrderID()
           if (!(await dealer.haveBestDealer())) {
             //----- for stress test -----
-            dealer.getMatchFinishTime()
-            dealer.getExecutionFinishTime()
-            dealer.addEmptyValueForSocket()
-            await dealer.sendOrderTimeToRabbitMQ()
-            dealer.deleteMatchTime()
+            // dealer.getMatchFinishTimeNotExec()
+            // dealer.getExecutionFinishTimeNotExec()
+            // dealer.addEmptyValueForSocket()
+            // await dealer.sendOrderTimeToRabbitMQ()
+            // dealer.deleteMatchTime()
             //----------
             return
           }
@@ -37,14 +37,17 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           await dealer.getBestDealerOrderInfo()
           await dealer.deleteBestDealer()
           await dealer.matchExecutionQuantity()
-          // //----- for stress test -----
+          //----- for stress test -----
           dealer.getMatchFinishTime()
-          // //----------
+          //----------
           dealer.createExecutionIDAndTime()
           dealer.createExecutionDetail()
           dealer.createExecutionBuyer()
           dealer.createExecutionSeller()
           await dealer.sendExecutionToRabbitmqForStorage()
+          //----- for stress test -----
+          dealer.getExecutionFinishTime()
+          //----------
           dealer.createExecutionMsg()
           await dealer.emitExeuction()
           dealer.createkLineInfo()
@@ -52,8 +55,8 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
 
           //----- for stress test -----
 
-          dealer.getExecutionFinishTime()
           dealer.deleteMatchTime()
+          // await dealer.sendOrderTimeToRabbitMQ() socketSub 才送rabbitmq
           //----------
         } while (dealer.hasRemainingQuantity)
       } catch (error) {
