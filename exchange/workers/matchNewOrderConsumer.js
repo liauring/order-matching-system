@@ -26,7 +26,8 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           if (!(await dealer.haveBestDealer())) {
             //----- for stress test -----
             dealer.getMatchFinishTime()
-            // dealer.getExecutionFinishTime()
+            dealer.getExecutionFinishTime()
+            dealer.addEmptyValueForSocket()
             await dealer.sendOrderTimeToRabbitMQ()
             dealer.deleteMatchTime()
             //----------
@@ -51,8 +52,7 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
 
           //----- for stress test -----
 
-          // dealer.getExecutionFinishTime()
-          await dealer.sendOrderTimeToRabbitMQ()
+          dealer.getExecutionFinishTime()
           dealer.deleteMatchTime()
           //----------
         } while (dealer.hasRemainingQuantity)

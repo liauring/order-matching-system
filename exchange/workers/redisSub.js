@@ -1,3 +1,5 @@
+let { rabbitmqSendToQueue } = require('../util/rabbitmq')
+
 require('dotenv').config({ path: __dirname + '/./../.env' })
 const socket = require('../util/socket')
 const redis = require('ioredis')
@@ -23,6 +25,12 @@ const redisClient = new redis({
     if (channel === 'sendExec') {
       try {
         socket.sendExec(message.brokerID, message.execution)
+
+        //----- for stress test -----
+        let currentTime = new Date().getTime()
+        message.matchTime.push(currentTime)
+        rabbitmqSendToQueue('matchTime', this.order.matchTime)
+        //----------
       } catch (error) {
         console.error(error)
       }

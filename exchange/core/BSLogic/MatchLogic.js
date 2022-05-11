@@ -67,6 +67,12 @@ class MatchLogic {
     return
   }
 
+  addEmptyValueForSocket() {
+    let currentTime = new Date().getTime()
+    this.order.matchTime.push(currentTime)
+    return
+  }
+
   async sendOrderTimeToRabbitMQ() {
     return await rabbitmqSendToQueue('matchTime', this.order.matchTime)
   }
@@ -74,6 +80,7 @@ class MatchLogic {
   deleteMatchTime() {
     this.order.matchTime.splice(-2)
   }
+
   //----------
 
   async getBestDealerOrderIDUtil(head, tail) {
@@ -194,7 +201,6 @@ class MatchLogic {
       symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
-      stressTestRecord: this.order.stressTestRecord,
     }
     return
   }
@@ -210,6 +216,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
+      matchTime: this.order.matchTime,
     }
     return
   }
@@ -225,6 +232,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
+      matchTime: this.order.matchTime,
     }
     return
   }
