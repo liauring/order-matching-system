@@ -65,7 +65,7 @@ const { rabbitmqDeleteQueue, rabbitmqClose } = require('../util/rabbitmq')
   await rabbitmqDeleteQueue('matchTime')
   await rabbitmqDeleteQueue('saveNewExec')
   await rabbitmqDeleteQueue('saveOrderLog')
-  console.log('[Clear Rabbitmq all queues')
+  console.log('[Clear Rabbitmq all queues]')
 
   redisClient.disconnect()
   mongodbClose()
