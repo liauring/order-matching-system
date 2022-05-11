@@ -32,4 +32,7 @@ const mongodbExecArray = async function (data) {
   return insertResult
 }
 
-module.exports = { db, mongodbExec, mongodbExecArray }
+const mongodbClose = async function () {
+  client.close()
+}
+module.exports = { db, mongodbExec, mongodbExecArray, mongodbClose }

@@ -7,6 +7,7 @@ let rabbitmq = require('amqplib').connect(
 const rabbitmqConn = rabbitmq
   .then(function (conn) {
     return conn.createChannel()
+    // return conn.createChannel
   })
   .catch(console.warn)
 
@@ -21,4 +22,14 @@ async function rabbitmqSendToQueue(queue, message) {
   await rabbitmqConnQueue.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true })
 }
 
-module.exports = { rabbitmqConn, rabbitmqPub, rabbitmqSendToQueue }
+async function rabbitmqDeleteQueue(queue) {
+  let rabbitmqConnQueue = await rabbitmqConn
+  await rabbitmqConnQueue.deleteQueue(queue)
+}
+
+async function rabbitmqClose(queue) {
+  let rabbitmqConnQueue = await rabbitmqConn
+  await rabbitmqConnQueue.close()
+}
+
+module.exports = { rabbitmqConn, rabbitmqPub, rabbitmqSendToQueue, rabbitmqDeleteQueue, rabbitmqClose }

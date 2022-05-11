@@ -1938,7 +1938,7 @@ let sourceDatas = [
 ]
 
 require('dotenv').config({ path: __dirname + '/./../.env' })
-let { mongodbExecArray } = require('../util/mongodb')
+let { mongodbExecArray, mongodbClose } = require('../util/mongodb')
 
 const oneMinute = 60000
 const gap = oneMinute / 4
@@ -1957,3 +1957,5 @@ let datas = Array.apply(null, Array(slotCount)).map(function (_, index) {
 // console.log(datas)
 
 mongodbExecArray(datas)
+mongodbClose()
+process.exit(0)

@@ -18,7 +18,7 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       try {
         do {
           // //----- for stress test -----
-          // dealer.getOrderIDForMatchTime()
+          dealer.getOrderIDForMatchTime()
           dealer.getOrderFromRabbitMQTime()
           // //----------
 

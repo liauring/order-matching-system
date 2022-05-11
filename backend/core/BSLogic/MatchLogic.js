@@ -42,22 +42,22 @@ class MatchLogic {
   // }
 
   getOrderIDForMatchTime() {
-    this.order.matchTime = []
-    this.order.matchTime.push(this.order.orderID)
+    if (!this.order.matchTime) {
+      this.order.matchTime = []
+      this.order.matchTime.push(this.order.orderID)
+    }
     return
   }
 
   getOrderFromRabbitMQTime() {
     let currentTime = new Date().getTime()
     this.order.matchTime.push(currentTime)
-    console.log('subFromRabbitmq: ', currentTime)
     return
   }
 
   getMatchFinishTime() {
     let currentTime = new Date().getTime()
     this.order.matchTime.push(currentTime)
-    console.log('finishMatch: ', currentTime)
     return
   }
 
@@ -285,7 +285,6 @@ class NewOrder {
   getRequestTime() {
     let currentTime = new Date().getTime()
     this.order.matchTime.push(currentTime)
-    console.log('getOrder: ', currentTime)
     return
   }
   //----------

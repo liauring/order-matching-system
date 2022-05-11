@@ -11,6 +11,7 @@
     "ioredis": "^5.0.4",
     "js-priority-queue": "^0.1.5",
     "mongodb": "^4.5.0",
+    "mysql2": "^2.3.3",
     "nodemon": "^2.0.16",
     "redis": "^4.0.6",
     "socket.io": "^4.4.1",

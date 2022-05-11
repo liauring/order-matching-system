@@ -17,6 +17,7 @@ let { rabbitmqConn } = require('../util/rabbitmq')
 
         if (count === 0) {
           count += 1
+          rabbitmqConn.ack(matchTime)
           return
         }
 
