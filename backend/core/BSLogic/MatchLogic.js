@@ -72,7 +72,7 @@ class MatchLogic {
   }
 
   deleteMatchTime() {
-    delete this.order.matchTime
+    this.order.matchTime.splice(-1, 2)
   }
   //----------
 
