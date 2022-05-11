@@ -8,10 +8,8 @@ let { mongodbExec } = require('../util/mongodb')
     rabbitmqConn.consume(
       'saveNewExec',
       async (msg) => {
-        // console.log(msg.content.toString())
-        console.log(JSON.parse(msg.content))
-        let mongoDBInsertResult = await mongodbExec(JSON.parse(msg.content))
-        console.log('[mongoDBInsertResult]: ', mongoDBInsertResult)
+        // console.log(JSON.parse(msg.content))
+        await mongodbExec(JSON.parse(msg.content))
         rabbitmqConn.ack(msg)
       },
       { noAck: false }

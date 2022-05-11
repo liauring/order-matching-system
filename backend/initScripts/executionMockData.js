@@ -1942,7 +1942,7 @@ let { mongodbExecArray } = require('../util/mongodb')
 
 const oneMinute = 60000
 const gap = oneMinute / 4
-const hoursBefore = 2
+const hoursBefore = 1
 let hourBeforeTimestamp = new Date().setHours(new Date().getHours() - hoursBefore, 0, 0, 0)
 let currentMinuteTimestmap = new Date().setSeconds(0, 0)
 let slotCount = (currentMinuteTimestmap - hourBeforeTimestamp) / gap
@@ -1954,4 +1954,6 @@ let datas = Array.apply(null, Array(slotCount)).map(function (_, index) {
   return sourceData
 })
 
-mongodbExecArray(JSON.parse(datas))
+// console.log(datas)
+
+mongodbExecArray(datas)

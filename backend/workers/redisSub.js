@@ -22,7 +22,6 @@ const redisClient = new redis({
     message = JSON.parse(message)
     if (channel === 'sendExec') {
       try {
-        console.log('[sendExec] redis sub for socket')
         socket.sendExec(message.brokerID, message.execution)
       } catch (error) {
         console.error(error)

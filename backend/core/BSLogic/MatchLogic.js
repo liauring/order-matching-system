@@ -35,39 +35,45 @@ class MatchLogic {
   //   })
 
   //   csvWriter
-  //     .writeRecords([this.order.matchingTime]) // returns a promise
+  //     .writeRecords([this.order.matchTime]) // returns a promise
   //     .then(() => {
   //       console.log(`[writeFile] ${this.orderID} is done.`)
   //     })
   // }
 
-  // sendOrderTimeToRabbitMQ() {
-  //   return await rabbitmqSendToQueue('matchTime', this.order.matchingTime)
-  // }
+  getOrderIDForMatchTime() {
+    this.order.matchTime = []
+    this.order.matchTime.push(this.order.orderID)
+    return
+  }
 
-  // getOrderFromRabbitMQTime() {
-  //   this.order.matchingTime = []
-  //   let currentTime = new Date().getTime()
-  //   this.order.matchingTime.push(this.order.orderID)
-  //   this.order.matchingTime.push(currentTime)
-  //   return
-  // }
+  getOrderFromRabbitMQTime() {
+    let currentTime = new Date().getTime()
+    this.order.matchTime.push(currentTime)
+    console.log('subFromRabbitmq: ', currentTime)
+    return
+  }
 
-  // getMatchFinishTime() {
-  //   let currentTime = new Date().getTime()
-  //   this.order.matchingTime.push(currentTime)
-  //   return
-  // }
+  getMatchFinishTime() {
+    let currentTime = new Date().getTime()
+    this.order.matchTime.push(currentTime)
+    console.log('finishMatch: ', currentTime)
+    return
+  }
 
-  // getExecutionFinishTime() {
-  //   let currentTime = new Date().getTime()
-  //   this.order.matchingTime.push(currentTime)
-  //   return
-  // }
+  getExecutionFinishTime() {
+    let currentTime = new Date().getTime()
+    this.order.matchTime.push(currentTime)
+    return
+  }
 
-  // cleanMatchingTime() {
-  //   this.order.matchingTime = []
-  // }
+  async sendOrderTimeToRabbitMQ() {
+    return await rabbitmqSendToQueue('matchTime', this.order.matchTime)
+  }
+
+  deleteMatchTime() {
+    delete this.order.matchTime
+  }
   //----------
 
   async getBestDealerOrderIDUtil(head, tail) {
@@ -86,7 +92,6 @@ class MatchLogic {
   }
 
   async haveBestDealer() {
-    // let comparePriceResult = this.compareBestDealerPriceWithOrderPrice();
     if (this.bestDealerOrderID === undefined || this.compareBestDealerPriceWithOrderPrice()) {
       await this.#addNewDealer()
       await new NewOrderFiveTicks().addNewOrderFiveTicks(
@@ -182,10 +187,10 @@ class MatchLogic {
       executionTime: this.executionTime,
       seller: this.getSeller().account,
       sellerOrderID: this.getSeller().orderID,
-      sellerOrderTime: this.getSeller().orderTime,
+      sellerOrderTime: this.getSeller().createTime,
       buyer: this.getBuyer().account,
       buyerOrderID: this.getBuyer().orderID,
-      buyerOrderTime: this.getBuyer().orderTime,
+      buyerOrderTime: this.getBuyer().createTime,
       symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
@@ -200,7 +205,7 @@ class MatchLogic {
       executionTime: this.executionTime,
       dealer: this.getBuyer().account,
       orderID: this.getBuyer().orderID,
-      orderTime: this.getBuyer().orderTime,
+      orderTime: this.getBuyer().createTime,
       symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
@@ -215,7 +220,7 @@ class MatchLogic {
       executionTime: this.executionTime,
       dealer: this.getSeller().account,
       orderID: this.getSeller().orderID,
-      orderTime: this.getSeller().orderTime,
+      orderTime: this.getSeller().createTime,
       symbol: this.order.symbol,
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
@@ -240,15 +245,10 @@ class MatchLogic {
   }
 
   async sendExecutionToRabbitmqForStorage() {
-    console.log('[Execution send to RabbitMQ]: ', this.executionDetail)
-    let execResult = await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
-    console.log('[Execution send to RabbitMQ end]: ', execResult)
-    return
+    return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
   }
 
   async emitExeuction() {
-    console.log('[emitExecution - this.execSellerMessage]', this.execSellerMessage)
-    console.log('[emitExecution - this.execBuyerMessage]', this.execBuyerMessage)
     await redisClient.publish('sendExec', JSON.stringify(this.execSellerMessage))
     await redisClient.publish('sendExec', JSON.stringify(this.execBuyerMessage))
     return
@@ -260,10 +260,10 @@ class MatchLogic {
 
   async #addNewDealer() {
     let setScore = this.order.orderID
-    console.log('[addNewOrderToRedisStart] ', this.order)
+
     await redisClient.zadd(`${this.order.symbol}-${this.orderType}`, setScore, JSON.stringify(this.order.orderID))
     await redisClient.set(`${this.order.orderID}`, JSON.stringify(this.order))
-    console.log('[addNewOrderToRedisEnd]')
+
     return
   }
 }
@@ -276,10 +276,16 @@ class NewOrder {
   }
 
   //----- for stress test -----
+  getOrderIDForJourneyTime() {
+    this.order.matchTime = []
+    this.order.matchTime.push(this.order.orderID)
+    return
+  }
+
   getRequestTime() {
-    this.order.stressTestRecord = []
-    let currentTime = new Date()
-    this.order.stressTestRecord.push(currentTime)
+    let currentTime = new Date().getTime()
+    this.order.matchTime.push(currentTime)
+    console.log('getOrder: ', currentTime)
     return
   }
   //----------
@@ -322,7 +328,7 @@ class NewOrder {
       quantity: this.order.quantity,
       price: this.order.price,
       executionQuantity: 0,
-      orderTime: this.order.orderTime,
+      orderTime: this.order.createTime,
       orderID: this.order.orderID,
       BS: this.order.BS,
     }

@@ -32,10 +32,4 @@ const mongodbExecArray = async function (data) {
   return insertResult
 }
 
-// const mongodbGetOrderHistory = async function (dealerAccount, time) {
-//   let midnight = new Date(new Date(time).setHours(0, 0, 0, 0)).getTime();
-//   const collection = db.collection('logsOfNewOrder')
-//   const historyOrder = await .find({ $and: [{ account: { $eq: dealerAccount } }, { executionTime: { $gte: midnight } }] })
-// }
-
 module.exports = { db, mongodbExec, mongodbExecArray }

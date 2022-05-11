@@ -8,6 +8,9 @@ const server = http.createServer(app)
 require('./util/socket.js').config(server)
 require('./workers/redisSub.js')
 
+// message []
+// [2022-05-08 13:41:31.123][type] message
+
 app.use(cors())
 app.use(express.static(__dirname + '/public'))
 app.use(express.json())

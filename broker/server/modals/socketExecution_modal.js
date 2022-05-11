@@ -7,7 +7,6 @@ const updateOrderInfo = async (updateResult) => {
     await conn.query('START TRANSACTION')
     let sqlSyntaxSelectOrder = `SELECT orderID, remaining_quantity, execution_quantity FROM orderInfo WHERE orderID = ? for update`
     let [result] = await conn.query(sqlSyntaxSelectOrder, updateResult.orderID)
-    console.log('[broker-socketExecution-updateOrderInfo-selectOrderInfo]: ', result[0])
 
     let remaining_quantity = result[0].remaining_quantity - updateResult.executionQuantity
     if (remaining_quantity < 0) {

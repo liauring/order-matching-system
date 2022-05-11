@@ -18,13 +18,17 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       try {
         do {
           // //----- for stress test -----
-          // dealer.getOrderFromRabbitMQTime()
+          // dealer.getOrderIDForMatchTime()
+          dealer.getOrderFromRabbitMQTime()
           // //----------
 
           await dealer.getBestDealerOrderID()
           if (!(await dealer.haveBestDealer())) {
             //----- for stress test -----
-            // dealer.getMatchFinishTime()
+            dealer.getMatchFinishTime()
+            // dealer.getExecutionFinishTime()
+            await dealer.sendOrderTimeToRabbitMQ()
+            dealer.deleteMatchTime()
             //----------
             return
           }
@@ -33,7 +37,7 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
           await dealer.deleteBestDealer()
           await dealer.matchExecutionQuantity()
           // //----- for stress test -----
-          // dealer.getMatchFinishTime()
+          dealer.getMatchFinishTime()
           // //----------
           dealer.createExecutionIDAndTime()
           dealer.createExecutionDetail()
@@ -47,10 +51,9 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
 
           //----- for stress test -----
 
-          // await dealer.getExecutionFinishTime()
-          // await dealer.createFile()
-          // // await dealer.writeFile()
-          // dealer.cleanMatchingTime()
+          // dealer.getExecutionFinishTime()
+          await dealer.sendOrderTimeToRabbitMQ()
+          dealer.deleteMatchTime()
           //----------
         } while (dealer.hasRemainingQuantity)
       } catch (error) {
