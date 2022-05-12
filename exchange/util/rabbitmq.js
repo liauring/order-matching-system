@@ -32,4 +32,18 @@ async function rabbitmqClose(queue) {
   await rabbitmqConnQueue.close()
 }
 
-module.exports = { rabbitmqConn, rabbitmqPub, rabbitmqSendToQueue, rabbitmqDeleteQueue, rabbitmqClose }
+async function rabbitmqGetLength(queue) {
+  let rabbitmqConnCh = await rabbitmqConn
+  let queueInfo = await rabbitmqConnCh.assertQueue(queue)
+  let queueLength = queueInfo.messageCount
+  return queueLength
+}
+
+module.exports = {
+  rabbitmqConn,
+  rabbitmqPub,
+  rabbitmqSendToQueue,
+  rabbitmqDeleteQueue,
+  rabbitmqClose,
+  rabbitmqGetLength,
+}

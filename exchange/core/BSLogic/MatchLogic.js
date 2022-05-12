@@ -1,7 +1,7 @@
 const redisClient = require('../../util/cache')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter
 const { v4: uuidv4 } = require('uuid')
-let { rabbitmqPub, rabbitmqSendToQueue } = require('../../util/rabbitmq')
+let { rabbitmqPub, rabbitmqSendToQueue, rabbitmqGetLength } = require('../../util/rabbitmq')
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks')
 
 class MatchLogic {
@@ -296,6 +296,12 @@ class NewOrder {
     this.order.matchTime.push(currentTime)
     return
   }
+
+  async getRabbitmqLength(queue) {
+    let queueLength = await rabbitmqGetLength(queue)
+    this.order.matchTime.push(queueLength)
+    return
+  }
   //----------
 
   formatOrder() {
@@ -316,7 +322,6 @@ class NewOrder {
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
     await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
-    return
   }
 
   createGetOrderResponse() {

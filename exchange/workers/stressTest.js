@@ -37,10 +37,10 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
             // console.log(`[writeFile] is done.`)
           })
 
-        let pubRabbitmqToSub = matchTimeData[2].pubRabbitmq - matchTimeData[1]
-        let rabbitmqToMatch = matchTimeData[3].matchFinish - matchTimeData[2].pubRabbitmq
-        let matchToRedis = matchTimeData[4].execFinish - matchTimeData[3].matchFinish
-        let RedisToSocket = matchTimeData[5].socketEmit - matchTimeData[4].execFinish
+        let pubRabbitmqToSub = matchTimeData[3].pubRabbitmq - matchTimeData[1]
+        let rabbitmqToMatch = matchTimeData[4].matchFinish - matchTimeData[3].pubRabbitmq
+        let matchToRedis = matchTimeData[5].execFinish - matchTimeData[4].matchFinish
+        let RedisToSocket = matchTimeData[6].socketEmit - matchTimeData[5].execFinish
 
         totalPubRabbitmqToSub += pubRabbitmqToSub
         totalrabbitmqToMatch += rabbitmqToMatch

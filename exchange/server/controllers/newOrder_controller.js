@@ -30,6 +30,7 @@ const postNewOrderStressTest = async (req, res, next) => {
   //----- for stress test -----
   dealer.getOrderIDForJourneyTime()
   dealer.getRequestTime()
+  await dealer.getRabbitmqLength('matchNewOrder-stock-0')
   //----------
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
