@@ -31,7 +31,7 @@ const redisClient = new redis({
           let currentTime = new Date().getTime()
           message.execution.matchTime.push({ socketEmit: currentTime })
           await rabbitmqSendToQueue('matchTime', message.execution.matchTime)
-          console.log(message.execution.matchTime)
+          // console.log(message.execution.matchTime)
         }
 
         //----------

@@ -5,13 +5,13 @@ function getRandomInt(x) {
 }
 
 const dealers = ['seller', 'buyer']
-let getRandomDealer = Math.floor(Math.random() * dealers.length)
 
 function getRandomPrice(min, max) {
   return (Math.random() * (max - min + 1) + min).toFixed(2)
 }
 
-for (let i = 0; i < 1000; i++) {
+for (let i = 0; i < 10; i++) {
+  let getRandomDealer = Math.floor(Math.random() * dealers.length)
   let reqbody = {
     account: getRandomInt(99),
     broker: 1030,
@@ -22,6 +22,7 @@ for (let i = 0; i < 1000; i++) {
     price: getRandomPrice(530, 540),
     quantity: getRandomInt(100),
   }
+
   // console.log(JSON.parse(reqbody))
   let url = 'https://exchange.connieplayground.site/api/newOrder/stressTest'
   axios
