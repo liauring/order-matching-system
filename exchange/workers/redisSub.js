@@ -27,7 +27,7 @@ const redisClient = new redis({
         socket.sendExec(message.brokerID, message.execution)
 
         //----- for stress test -----
-        if (message.execution.matchTime.length === 5) {
+        if (message.execution.matchTime.length === 6) {
           let currentTime = new Date().getTime()
           message.execution.matchTime.push({ socketEmit: currentTime })
           await rabbitmqSendToQueue('matchTime', message.execution.matchTime)
