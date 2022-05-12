@@ -322,6 +322,7 @@ class NewOrder {
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
     await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
+    return
   }
 
   createGetOrderResponse() {
