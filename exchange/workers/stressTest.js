@@ -16,7 +16,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
         // console.log(JSON.parse(matchTime.content))
         let matchTimeData = JSON.parse(matchTime.content)
 
-        const csvWriter = createCsvWriter({
+        const timeCSVWriter = createCsvWriter({
           header: false,
           path: 'matchLogicTime.csv',
           append: true,
@@ -30,7 +30,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
           }
           return acc
         }, [])
-        csvWriter
+        timeCSVWriter
           .writeRecords([newMatchTimeData]) // returns a promise
           .then(() => {
             // console.log(`[writeFile] is done.`)
@@ -46,14 +46,25 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
         totalMatchToRedis += matchToRedis
         totalRedisToSocket += RedisToSocket
 
+        let avgPubRabbitmqToSub = (totalPubRabbitmqToSub / count).toFixed(2)
+        let avgRabbitmqToMatch = (totalrabbitmqToMatch / count).toFixed(2)
+        let avgMatchToRedis = (totalMatchToRedis / count).toFixed(2)
+        let avgRedisToSocket = (totalRedisToSocket / count).toFixed(2)
+        let matchPeriodData = [avgPubRabbitmqToSub, avgRabbitmqToMatch, avgMatchToRedis, avgRedisToSocket, count]
+
+        const periodCSVWriter = createCsvWriter({
+          header: false,
+          path: 'matchLogicPeriod.csv',
+          append: true,
+        })
+        periodCSVWriter
+          .writeRecords([matchPeriodData]) // returns a promise
+          .then(() => {
+            // console.log(`[writeFile] is done.`)
+          })
+
         // console.log(matchTimeData)
-        console.log(
-          (totalPubRabbitmqToSub / count).toFixed(2),
-          (totalrabbitmqToMatch / count).toFixed(2),
-          (totalMatchToRedis / count).toFixed(2),
-          (totalRedisToSocket / count).toFixed(2),
-          count
-        )
+        console.log(avgPubRabbitmqToSub, avgRabbitmqToMatch, avgMatchToRedis, avgRedisToSocket, count)
 
         count += 1
 
