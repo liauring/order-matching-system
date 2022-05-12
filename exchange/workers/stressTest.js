@@ -51,7 +51,14 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
         let avgRabbitmqToMatch = (totalrabbitmqToMatch / count).toFixed(2)
         let avgMatchToRedis = (totalMatchToRedis / count).toFixed(2)
         let avgRedisToSocket = (totalRedisToSocket / count).toFixed(2)
-        let matchPeriodData = [avgPubRabbitmqToSub, avgRabbitmqToMatch, avgMatchToRedis, avgRedisToSocket, count]
+        let matchPeriodData = [
+          matchTimeData[2],
+          avgPubRabbitmqToSub,
+          avgRabbitmqToMatch,
+          avgMatchToRedis,
+          avgRedisToSocket,
+          count,
+        ]
 
         const periodCSVWriter = createCsvWriter({
           header: false,
@@ -65,7 +72,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
           })
 
         // console.log(matchTimeData)
-        console.log(avgPubRabbitmqToSub, avgRabbitmqToMatch, avgMatchToRedis, avgRedisToSocket, count)
+        console.log(matchPeriodData)
 
         count += 1
 
