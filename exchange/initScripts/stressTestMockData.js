@@ -27,7 +27,7 @@ for (let i = 0; i < 1000; i++) {
   axios
     .post(url, reqbody, { headers: { 'Content-Type': 'application/json' } })
     .then((response) => {
-      // console.log(response.data)
+      console.log(response.data)
     })
     .catch((err) => {
       // console.error(err)

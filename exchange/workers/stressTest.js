@@ -10,6 +10,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
   let count = 1
   try {
     rabbitmqConn = await rabbitmqConn
+    rabbitmqConn.prefetch(1)
     rabbitmqConn.consume(
       'matchTime',
       async (matchTime) => {
@@ -67,15 +68,6 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
         console.log(avgPubRabbitmqToSub, avgRabbitmqToMatch, avgMatchToRedis, avgRedisToSocket, count)
 
         count += 1
-
-        // console.log(
-        //   'pubRabbitmqToSub: ',
-        //   pubRabbitmqToSub,
-        //   ' / rabbitmqToMatch: ',
-        //   rabbitmqToMatch
-        //   // ' / matchToExec: ',
-        //   // matchToExec
-        // )
 
         rabbitmqConn.ack(matchTime)
       },
