@@ -7,6 +7,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
   let totalrabbitmqToMatch = 0
   let totalMatchToRedis = 0
   let totalRedisToSocket = 0
+  let totalStartToEnd = 0
   let count = 1
   try {
     rabbitmqConn = await rabbitmqConn
@@ -41,22 +42,26 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
         let rabbitmqToMatch = matchTimeData[4].matchFinish - matchTimeData[3].pubRabbitmq
         let matchToRedis = matchTimeData[5].execFinish - matchTimeData[4].matchFinish
         let RedisToSocket = matchTimeData[6].socketEmit - matchTimeData[5].execFinish
+        let startToEnd = matchTimeData[6].socketEmit - matchTimeData[1]
 
         totalPubRabbitmqToSub += pubRabbitmqToSub
         totalrabbitmqToMatch += rabbitmqToMatch
         totalMatchToRedis += matchToRedis
         totalRedisToSocket += RedisToSocket
+        totalStartToEnd += startToEnd
 
         let avgPubRabbitmqToSub = (totalPubRabbitmqToSub / count).toFixed(2)
         let avgRabbitmqToMatch = (totalrabbitmqToMatch / count).toFixed(2)
         let avgMatchToRedis = (totalMatchToRedis / count).toFixed(2)
         let avgRedisToSocket = (totalRedisToSocket / count).toFixed(2)
+        let avgStartToEnd = (totalStartToEnd / count).toFixed(2)
         let matchPeriodData = [
           matchTimeData[2],
           avgPubRabbitmqToSub,
           avgRabbitmqToMatch,
           avgMatchToRedis,
           avgRedisToSocket,
+          avgStartToEnd,
           count,
         ]
 
