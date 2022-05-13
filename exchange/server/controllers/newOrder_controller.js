@@ -24,7 +24,7 @@ const postNewOrder = async (req, res, next) => {
 }
 
 const postNewOrderStressTest = async (req, res, next) => {
-  await redisClient.incr(requestCount)
+  await redisClient.incr('requestCount')
   let dealer = new BSLogicMap[req.body.BS](req.body)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
