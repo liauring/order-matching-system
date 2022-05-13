@@ -56,3 +56,5 @@ function mustExecBuyer() {
     sentNewOrder(reqBody)
   }
 }
+
+mustExecBuyer()
