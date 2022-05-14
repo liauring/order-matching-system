@@ -1955,7 +1955,15 @@ let datas = Array.apply(null, Array(slotCount)).map(function (_, index) {
 })
 
 // console.log(datas)
+// mongodbExecArray(datas)
 
-mongodbExecArray(datas)
-mongodbClose()
-process.exit(0)
+// mongodbExec()
+;(async () => {
+  // let a = await mongodbExecArray(datas)
+
+  let insertResult = await mongodbExecArray(datas)
+
+  console.log('MongoDBInitResult: ', insertResult)
+  mongodbClose()
+  process.exit(0)
+})()
