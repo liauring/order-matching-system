@@ -1,4 +1,4 @@
-let { mongodbGetExecutionHistory } = require('../modals/kLine_modal')
+let { mongodbGetExecutionHistory } = require('../models/kLine_model')
 
 const getkLineHistory = async (req, res) => {
   let { symbol } = req.params

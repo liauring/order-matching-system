@@ -1,5 +1,5 @@
 const axios = require('axios').default
-const { createNewOrder, createNewOrderHistory } = require('../modals/newOrder_modal')
+const { createNewOrder, createNewOrderHistory } = require('../models/newOrder_model')
 
 const postNewOrder = async (req, res, next) => {
   let reqBody = req.body

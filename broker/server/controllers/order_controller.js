@@ -1,5 +1,5 @@
 const axios = require('axios').default
-const { getOrderInfo, getOrderInfoSingle, updateOrderInfo, createOrderHistory } = require('../modals/order_modal')
+const { getOrderInfo, getOrderInfoSingle, updateOrderInfo, createOrderHistory } = require('../models/order_model')
 
 const getOrder = async (req, res) => {
   let { account, symbol } = req.body

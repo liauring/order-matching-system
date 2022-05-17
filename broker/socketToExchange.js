@@ -1,7 +1,7 @@
 const { io } = require('socket.io-client')
 const socketToClient = require('./util/socketToClient')
-const { updateOrderInfo, createOrderHistory } = require('./server/modals/socketExecution_modal')
-const { getOrderInfoSingle } = require('./server/modals/order_modal')
+const { updateOrderInfo, createOrderHistory } = require('./server/models/socketExecution_model')
+const { getOrderInfoSingle } = require('./server/models/order_model')
 
 let socketToExchange = io('http://127.0.0.1:8080') //TODO:nginx要改
 
