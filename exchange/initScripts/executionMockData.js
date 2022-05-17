@@ -1942,7 +1942,7 @@ let { mongodbExecArray, mongodbClose } = require('../util/mongodb')
 
 const oneMinute = 60000
 const gap = oneMinute / 4
-const hoursBefore = 1
+const hoursBefore = 2
 let hourBeforeTimestamp = new Date().setHours(new Date().getHours() - hoursBefore, 0, 0, 0)
 let currentMinuteTimestmap = new Date().setSeconds(0, 0)
 let slotCount = (currentMinuteTimestmap - hourBeforeTimestamp) / gap
