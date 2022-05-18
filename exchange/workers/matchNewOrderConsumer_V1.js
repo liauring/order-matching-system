@@ -1,13 +1,13 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
 const redisClient = require('../util/cache')
 const { v4: uuidv4 } = require('uuid')
-let { rabbitmqConn } = require('../util/rabbitmq')
+let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 const consumeQueue = 'matchNewOrder-stock-0'
 const pubQueue = 'saveNewExec'
 
 // TODO: 包成class
 ;(async () => {
-  rabbitmqConn = await rabbitmqConn
+  let rabbitmqConn = await rabbitmqCreateConnect
   rabbitmqConn.prefetch(1)
   rabbitmqConn.consume(
     consumeQueue,

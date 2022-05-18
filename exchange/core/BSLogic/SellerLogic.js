@@ -1,8 +1,8 @@
 const { MatchLogic, NewOrder } = require('./MatchLogic')
 
 class SellerLogic extends MatchLogic {
-  constructor(order) {
-    super(order, 'buyer', 'seller')
+  constructor(order, rabbitMQManager) {
+    super(order, 'buyer', 'seller', rabbitMQManager)
   }
 
   async getBestDealerOrderID() {

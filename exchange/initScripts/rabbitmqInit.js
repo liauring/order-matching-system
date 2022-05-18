@@ -1,10 +1,10 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-let { rabbitmqConn } = require('../util/rabbitmq')
+let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 
 ;(async () => {
   //create exchange and queues for matchNewOrder
   try {
-    rabbitmqConn = await rabbitmqConn
+    let rabbitmqConn = await rabbitmqCreateConnect
     await rabbitmqConn.assertExchange('matchNewOrder', 'direct', {
       durable: false,
     })

@@ -1,10 +1,10 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-let { rabbitmqConn } = require('../util/rabbitmq')
+let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 let { mongodbExec } = require('../util/mongodb')
 
 ;(async () => {
   try {
-    rabbitmqConn = await rabbitmqConn
+    let rabbitmqConn = await rabbitmqCreateConnect
     rabbitmqConn.consume(
       'saveNewExec',
       async (msg) => {

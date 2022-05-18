@@ -4,8 +4,24 @@ const { v4: uuidv4 } = require('uuid')
 let { rabbitmqPub, rabbitmqSendToQueue, rabbitmqGetLength } = require('../../util/rabbitmq')
 let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks')
 
+// class RabbitMQManager {
+//   async function publish(exchange, severity, message) {
+//     await rabbitmqConn.publish(exchange, severity, Buffer.from(message))
+//   }
+//   //外面再close connection
+
+//   async function sendToQueue(queue, message) {
+//     await rabbitmqConn.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true })
+//   }
+
+//   async function deleteQueue(queue) {
+//     await rabbitmqConn.deleteQueue(queue)
+//   }
+
+// }
 class MatchLogic {
-  constructor(order, dealerType, orderType) {
+  constructor(order, dealerType, orderType, rabbitMQManager) {
+    this.rabbitMQManager = rabbitMQManager
     this.order = order
     this.dealerType = dealerType
     this.orderType = orderType
@@ -74,11 +90,10 @@ class MatchLogic {
   }
 
   async sendOrderTimeToRabbitMQ() {
-    return await rabbitmqSendToQueue('matchTime', this.order.matchTime)
+    return await rabbitMQManager.sendToQueue('matchTime', this.order.matchTime)
   }
 
   deleteMatchTime() {
-    // this.order.matchTime.splice(-4)
     delete this.order.matchTime
   }
 
@@ -217,7 +232,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
-      matchTime: this.getBuyer().matchTime, //TODO:
+      matchTime: this.getBuyer().matchTime, //stress test
     }
     return
   }
@@ -233,7 +248,7 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
-      matchTime: this.getSeller().matchTime, //TODO:
+      matchTime: this.getSeller().matchTime, //stress test
     }
     return
   }
@@ -254,6 +269,7 @@ class MatchLogic {
   }
 
   async sendExecutionToRabbitmqForStorage() {
+    console.log(this.executionDetail) //TODO:
     return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
   }
 
@@ -347,3 +363,84 @@ class NewOrder {
 }
 
 module.exports = { MatchLogic, NewOrder }
+
+// class A {
+//   let b = B()
+//   function foo {
+//     let answer = b.getProperty()
+//     return answer.number
+//   }
+// }
+
+// let testA = A()
+// if (testA.foo() == 'xxx') {
+
+// }
+
+// 1. init
+// class A {
+//   constructor(b) {
+//     this.b = b
+//   }
+
+//   function foo {
+//     let answer = this.b.getProperty()
+//     return answer.number
+//   }
+// }
+
+// class MockB {
+//   function getProperty() {
+//     return 'test'
+//   }
+// }
+// let mockB = MockB()
+// let testA = A(mockB)
+// if (testA.foo() == 'xxx') {
+
+// }
+
+// 2. property, memeber, varable
+
+// class A {
+//   let b = null
+//   function foo {
+//     let answer = this.b.getProperty()
+//     return answer.number
+//   }
+//   function xxx {
+//     let answer = this.b.
+//   }
+// }
+
+// class MockB {
+//   function getProperty() {
+//     return 'test'
+//   }
+
+// }
+
+// let mockB = MockB()
+// let testA = A()
+// testA.b = mockB
+// if (testA.foo() == 'xxx') {
+
+// }
+
+// testA.xxx()
+
+// 3. function
+
+// class A {
+//   function foo(b) {
+//     let answer = b.getProperty()
+//     return answer.number
+//   }
+
+// }
+
+// let mockB = MockB()
+// let testA = A()
+// if (testA.foo(mockB) == 'xxx') {
+
+// }

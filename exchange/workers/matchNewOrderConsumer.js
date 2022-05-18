@@ -1,18 +1,22 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
+// require('../util/rabbitmq')
 const redisClient = require('../util/cache')
-let { rabbitmqConn } = require('../util/rabbitmq')
 const BSLogicMap = require('../core/BSLogic')[1]
 const CONSUMEQUEUE = 'matchNewOrder-stock-0'
 const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
+const { rabbitmqCreateConnect } = require('../util/rabbitmq')
 
 ;(async () => {
-  rabbitmqConn = await rabbitmqConn
+  // let rabbitMQManager =  new RabbitMQManager()
+
+  let rabbitmqConn = await rabbitmqCreateConnect
   rabbitmqConn.prefetch(1)
   rabbitmqConn.consume(
     CONSUMEQUEUE,
     async (newOrder) => {
       let order = JSON.parse(newOrder.content.toString())
       let { BS } = order
+      // let dealer = new BSLogicMap[BS](order, rabbitMQManager)
       let dealer = new BSLogicMap[BS](order)
 
       try {
@@ -65,7 +69,7 @@ const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
       } finally {
         let newFiveTicks = new CurrentFiveTicks(order.symbol)
         let fiveTicks = await newFiveTicks.getFiveTicks()
-        // console.debug('[fiveTicks]', fiveTicks)
+        console.debug('[fiveTicks]', fiveTicks)
         await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks))
         rabbitmqConn.ack(newOrder)
       }

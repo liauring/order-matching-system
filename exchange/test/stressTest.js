@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-let { rabbitmqConn } = require('../util/rabbitmq')
+let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter
 
 ;(async () => {
@@ -10,7 +10,7 @@ const createCsvWriter = require('csv-writer').createArrayCsvWriter
   let totalStartToEnd = 0
   let count = 1
   try {
-    rabbitmqConn = await rabbitmqConn
+    let rabbitmqConn = await rabbitmqCreateConnect
     rabbitmqConn.prefetch(1)
     rabbitmqConn.consume(
       'matchTime',

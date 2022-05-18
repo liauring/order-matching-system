@@ -4,43 +4,45 @@ let rabbitmq = require('amqplib').connect(
   `amqp://${process.env.rabbitmqUser}:${process.env.rabbitmqPW}@${process.env.rabbitmqHost}:${process.env.rabbitmqPort}/`
 )
 
-const rabbitmqConn = rabbitmq
+let rabbitmqConn
+
+const rabbitmqCreateConnect = rabbitmq
   .then(function (conn) {
+    console.log('rabbitmq channel is created')
     return conn.createChannel()
-    // return conn.createChannel
+  })
+  .then((channel) => {
+    rabbitmqConn = channel
+    console.log('rabbitmq connected')
+    return rabbitmqConn
   })
   .catch(console.warn)
 
 async function rabbitmqPub(exchange, severity, message) {
-  let rabbitmqConnCh = await rabbitmqConn
-  await rabbitmqConnCh.publish(exchange, severity, Buffer.from(message))
+  await rabbitmqConn.publish(exchange, severity, Buffer.from(message))
 }
 //外面再close connection
 
 async function rabbitmqSendToQueue(queue, message) {
-  let rabbitmqConnQueue = await rabbitmqConn
-  await rabbitmqConnQueue.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true })
+  await rabbitmqConn.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true })
 }
 
 async function rabbitmqDeleteQueue(queue) {
-  let rabbitmqConnQueue = await rabbitmqConn
-  await rabbitmqConnQueue.deleteQueue(queue)
+  await rabbitmqConn.deleteQueue(queue)
 }
 
-async function rabbitmqClose(queue) {
-  let rabbitmqConnQueue = await rabbitmqConn
-  await rabbitmqConnQueue.close()
+async function rabbitmqClose() {
+  await rabbitmqConn.close()
 }
 
 async function rabbitmqGetLength(queue) {
-  let rabbitmqConnCh = await rabbitmqConn
-  let queueInfo = await rabbitmqConnCh.assertQueue(queue)
+  let queueInfo = await rabbitmqConn.assertQueue(queue)
   let queueLength = queueInfo.messageCount
   return queueLength
 }
 
 module.exports = {
-  rabbitmqConn,
+  rabbitmqCreateConnect,
   rabbitmqPub,
   rabbitmqSendToQueue,
   rabbitmqDeleteQueue,
