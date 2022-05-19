@@ -1,27 +1,10 @@
 const redisClient = require('../../util/cache')
-const createCsvWriter = require('csv-writer').createArrayCsvWriter
 const { v4: uuidv4 } = require('uuid')
-let { rabbitmqPub, rabbitmqSendToQueue, rabbitmqGetLength } = require('../../util/rabbitmq')
-let { CurrentFiveTicks, NewOrderFiveTicks } = require('../FiveTicks')
+let { NewOrderFiveTicks } = require('../FiveTicks')
 
-// class RabbitMQManager {
-//   async function publish(exchange, severity, message) {
-//     await rabbitmqConn.publish(exchange, severity, Buffer.from(message))
-//   }
-//   //外面再close connection
-
-//   async function sendToQueue(queue, message) {
-//     await rabbitmqConn.sendToQueue(queue, Buffer.from(JSON.stringify(message)), { deliveryMode: true })
-//   }
-
-//   async function deleteQueue(queue) {
-//     await rabbitmqConn.deleteQueue(queue)
-//   }
-
-// }
 class MatchLogic {
-  constructor(order, dealerType, orderType, rabbitMQManager) {
-    this.rabbitMQManager = rabbitMQManager
+  constructor(order, dealerType, orderType, queueProvider) {
+    this.queueProvider = queueProvider
     this.order = order
     this.dealerType = dealerType
     this.orderType = orderType
@@ -90,7 +73,7 @@ class MatchLogic {
   }
 
   async sendOrderTimeToRabbitMQ() {
-    return await rabbitMQManager.sendToQueue('matchTime', this.order.matchTime)
+    return await this.queueProvider.sendToQueue('matchTime', this.order.matchTime)
   }
 
   deleteMatchTime() {
@@ -270,7 +253,7 @@ class MatchLogic {
 
   async sendExecutionToRabbitmqForStorage() {
     console.log(this.executionDetail) //TODO:
-    return await rabbitmqSendToQueue('saveNewExec', this.executionDetail)
+    return await this.queueProvider.sendToQueue('saveNewExec', this.executionDetail)
   }
 
   async emitExeuction() {
@@ -294,8 +277,9 @@ class MatchLogic {
 }
 
 class NewOrder {
-  constructor(order) {
+  constructor(order, queueProvider) {
     this.order = order
+    this.queueProvider = queueProvider
     this.orderID = null
     // this.todayRestTime = null
   }
@@ -314,7 +298,7 @@ class NewOrder {
   }
 
   async getRabbitmqLength(queue) {
-    let queueLength = await rabbitmqGetLength(queue)
+    let queueLength = await this.queueProvider.getQueueLength(queue)
     this.order.matchTime.push(queueLength)
     return
   }
@@ -337,7 +321,7 @@ class NewOrder {
 
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
-    await rabbitmqPub('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
+    await this.queueProvider.publishToExchange('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return
   }
 

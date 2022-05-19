@@ -4,7 +4,7 @@ let { mongodbExec } = require('../util/mongodb')
 
 ;(async () => {
   try {
-    let rabbitmqConn = await rabbitmqCreateConnect
+    let rabbitmqConn = await rabbitmqCreateConnect()
     rabbitmqConn.consume(
       'saveNewExec',
       async (msg) => {

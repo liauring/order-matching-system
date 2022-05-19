@@ -12,7 +12,7 @@ const redisClient = new redis({
 console.log('Redis connects successfully.')
 
 redisClient.on('connect', async () => {
-  console.log('connect', redisClient.connector)
+  console.log('Redis connect')
 })
 
 redisClient.on('error', (err) => {

@@ -1,11 +1,20 @@
 const BSLogicMap = require('../../core/BSLogic')[0]
 const redisClient = require('../../util/cache')
+const { QueueProvider } = require('../../serviceProvider/queue')
+
+let queueProvier
 
 //TODO:委託失敗失敗：每個都要有值/沒有單可以賣/沒有註冊過
 //不做：沒有這個broker/沒有這檔股票
+// ;(async () => {
+//   let rabbitmqConn = await rabbitmqCreateConnect()
+//   console.log('newOrder')
+//   queueProvier = new QueueProvider(rabbitmqConn)
+// })()
 
 const getNewOrderID = async (req, res, next) => {
-  let dealer = new BSLogicMap[req.body.BS](req.body)
+  let queueProvier = await QueueProvider.getInstance()
+  let dealer = new BSLogicMap[req.body.BS](req.body, queueProvier)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()
@@ -14,7 +23,8 @@ const getNewOrderID = async (req, res, next) => {
 }
 
 const postNewOrder = async (req, res, next) => {
-  let dealer = new BSLogicMap[req.body.BS](req.body)
+  let queueProvier = await QueueProvider.getInstance()
+  let dealer = new BSLogicMap[req.body.BS](req.body, queueProvier)
   dealer.formatOrder()
   // dealer.orderTimeInDayPeriod()
   // dealer.createOrderID()
@@ -25,7 +35,8 @@ const postNewOrder = async (req, res, next) => {
 
 const postNewOrderStressTest = async (req, res, next) => {
   await redisClient.incr('requestCount')
-  let dealer = new BSLogicMap[req.body.BS](req.body)
+  let queueProvier = await QueueProvider.getInstance()
+  let dealer = new BSLogicMap[req.body.BS](req.body, queueProvier)
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()

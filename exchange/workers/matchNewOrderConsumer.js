@@ -1,23 +1,22 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-// require('../util/rabbitmq')
 const redisClient = require('../util/cache')
 const BSLogicMap = require('../core/BSLogic')[1]
 const CONSUMEQUEUE = 'matchNewOrder-stock-0'
-const { CurrentFiveTicks, NewOrderFiveTicks } = require('../core/FiveTicks')
+const { CurrentFiveTicks } = require('../core/FiveTicks')
 const { rabbitmqCreateConnect } = require('../util/rabbitmq')
+const { QueueProvider } = require('../serviceProvider/queue')
 
 ;(async () => {
-  // let rabbitMQManager =  new RabbitMQManager()
+  let rabbitmqConn = await rabbitmqCreateConnect()
+  let queueProvier = new QueueProvider(rabbitmqConn)
 
-  let rabbitmqConn = await rabbitmqCreateConnect
   rabbitmqConn.prefetch(1)
   rabbitmqConn.consume(
     CONSUMEQUEUE,
     async (newOrder) => {
       let order = JSON.parse(newOrder.content.toString())
       let { BS } = order
-      // let dealer = new BSLogicMap[BS](order, rabbitMQManager)
-      let dealer = new BSLogicMap[BS](order)
+      let dealer = new BSLogicMap[BS](order, queueProvier)
 
       try {
         do {

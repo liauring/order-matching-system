@@ -4,7 +4,7 @@ let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 ;(async () => {
   //create exchange and queues for matchNewOrder
   try {
-    let rabbitmqConn = await rabbitmqCreateConnect
+    let rabbitmqConn = await rabbitmqCreateConnect()
     await rabbitmqConn.assertExchange('matchNewOrder', 'direct', {
       durable: false,
     })
