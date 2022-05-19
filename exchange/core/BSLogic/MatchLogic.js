@@ -73,7 +73,7 @@ class MatchLogic {
   }
 
   async sendOrderTimeToRabbitMQ() {
-    return await this.queueProvider.sendToQueue('matchTime', this.order.matchTime)
+    return await this.queueProvider.sendToSingleQueue('matchTime', this.order.matchTime)
   }
 
   deleteMatchTime() {
@@ -253,7 +253,7 @@ class MatchLogic {
 
   async sendExecutionToRabbitmqForStorage() {
     console.log(this.executionDetail) //TODO:
-    return await this.queueProvider.sendToQueue('saveNewExec', this.executionDetail)
+    return await this.queueProvider.sendToSingleQueue('saveNewExec', this.executionDetail)
   }
 
   async emitExeuction() {
@@ -321,7 +321,7 @@ class NewOrder {
 
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
-    await this.queueProvider.publishToExchange('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
+    await this.queueProvider.shardingToQueue('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return
   }
 

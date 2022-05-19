@@ -1,13 +1,10 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
 
-let rabbitmqConn
-
 async function rabbitmqCreateConnect() {
   let rabbitmq = await require('amqplib').connect(
     `amqp://${process.env.rabbitmqUser}:${process.env.rabbitmqPW}@${process.env.rabbitmqHost}:${process.env.rabbitmqPort}/`
   )
-  rabbitmqConn = await rabbitmq.createChannel()
-  return rabbitmqConn
+  return await rabbitmq.createChannel()
 }
 
 // class QueueProvider {
