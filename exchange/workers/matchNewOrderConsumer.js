@@ -11,52 +11,10 @@ async function matchLogic(orderFromQueue) {
   let dealer = new BSLogicMap[BS](order, QueueProvider)
 
   try {
-    do {
-      // //----- for stress test -----
-      dealer.getOrderIDForMatchTime()
-      dealer.getOrderFromRabbitMQTime()
-      // //----------
-
-      await dealer.getBestDealerOrderID()
-      if (!(await dealer.haveBestDealer())) {
-        //----- for stress test -----
-        // dealer.getMatchFinishTimeNotExec()
-        // dealer.getExecutionFinishTimeNotExec()
-        // dealer.addEmptyValueForSocket()
-        // await dealer.sendOrderTimeToRabbitMQ()
-        // dealer.deleteMatchTime()
-        //----------
-        return
-      }
-
-      await dealer.getBestDealerOrderInfo()
-      await dealer.deleteBestDealer()
-      await dealer.matchExecutionQuantity()
-      //----- for stress test -----
-      dealer.getMatchFinishTime()
-      //----------
-      dealer.createExecutionIDAndTime()
-      dealer.createExecutionDetail()
-      dealer.createExecutionBuyer()
-      dealer.createExecutionSeller()
-      await dealer.sendExecutionToRabbitmqForStorage()
-      //----- for stress test -----
-      dealer.getExecutionFinishTime()
-      //----------
-      dealer.createExecutionMsg()
-      await dealer.emitExeuction()
-      dealer.createkLineInfo()
-      await dealer.emitKLine()
-
-      //----- for stress test -----
-
-      dealer.deleteMatchTime()
-      // await dealer.sendOrderTimeToRabbitMQ() socketSub 才送rabbitmq
-      //----------
-    } while (dealer.hasRemainingQuantity)
+    await dealer.matchWorkFlow()
   } catch (error) {
     console.error(error)
-    //TODO:rabbitmqConn.ack false
+    saveLogs('logsOfNewOrderExchange-Error')
   } finally {
     let newFiveTicks = new CurrentFiveTicks(order.symbol)
     let fiveTicks = await newFiveTicks.getFiveTicks()

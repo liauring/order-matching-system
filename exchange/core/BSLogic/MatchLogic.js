@@ -82,6 +82,52 @@ class MatchLogic {
 
   //----------
 
+  async matchWorkFlow() {
+    do {
+      // //----- for stress test -----
+      this.getOrderIDForMatchTime()
+      this.getOrderFromRabbitMQTime()
+      // //----------
+
+      await this.getBestDealerOrderID()
+      if (!(await this.#haveBestDealer())) {
+        //----- for stress test -----
+        // dealer.getMatchFinishTimeNotExec()
+        // dealer.getExecutionFinishTimeNotExec()
+        // dealer.addEmptyValueForSocket()
+        // await dealer.sendOrderTimeToRabbitMQ()
+        // dealer.deleteMatchTime()
+        //----------
+        return
+      }
+
+      await this.#getBestDealerOrderInfo()
+      await this.#deleteBestDealer()
+      await this.#matchExecutionQuantity()
+      //----- for stress test -----
+      this.getMatchFinishTime()
+      //----------
+      this.#createExecutionIDAndTime()
+      this.#createExecutionDetail()
+      this.#createExecutionBuyer()
+      this.#createExecutionSeller()
+      await this.#sendExecutionToRabbitmqForStorage()
+      //----- for stress test -----
+      this.getExecutionFinishTime()
+      //----------
+      this.#createExecutionMsg()
+      await this.#emitExeuction()
+      this.#createkLineInfo()
+      await this.#emitKLine()
+
+      //----- for stress test -----
+
+      this.deleteMatchTime()
+      // await dealer.sendOrderTimeToRabbitMQ() socketSub 才送rabbitmq
+      //----------
+    } while (this.hasRemainingQuantity)
+  }
+
   async getBestDealerOrderIDUtil(head, tail) {
     ;[this.bestDealerOrderID, this.bestDealerScore] = await redisClient.zrange(
       `${this.order.symbol}-${this.dealerType}`,
@@ -97,7 +143,12 @@ class MatchLogic {
     throw new Error('compareBestDealerPriceWithOrderPrice() function should be implemented by child.')
   }
 
-  async haveBestDealer() {
+  async getBestDealerOrderID() {
+    //由子層實作
+    throw new Error('compareBestDealerPriceWithOrderPrice() function should be implemented by child.')
+  }
+
+  async #haveBestDealer() {
     if (this.bestDealerOrderID === undefined || this.compareBestDealerPriceWithOrderPrice()) {
       await this.#addNewDealer()
       await new NewOrderFiveTicks().addNewOrderFiveTicks(
@@ -111,19 +162,19 @@ class MatchLogic {
     return true
   }
 
-  async getBestDealerOrderInfo() {
+  async #getBestDealerOrderInfo() {
     this.bestDealer = await redisClient.get(this.bestDealerOrderID)
     this.bestDealer = JSON.parse(this.bestDealer)
     return
   }
 
-  async deleteBestDealer() {
+  async #deleteBestDealer() {
     await redisClient.zrem(`${this.order.symbol}-${this.dealerType}`, this.bestDealerOrderID)
     await redisClient.del(`${this.bestDealerOrderID}`)
     return
   }
 
-  async matchExecutionQuantity() {
+  async #matchExecutionQuantity() {
     if (this.order.quantity === this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity
       this.hasRemainingQuantity = false
@@ -171,7 +222,7 @@ class MatchLogic {
     return
   }
 
-  createExecutionIDAndTime() {
+  #createExecutionIDAndTime() {
     this.executionID = uuidv4()
     this.executionTime = new Date().getTime()
     return
@@ -187,7 +238,7 @@ class MatchLogic {
     throw new Error('getBuyer() function should be implemented by child.')
   }
 
-  createExecutionDetail() {
+  #createExecutionDetail() {
     this.executionDetail = {
       executionID: this.executionID,
       executionTime: this.executionTime,
@@ -204,7 +255,7 @@ class MatchLogic {
     return
   }
 
-  createExecutionBuyer() {
+  #createExecutionBuyer() {
     this.executionBuyer = {
       executionID: this.executionID,
       executionTime: this.executionTime,
@@ -220,7 +271,7 @@ class MatchLogic {
     return
   }
 
-  createExecutionSeller() {
+  #createExecutionSeller() {
     this.executionSeller = {
       executionID: this.executionID,
       executionTime: this.executionTime,
@@ -236,13 +287,13 @@ class MatchLogic {
     return
   }
 
-  createExecutionMsg() {
+  #createExecutionMsg() {
     this.execSellerMessage = { brokerID: this.getSeller().broker, execution: this.executionSeller }
     this.execBuyerMessage = { brokerID: this.getBuyer().broker, execution: this.executionBuyer }
     return
   }
 
-  createkLineInfo() {
+  #createkLineInfo() {
     this.kLineInfo = {
       symbol: this.order.symbol,
       price: this.bestDealer.price,
@@ -251,18 +302,18 @@ class MatchLogic {
     return
   }
 
-  async sendExecutionToRabbitmqForStorage() {
+  async #sendExecutionToRabbitmqForStorage() {
     console.log(this.executionDetail) //TODO:
     return await this.queueProvider.sendToSingleQueue('saveNewExec', this.executionDetail)
   }
 
-  async emitExeuction() {
+  async #emitExeuction() {
     await redisClient.publish('sendExec', JSON.stringify(this.execSellerMessage))
     await redisClient.publish('sendExec', JSON.stringify(this.execBuyerMessage))
     return
   }
 
-  async emitKLine() {
+  async #emitKLine() {
     return await redisClient.publish('kLine', JSON.stringify(this.kLineInfo))
   }
 
@@ -347,84 +398,3 @@ class NewOrder {
 }
 
 module.exports = { MatchLogic, NewOrder }
-
-// class A {
-//   let b = B()
-//   function foo {
-//     let answer = b.getProperty()
-//     return answer.number
-//   }
-// }
-
-// let testA = A()
-// if (testA.foo() == 'xxx') {
-
-// }
-
-// 1. init
-// class A {
-//   constructor(b) {
-//     this.b = b
-//   }
-
-//   function foo {
-//     let answer = this.b.getProperty()
-//     return answer.number
-//   }
-// }
-
-// class MockB {
-//   function getProperty() {
-//     return 'test'
-//   }
-// }
-// let mockB = MockB()
-// let testA = A(mockB)
-// if (testA.foo() == 'xxx') {
-
-// }
-
-// 2. property, memeber, varable
-
-// class A {
-//   let b = null
-//   function foo {
-//     let answer = this.b.getProperty()
-//     return answer.number
-//   }
-//   function xxx {
-//     let answer = this.b.
-//   }
-// }
-
-// class MockB {
-//   function getProperty() {
-//     return 'test'
-//   }
-
-// }
-
-// let mockB = MockB()
-// let testA = A()
-// testA.b = mockB
-// if (testA.foo() == 'xxx') {
-
-// }
-
-// testA.xxx()
-
-// 3. function
-
-// class A {
-//   function foo(b) {
-//     let answer = b.getProperty()
-//     return answer.number
-//   }
-
-// }
-
-// let mockB = MockB()
-// let testA = A()
-// if (testA.foo(mockB) == 'xxx') {
-
-// }
