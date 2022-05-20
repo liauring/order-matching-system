@@ -3,6 +3,16 @@ const { v4: uuidv4 } = require('uuid')
 let { NewOrderFiveTicks } = require('../FiveTicks')
 
 class MatchLogic {
+  #hasRemainingQuantity
+  #executionID
+  #executionTime
+  #executionDetail
+  #executionBuyer
+  #executionSeller
+  #execBuyerMessage
+  #execSellerMessage
+  #kLineInfo
+
   constructor(order, dealerType, orderType, queueProvider) {
     this.queueProvider = queueProvider
     this.order = order
@@ -12,16 +22,15 @@ class MatchLogic {
     this.bestDealer = null
     this.bestDealerScore = null
     this.finalQTY = null
-    this.hasRemainingQuantity = false
-    this.executionID = null
-    this.executionTime = null
-    this.executionDetail = {}
-    this.executionBuyer = {}
-    this.executionSeller = {}
-    this.execBuyerMessage = {}
-    this.execSellerMessage = {}
-    this.kLineInfo = {}
-    this.csvWriter = null
+    this.#hasRemainingQuantity = false
+    this.#executionID = null
+    this.#executionTime = null
+    this.#executionDetail = {}
+    this.#executionBuyer = {}
+    this.#executionSeller = {}
+    this.#execBuyerMessage = {}
+    this.#execSellerMessage = {}
+    this.#kLineInfo = {}
   }
 
   async matchWorkFlow() {
@@ -43,7 +52,7 @@ class MatchLogic {
       await this.#emitExeuction()
       this.#createkLineInfo()
       await this.#emitKLine()
-    } while (this.hasRemainingQuantity)
+    } while (this.#hasRemainingQuantity)
   }
 
   async getBestDealerOrderIDUtil(head, tail) {
@@ -95,7 +104,7 @@ class MatchLogic {
   async #matchExecutionQuantity() {
     if (this.order.quantity === this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity
-      this.hasRemainingQuantity = false
+      this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.bestDealer.orderStatus = 3
       await new NewOrderFiveTicks().addNewOrderFiveTicks(
@@ -113,7 +122,7 @@ class MatchLogic {
         JSON.stringify(this.bestDealer.orderID)
       )
       await redisClient.set(`${this.bestDealer.orderID}`, JSON.stringify(this.bestDealer))
-      this.hasRemainingQuantity = false
+      this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.bestDealer.orderStatus = 2
       await new NewOrderFiveTicks().addNewOrderFiveTicks(
@@ -125,7 +134,7 @@ class MatchLogic {
     } else if (this.order.quantity > this.bestDealer.quantity) {
       this.finalQTY = this.bestDealer.quantity
       this.order.quantity -= this.bestDealer.quantity
-      this.hasRemainingQuantity = true
+      this.#hasRemainingQuantity = true
       this.order.orderStatus = 2
       this.bestDealer.orderStatus = 3
       await new NewOrderFiveTicks().addNewOrderFiveTicks(
@@ -141,8 +150,8 @@ class MatchLogic {
   }
 
   #createExecutionIDAndTime() {
-    this.executionID = uuidv4()
-    this.executionTime = new Date().getTime()
+    this.#executionID = uuidv4()
+    this.#executionTime = new Date().getTime()
     return
   }
 
@@ -157,9 +166,9 @@ class MatchLogic {
   }
 
   #createExecutionDetail() {
-    this.executionDetail = {
-      executionID: this.executionID,
-      executionTime: this.executionTime,
+    this.#executionDetail = {
+      executionID: this.#executionID,
+      executionTime: this.#executionTime,
       seller: this.getSeller().account,
       sellerOrderID: this.getSeller().orderID,
       sellerOrderTime: this.getSeller().createTime,
@@ -174,9 +183,9 @@ class MatchLogic {
   }
 
   #createExecutionBuyer() {
-    this.executionBuyer = {
-      executionID: this.executionID,
-      executionTime: this.executionTime,
+    this.#executionBuyer = {
+      executionID: this.#executionID,
+      executionTime: this.#executionTime,
       dealer: this.getBuyer().account,
       orderID: this.getBuyer().orderID,
       orderTime: this.getBuyer().createTime,
@@ -189,9 +198,9 @@ class MatchLogic {
   }
 
   #createExecutionSeller() {
-    this.executionSeller = {
-      executionID: this.executionID,
-      executionTime: this.executionTime,
+    this.#executionSeller = {
+      executionID: this.#executionID,
+      executionTime: this.#executionTime,
       dealer: this.getSeller().account,
       orderID: this.getSeller().orderID,
       orderTime: this.getSeller().createTime,
@@ -204,33 +213,33 @@ class MatchLogic {
   }
 
   #createExecutionMsg() {
-    this.execSellerMessage = { brokerID: this.getSeller().broker, execution: this.executionSeller }
-    this.execBuyerMessage = { brokerID: this.getBuyer().broker, execution: this.executionBuyer }
+    this.#execSellerMessage = { brokerID: this.getSeller().broker, execution: this.#executionSeller }
+    this.#execBuyerMessage = { brokerID: this.getBuyer().broker, execution: this.#executionBuyer }
     return
   }
 
   #createkLineInfo() {
-    this.kLineInfo = {
+    this.#kLineInfo = {
       symbol: this.order.symbol,
       price: this.bestDealer.price,
-      executionTime: this.executionTime,
+      executionTime: this.#executionTime,
     }
     return
   }
 
   async #sendExecutionToRabbitmqForStorage() {
-    console.log(this.executionDetail) //TODO:
-    return await this.queueProvider.sendToSingleQueue('saveNewExec', this.executionDetail)
+    console.log(this.#executionDetail) //TODO:
+    return await this.queueProvider.sendToSingleQueue('saveNewExec', this.#executionDetail)
   }
 
   async #emitExeuction() {
-    await redisClient.publish('sendExec', JSON.stringify(this.execSellerMessage))
-    await redisClient.publish('sendExec', JSON.stringify(this.execBuyerMessage))
+    await redisClient.publish('sendExec', JSON.stringify(this.#execSellerMessage))
+    await redisClient.publish('sendExec', JSON.stringify(this.#execBuyerMessage))
     return
   }
 
   async #emitKLine() {
-    return await redisClient.publish('kLine', JSON.stringify(this.kLineInfo))
+    return await redisClient.publish('kLine', JSON.stringify(this.#kLineInfo))
   }
 
   async #addNewDealer() {
