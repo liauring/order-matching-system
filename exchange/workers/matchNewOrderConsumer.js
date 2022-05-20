@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-const redisClient = require('../util/Redis')
+const redisClient = require('../util/redis')
 const BSLogicMap = require('../core/BSLogic')[1]
 const CONSUMEQUEUE = 'matchNewOrder-stock-0'
 const { CurrentFiveTicks } = require('../core/FiveTicks')
