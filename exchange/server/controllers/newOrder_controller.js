@@ -16,8 +16,6 @@ const postNewOrder = async (req, res, next) => {
   await QueueProvider.connect()
   let dealer = new BSLogicMap[req.body.BS](req.body, QueueProvider)
   dealer.formatOrder()
-  // dealer.orderTimeInDayPeriod()
-  // dealer.createOrderID()
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
   res.status(200).json(orderResponse)
@@ -30,11 +28,6 @@ const postNewOrderStressTest = async (req, res, next) => {
   dealer.formatOrder()
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()
-  //----- for stress test -----
-  dealer.getOrderIDForJourneyTime()
-  dealer.getRequestTime()
-  await dealer.getRabbitmqLength('matchNewOrder-stock-0')
-  //----------
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
   res.status(200).json(orderResponse)

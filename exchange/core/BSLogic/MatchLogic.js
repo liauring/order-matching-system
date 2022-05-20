@@ -24,107 +24,25 @@ class MatchLogic {
     this.csvWriter = null
   }
 
-  //----- for stress test -----
-  // createFile() {
-  //   const csvWriter = createCsvWriter({
-  //     header: ['orderID', 'consumeFromRabbitmq', 'matchFinish', 'allExecutionFinish'],
-  //     // header: false,
-  //     path: 'matchLogicTime.csv',
-  //     append: true,
-  //   })
-
-  //   csvWriter
-  //     .writeRecords([this.order.matchTime]) // returns a promise
-  //     .then(() => {
-  //       console.log(`[writeFile] ${this.orderID} is done.`)
-  //     })
-  // }
-
-  getOrderIDForMatchTime() {
-    if (!this.order.matchTime) {
-      this.order.matchTime = []
-      this.order.matchTime.push(this.order.orderID)
-    }
-    return
-  }
-
-  getOrderFromRabbitMQTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchTime.push({ pubRabbitmq: currentTime })
-    return
-  }
-
-  getMatchFinishTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchTime.push({ matchFinish: currentTime })
-    return
-  }
-
-  getExecutionFinishTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchTime.push({ execFinish: currentTime })
-    return
-  }
-
-  addEmptyValueForSocket() {
-    let currentTime = new Date().getTime()
-    this.order.matchTime.push(currentTime)
-    return
-  }
-
-  async sendOrderTimeToRabbitMQ() {
-    return await this.queueProvider.sendToSingleQueue('matchTime', this.order.matchTime)
-  }
-
-  deleteMatchTime() {
-    delete this.order.matchTime
-  }
-
-  //----------
-
   async matchWorkFlow() {
     do {
-      // //----- for stress test -----
-      this.getOrderIDForMatchTime()
-      this.getOrderFromRabbitMQTime()
-      // //----------
-
       await this.getBestDealerOrderID()
       if (!(await this.#haveBestDealer())) {
-        //----- for stress test -----
-        // dealer.getMatchFinishTimeNotExec()
-        // dealer.getExecutionFinishTimeNotExec()
-        // dealer.addEmptyValueForSocket()
-        // await dealer.sendOrderTimeToRabbitMQ()
-        // dealer.deleteMatchTime()
-        //----------
         return
       }
 
       await this.#getBestDealerOrderInfo()
       await this.#deleteBestDealer()
       await this.#matchExecutionQuantity()
-      //----- for stress test -----
-      this.getMatchFinishTime()
-      //----------
       this.#createExecutionIDAndTime()
       this.#createExecutionDetail()
       this.#createExecutionBuyer()
       this.#createExecutionSeller()
       await this.#sendExecutionToRabbitmqForStorage()
-      //----- for stress test -----
-      this.getExecutionFinishTime()
-      //----------
       this.#createExecutionMsg()
       await this.#emitExeuction()
       this.#createkLineInfo()
       await this.#emitKLine()
-
-      //----- for stress test -----
-
-      this.deleteMatchTime()
-      // await dealer.sendOrderTimeToRabbitMQ() socketSub 才送rabbitmq
-      //----------
     } while (this.hasRemainingQuantity)
   }
 
@@ -266,7 +184,6 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getBuyer().orderStatus,
-      matchTime: this.getBuyer().matchTime, //stress test
     }
     return
   }
@@ -282,7 +199,6 @@ class MatchLogic {
       price: this.bestDealer.price,
       executionQuantity: this.finalQTY,
       orderStatus: this.getSeller().orderStatus,
-      matchTime: this.getSeller().matchTime, //stress test
     }
     return
   }
@@ -332,28 +248,7 @@ class NewOrder {
     this.order = order
     this.queueProvider = queueProvider
     this.orderID = null
-    // this.todayRestTime = null
   }
-
-  //----- for stress test -----
-  getOrderIDForJourneyTime() {
-    this.order.matchTime = []
-    this.order.matchTime.push(this.order.orderID)
-    return
-  }
-
-  getRequestTime() {
-    let currentTime = new Date().getTime()
-    this.order.matchTime.push(currentTime)
-    return
-  }
-
-  async getRabbitmqLength(queue) {
-    let queueLength = await this.queueProvider.getQueueLength(queue)
-    this.order.matchTime.push(queueLength)
-    return
-  }
-  //----------
 
   formatOrder() {
     this.order.account = parseInt(this.order.account)
