@@ -1,4 +1,4 @@
-const redisClient = require('../../util/Redis')
+const redisClient = require('../../util/redis')
 const { Worker } = require('worker_threads')
 
 // TODO: 錯誤處理：1.找不到orderID
