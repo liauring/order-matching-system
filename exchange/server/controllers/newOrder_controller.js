@@ -1,5 +1,5 @@
 const BSLogicMap = require('../../core/BSLogic')[0]
-const redisClient = require('../../util/cache')
+const redisClient = require('../../util/redis')
 const { QueueProvider } = require('../../serviceProviders/queue_provider')
 
 const getNewOrderID = async (req, res, next) => {

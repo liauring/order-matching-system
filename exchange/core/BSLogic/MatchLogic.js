@@ -1,4 +1,4 @@
-const redisClient = require('../../util/cache')
+const redisClient = require('../../util/Redis')
 const { v4: uuidv4 } = require('uuid')
 let { NewOrderFiveTicks } = require('../FiveTicks')
 

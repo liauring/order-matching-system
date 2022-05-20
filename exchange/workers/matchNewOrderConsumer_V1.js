@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-const redisClient = require('../util/cache')
+const redisClient = require('../util/redis')
 const { v4: uuidv4 } = require('uuid')
 let { rabbitmqCreateConnect } = require('../util/rabbitmq')
 const consumeQueue = 'matchNewOrder-stock-0'

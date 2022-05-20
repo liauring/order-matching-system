@@ -1,4 +1,4 @@
-const redisClient = require('../../util/cache')
+const redisClient = require('../../util/Redis')
 
 class CurrentFiveTicks {
   constructor(symbol) {

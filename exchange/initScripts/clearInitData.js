@@ -1,6 +1,6 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
 require('../util/rabbitmq').rabbitmqCreateConnect()
-const redisClient = require('../util/cache')
+const redisClient = require('../util/redis')
 const { db, mongodbClose } = require('../util/mongodb')
 const { mysqldb } = require('../util/mysql')
 const { QueueProvider } = require('../serviceProviders/queue_provider')
