@@ -10,7 +10,7 @@ const client = new MongoClient(
   { keepAlive: 1 }
 )
 ;(async () => {
-  //TODO:接error
+  //TODO:if error
   await client.connect()
   console.log('MongoDB connected successfully to server')
 })()

@@ -65,12 +65,12 @@ class MatchLogic {
   }
 
   compareBestDealerPriceWithOrderPrice() {
-    //由子層實作
+    //implemented by child
     throw new Error('compareBestDealerPriceWithOrderPrice() function should be implemented by child.')
   }
 
   async getBestDealerOrderID() {
-    //由子層實作
+    //implemented by child
     throw new Error('compareBestDealerPriceWithOrderPrice() function should be implemented by child.')
   }
 
@@ -155,12 +155,12 @@ class MatchLogic {
   }
 
   getSeller() {
-    //由子層實作
+    //implemented by child
     throw new Error('getSeller() function should be implemented by child.')
   }
 
   getBuyer() {
-    //由子層實作
+    //implemented by child
     throw new Error('getBuyer() function should be implemented by child.')
   }
 
@@ -227,7 +227,7 @@ class MatchLogic {
   }
 
   async #sendExecutionToRabbitmqForStorage() {
-    console.log(this.#executionDetail) //TODO:
+    console.log(this.#executionDetail)
     return await this.queueProvider.sendToSingleQueue('saveNewExec', this.#executionDetail)
   }
 

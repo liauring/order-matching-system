@@ -1,6 +1,6 @@
 const redisClient = require('../../util/redis')
 
-// TODO: 錯誤處理：1.找不到orderID
+// TODO: error handling: 1. can not find orderID
 const updateOrder = async (req, res) => {
   let { orderID, symbol, quantity, BS } = req.body
   orderID = parseInt(orderID)
@@ -27,10 +27,10 @@ const updateOrder = async (req, res) => {
   orderInfo.quantity = parseInt(orderInfo.quantity)
   orderInfo.quantity -= quantity
   if (orderInfo.quantity <= 0) {
-    // 刪除redis裏zset的order
+    // delete the order in the zset of redis
     await redisClient.zrem(`${symbol}-${BS}`, orderID.toString())
     let response = {
-      orderStatus: 0, //剩餘委託刪除
+      orderStatus: 0, //delete remaining order
       quantity: 0,
       price: orderInfo.price,
       orderTime: orderInfo.orderTime,
@@ -47,6 +47,7 @@ const updateOrder = async (req, res) => {
     orderID: orderInfo.orderID,
   }
 
+  //release redis lock
   let lockOrderValue = await redisClient.get(`lock-${orderID}`)
   let lockStockValue = await redisClient.get(`lock-${symbol}-${BS}`)
   if (lockOrderValue === 'updateOrder') {
@@ -55,7 +56,7 @@ const updateOrder = async (req, res) => {
   if (lockStockValue === 'updateOrder') {
     await redisClient.del(`lock-${symbol}-${BS}`)
   }
-  //TODO:五檔也要更新
+  //TODO:update five ticks
   res.status(200).json(response)
 }
 

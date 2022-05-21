@@ -8,7 +8,8 @@ const server = http.createServer(app)
 require('./util/socket.js').config(server)
 require('./workers/redisSub.js')
 require('./util/rabbitmq').rabbitmqCreateConnect()
-// message []
+
+//TODO: design log message []
 // [2022-05-08 13:41:31.123][type] message
 
 app.use(cors())

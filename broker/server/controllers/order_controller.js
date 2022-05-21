@@ -14,7 +14,6 @@ const getOrder = async (req, res) => {
 //   symbol: int
 // }
 
-// TODO: 錯誤處理：1.找不到orderID
 const updateOrder = async (req, res) => {
   let reqBody = req.body
   let updateResponse = await axios.patch(`${process.env.apiHost}/api/order`, reqBody)
