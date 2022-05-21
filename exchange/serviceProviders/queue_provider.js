@@ -41,13 +41,12 @@ class RabbitMQ {
     return queueLength
   }
 
-  async connectionClose() {
+  async closeConnection() {
     await rabbitmqConn.close()
     this.status = false
   }
 }
 
 const QueueProvider = new RabbitMQ()
-// Object.freeze(QueueProvider)
 
 module.exports = { QueueProvider }

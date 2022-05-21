@@ -1,4 +1,3 @@
-const redisClient = require('../../util/redis') //TODO:可改為依賴注入
 const { v4: uuidv4 } = require('uuid')
 let { NewOrderFiveTicks } = require('../FiveTicks')
 
@@ -13,8 +12,9 @@ class MatchLogic {
   #execSellerMessage
   #kLineInfo
 
-  constructor(order, dealerType, orderType, queueProvider) {
+  constructor(order, dealerType, orderType, queueProvider, cacheProvider) {
     this.queueProvider = queueProvider
+    this.cacheProvider = cacheProvider
     this.order = order
     this.dealerType = dealerType
     this.orderType = orderType
@@ -56,11 +56,10 @@ class MatchLogic {
   }
 
   async getBestDealerOrderIDUtil(head, tail) {
-    ;[this.bestDealerOrderID, this.bestDealerScore] = await redisClient.zrange(
+    ;[this.bestDealerOrderID, this.bestDealerScore] = await this.cacheProvider.getSortedSetItem(
       `${this.order.symbol}-${this.dealerType}`,
       head,
-      tail,
-      'WITHSCORES'
+      tail
     )
     return
   }
@@ -90,14 +89,14 @@ class MatchLogic {
   }
 
   async #getBestDealerOrderInfo() {
-    this.bestDealer = await redisClient.get(this.bestDealerOrderID)
+    this.bestDealer = await this.cacheProvider.getKeyValue(this.bestDealerOrderID)
     this.bestDealer = JSON.parse(this.bestDealer)
     return
   }
 
   async #deleteBestDealer() {
-    await redisClient.zrem(`${this.order.symbol}-${this.dealerType}`, this.bestDealerOrderID)
-    await redisClient.del(`${this.bestDealerOrderID}`)
+    await this.cacheProvider.deleteSortedSetMember(`${this.order.symbol}-${this.dealerType}`, this.bestDealerOrderID)
+    await this.cacheProvider.deleteKeyValue(`${this.bestDealerOrderID}`)
     return
   }
 
@@ -116,12 +115,12 @@ class MatchLogic {
     } else if (this.order.quantity < this.bestDealer.quantity) {
       this.finalQTY = this.order.quantity
       this.bestDealer.quantity -= this.order.quantity
-      await redisClient.zadd(
+      await this.cacheProvider.addSortedSetMember(
         `${this.order.symbol}-${this.dealerType}`,
         this.bestDealerScore,
         JSON.stringify(this.bestDealer.orderID)
       )
-      await redisClient.set(`${this.bestDealer.orderID}`, JSON.stringify(this.bestDealer))
+      await this.cacheProvider.addKeyValue(`${this.bestDealer.orderID}`, JSON.stringify(this.bestDealer))
       this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.bestDealer.orderStatus = 2
@@ -233,20 +232,24 @@ class MatchLogic {
   }
 
   async #emitExeuction() {
-    await redisClient.publish('sendExec', JSON.stringify(this.#execSellerMessage))
-    await redisClient.publish('sendExec', JSON.stringify(this.#execBuyerMessage))
+    await this.cacheProvider.publishChannel('sendExec', JSON.stringify(this.#execSellerMessage))
+    await this.cacheProvider.publishChannel('sendExec', JSON.stringify(this.#execBuyerMessage))
     return
   }
 
   async #emitKLine() {
-    return await redisClient.publish('kLine', JSON.stringify(this.#kLineInfo))
+    return await this.cacheProvider.publishChannel('kLine', JSON.stringify(this.#kLineInfo))
   }
 
   async #addNewDealer() {
     let setScore = this.order.orderID
 
-    await redisClient.zadd(`${this.order.symbol}-${this.orderType}`, setScore, JSON.stringify(this.order.orderID))
-    await redisClient.set(`${this.order.orderID}`, JSON.stringify(this.order))
+    await this.cacheProvider.addSortedSetMember(
+      `${this.order.symbol}-${this.orderType}`,
+      setScore,
+      JSON.stringify(this.order.orderID)
+    )
+    await this.cacheProvider.addKeyValue(`${this.order.orderID}`, JSON.stringify(this.order))
 
     return
   }

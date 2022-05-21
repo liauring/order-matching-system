@@ -4,12 +4,13 @@ const BSLogicMap = require('../core/BSLogic')[1]
 const CONSUMEQUEUE = 'matchNewOrder-stock-0'
 const { CurrentFiveTicks } = require('../core/FiveTicks')
 const { QueueProvider } = require('../serviceProviders/queue_provider')
+const { CacheProvider } = require('../serviceProviders/cach_provider')
 const { saveLogs } = require('../util/util')
 
 async function matchLogic(orderFromQueue) {
   let order = JSON.parse(orderFromQueue.content.toString())
   let { BS } = order
-  let dealer = new BSLogicMap[BS](order, QueueProvider)
+  let dealer = new BSLogicMap[BS](order, QueueProvider, CacheProvider)
 
   try {
     //get redis lock
