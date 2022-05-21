@@ -1,5 +1,4 @@
 const redisClient = require('../../util/redis')
-const { Worker } = require('worker_threads')
 
 // TODO: 錯誤處理：1.找不到orderID
 const updateOrder = async (req, res) => {
@@ -7,6 +6,21 @@ const updateOrder = async (req, res) => {
   orderID = parseInt(orderID)
   symbol = parseInt(symbol)
   quantity = parseInt(quantity)
+
+  //get redis lock
+  let requestTimeForLock = new Date().getTime()
+  let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
+  do {
+    orderIsLock = await redisClient.setnx(`lock-${orderID}`, 'updateOrder')
+    stockSetIsLock = await redisClient.setnx(`lock-${symbol}-${BS}`, 'updateOrder')
+    let currentTime = new Date().getTime()
+    waitingPeriod = currentTime - requestTimeForLock
+  } while ((orderIsLock == 0 || stockSetIsLock == 0) && waitingPeriod < 30000)
+
+  if (orderIsLock == 0 || stockSetIsLock == 0) {
+    res.status(500).json('Please try again later.') //TODO:error handling
+  }
+
   let orderInfo = await redisClient.get(`${orderID}`)
   orderInfo = JSON.parse(orderInfo)
   await redisClient.del(`${orderID}`)
@@ -22,7 +36,7 @@ const updateOrder = async (req, res) => {
       orderTime: orderInfo.orderTime,
       orderID: orderInfo.orderID,
     }
-    return res.send(response)
+    res.status(200).json(response)
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo))
   let response = {
@@ -33,6 +47,15 @@ const updateOrder = async (req, res) => {
     orderID: orderInfo.orderID,
   }
 
+  let lockOrderValue = await redisClient.get(`lock-${orderID}`)
+  let lockStockValue = await redisClient.get(`lock-${symbol}-${BS}`)
+  if (lockOrderValue === 'updateOrder') {
+    await redisClient.del(`lock-${orderID}`)
+  }
+  if (lockStockValue === 'updateOrder') {
+    await redisClient.del(`lock-${symbol}-${BS}`)
+  }
+  //TODO:五檔也要更新
   res.status(200).json(response)
 }
 

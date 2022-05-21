@@ -1,4 +1,4 @@
-const redisClient = require('../../util/redis')
+const redisClient = require('../../util/redis') //TODO:可改為依賴注入
 const { v4: uuidv4 } = require('uuid')
 let { NewOrderFiveTicks } = require('../FiveTicks')
 

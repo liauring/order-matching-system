@@ -4,6 +4,7 @@ const BSLogicMap = require('../core/BSLogic')[1]
 const CONSUMEQUEUE = 'matchNewOrder-stock-0'
 const { CurrentFiveTicks } = require('../core/FiveTicks')
 const { QueueProvider } = require('../serviceProviders/queue_provider')
+const { saveLogs } = require('../util/util')
 
 async function matchLogic(orderFromQueue) {
   let order = JSON.parse(orderFromQueue.content.toString())
@@ -11,6 +12,19 @@ async function matchLogic(orderFromQueue) {
   let dealer = new BSLogicMap[BS](order, QueueProvider)
 
   try {
+    //get redis lock
+    let requestTimeForLock = new Date().getTime()
+    let waitingPeriod, orderIsLock, stockSetIsLock
+    do {
+      orderIsLock = await redisClient.setnx(`lock-${dealer.order.orderID}`, 'updateOrder')
+      stockSetIsLock = await redisClient.setnx(`lock-${dealer.order.symbol}-${dealer.order.BS}`, 'updateOrder')
+      let currentTime = new Date().getTime()
+      waitingPeriod = currentTime - requestTimeForLock
+    } while ((orderIsLock == 0 || stockSetIsLock == 0) && waitingPeriod < 30000)
+    if (orderIsLock == 0 || stockSetIsLock == 0) {
+      let error = new Error('Can not get redis lock.')
+      throw error
+    }
     await dealer.matchWorkFlow()
   } catch (error) {
     console.error(error)
@@ -20,7 +34,18 @@ async function matchLogic(orderFromQueue) {
     let fiveTicks = await newFiveTicks.getFiveTicks()
     console.debug('[fiveTicks]', fiveTicks)
     await redisClient.publish('fiveTicks', JSON.stringify(fiveTicks))
-    QueueProvider.queueConnect.ack(orderFromQueue)
+
+    //release redis lock
+    let lockOrderValue = await redisClient.get(`lock-${dealer.order.orderID}`)
+    let lockStockValue = await redisClient.get(`lock-${dealer.order.symbol}-${dealer.order.BS}`)
+    if (lockOrderValue === 'updateOrder') {
+      await redisClient.del(`lock-${dealer.order.orderID}`)
+    }
+    if (lockStockValue === 'updateOrder') {
+      await redisClient.del(`lock-${dealer.order.symbol}-${dealer.order.BS}`)
+
+      QueueProvider.queueConnect.ack(orderFromQueue)
+    }
   }
 }
 

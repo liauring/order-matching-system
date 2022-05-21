@@ -9,8 +9,6 @@ const redisClient = new redis({
   password: process.env.redisPW,
 })
 
-console.log('Redis connects successfully.')
-
 redisClient.on('connect', async () => {
   console.log('Redis connect')
 })
