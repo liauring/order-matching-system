@@ -5,7 +5,7 @@ const StockInfo = () => {
   const { socket } = useStatus()
   const [lastPrice, setLastPrice] = useState(536)
   const highestPrice = useRef(536)
-  const lowestPrice = useRef(536)
+  const lowestPrice = useRef(531)
 
   useEffect(() => {
     if (socket) {

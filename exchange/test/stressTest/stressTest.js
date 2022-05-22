@@ -1,5 +1,5 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
-let { rabbitmqCreateConnect } = require('../util/rabbitmq')
+let { rabbitmqCreateConnect } = require('../../util/rabbitmq')
 const createCsvWriter = require('csv-writer').createArrayCsvWriter
 
 ;(async () => {

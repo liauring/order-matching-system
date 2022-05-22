@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "test": "mocha"
   },
   "dependencies": {
     "amqplib": "^0.8.0",
@@ -16,5 +17,9 @@
     "redis": "^4.0.6",
     "socket.io": "^4.4.1",
     "uuidv4": "^6.2.13"
+  },
+  "devDependencies": {
+    "chai": "^4.3.6",
+    "mocha": "^10.0.0"
   }
 }
