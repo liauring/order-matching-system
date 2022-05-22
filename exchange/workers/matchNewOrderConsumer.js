@@ -26,6 +26,7 @@ async function matchLogic(orderFromQueue) {
       let error = new Error('Can not get redis lock.')
       throw error
     }
+
     await dealer.matchWorkFlow()
   } catch (error) {
     console.error(error)
