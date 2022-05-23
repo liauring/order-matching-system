@@ -7,7 +7,7 @@ const { QueueProvider } = require('../core/BSLogic/serviceProviders/queue_provid
 
 ;(async () => {
   await QueueProvider.connect()
-  redisClient.flushdb(function (err, succeeded) {
+  await redisClient.flushdb(function (err, succeeded) {
     if (err) {
       console.error(err)
     } else {
