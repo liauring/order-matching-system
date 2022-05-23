@@ -1,6 +1,7 @@
 require('dotenv').config({ path: __dirname + '/./../.env' })
 require('../util/rabbitmq').rabbitmqCreateConnect()
-const redisClient = require('../util/redis')(async () => {
+const redisClient = require('../util/redis')
+;(async () => {
   redisClient.flushdb(function (err, succeeded) {
     if (err) {
       console.error(err)
@@ -10,4 +11,4 @@ const redisClient = require('../util/redis')(async () => {
   })
   redisClient.disconnect()
   process.exit(0)
-})
+})()
