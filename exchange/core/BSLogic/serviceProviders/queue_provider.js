@@ -1,4 +1,4 @@
-const { rabbitmqCreateConnect } = require('../util/rabbitmq')
+const { rabbitmqCreateConnect } = require('../../../util/rabbitmq')
 
 class RabbitMQ {
   constructor() {

@@ -1,4 +1,4 @@
-const redisClient = require('../util/redis')
+const redisClient = require('../../../util/redis')
 
 class Redis {
   constructor() {
