@@ -3,7 +3,7 @@ require('../util/rabbitmq').rabbitmqCreateConnect()
 const redisClient = require('../util/redis')
 const { db, mongodbClose } = require('../util/mongodb')
 const { mysqldb } = require('../util/mysql')
-const { QueueProvider } = require('../serviceProviders/queue_provider')
+const { QueueProvider } = require('../core/BSLogic/serviceProviders/queue_provider')
 
 ;(async () => {
   await QueueProvider.connect()
