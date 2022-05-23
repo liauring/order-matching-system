@@ -19,7 +19,7 @@ const updateOrderInfo = async (updateResult) => {
   try {
     conn = await mysqldb.getConnection()
     await conn.query('START TRANSACTION')
-    let sqlSyntax = `UPDATE orderInfo SET ? WHERE orderID = ?`
+    let sqlSyntax = `UPDATE orderInfo SET ? WHERE orderID = ? for update`
     if (updateResult.orderStatus === 0) {
       updateResult.orderStatus = 3
     }

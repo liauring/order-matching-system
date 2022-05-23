@@ -3,9 +3,14 @@ const { expect } = require('chai')
 const { MockCacheForDealerProvider } = require('./mockProvider/mockCache_provider')
 const { DealerProvider, SellerInfo, BuyerInfo } = require('../core/BSLogic/DealerProvider')
 
-const dealerProviderSellerLowerToDealer = new DealerProvider(new SellerInfo(), 700, 2330, MockCacheForDealerProvider)
 describe('DealerProvider-updateDealer()-Seller', function () {
   it('Seller Lower To Dealer', async function () {
+    const dealerProviderSellerLowerToDealer = new DealerProvider(
+      new SellerInfo(),
+      700,
+      2330,
+      MockCacheForDealerProvider
+    )
     await dealerProviderSellerLowerToDealer.updateDealer()
     let result = {
       account: 66,
@@ -28,17 +33,27 @@ describe('DealerProvider-updateDealer()-Seller', function () {
   })
 })
 
-const dealerProviderSellerHighterToDealer = new DealerProvider(new SellerInfo(), 100, 2330, MockCacheForDealerProvider)
 describe('DealerProvider-updateDealer()-Seller', function () {
   it('Seller Highter To Dealer', async function () {
+    const dealerProviderSellerHighterToDealer = new DealerProvider(
+      new SellerInfo(),
+      100,
+      2330,
+      MockCacheForDealerProvider
+    )
     await dealerProviderSellerHighterToDealer.updateDealer()
     expect(dealerProviderSellerHighterToDealer.order).to.deep.equal(null)
   })
 })
 
-const dealerProviderSellerEqualToDealer = new DealerProvider(new SellerInfo(), 668.88, 2330, MockCacheForDealerProvider)
 describe('DealerProvider-updateDealer()-Seller', function () {
   it('Seller Equal To Dealer', async function () {
+    const dealerProviderSellerEqualToDealer = new DealerProvider(
+      new SellerInfo(),
+      668.88,
+      2330,
+      MockCacheForDealerProvider
+    )
     await dealerProviderSellerEqualToDealer.updateDealer()
     let result = {
       account: 66,

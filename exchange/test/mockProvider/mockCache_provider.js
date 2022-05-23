@@ -1,4 +1,4 @@
-class MockRedis {
+class MockRedisForDealerProvider {
   async getSortedSetItem(key, head, tail) {
     let sortedSetItem = [6688801000000, 6688801000000]
     return sortedSetItem
@@ -35,6 +35,6 @@ class MockRedis {
   }
 }
 
-const MockCacheForDealerProvider = new MockRedis()
+const MockCacheForDealerProvider = new MockRedisForDealerProvider()
 
 module.exports = { MockCacheForDealerProvider }
