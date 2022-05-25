@@ -1,45 +1,29 @@
 class DealerProvider {
-  constructor(info, sourcePrice, symbol, cacheProvider) {
+  constructor(info, symbol, cacheProvider) {
     this.info = info
     this.symbol = symbol
     this.cacheProvider = cacheProvider
-    this.sourcePrice = sourcePrice
-    this.orderID = null
-    this.order = null
-    this.score = null
   }
 
-  async updateDealer() {
-    await this.#fetchDealerProfile()
-    if (this.haveBestDealer()) {
-      let data = await this.cacheProvider.getKeyValue(this.orderID)
-      this.order = JSON.parse(data)
-      await this.#deleteDealer(this.symbol, this.info.type, this.orderID)
+  async shiftDealer() {
+    await this.#fetchInfo()
+    if (this.info.orderID !== null && this.info.haveBestDealer()) {
+      let data = await this.cacheProvider.getKeyValue(this.info.orderID)
+      let dealer = JSON.parse(data)
+      await this.#deleteDealer(this.symbol, this.info.type, orderID)
+      return dealer
     }
+    return null
   }
 
-  async #fetchDealerProfile() {
-    ;[this.orderID, this.score] = await this.cacheProvider.getSortedSetItem(
+  async #fetchInfo() {
+    let score
+    ;[this.info.orderID, score] = await this.cacheProvider.getSortedSetItem(
       `${this.symbol}-${this.info.type}`,
       this.info.head,
       this.info.tail
     )
-  }
-
-  haveBestDealer() {
-    if (this.orderID === undefined) {
-      return false
-    }
-
-    let dealerPrice = parseInt(this.score.toString().slice(0, -8)) //撮合價
-    let alignedSourcePrice = this.sourcePrice * 100 //委託單價
-
-    // buyer >= seller
-    if (this.info.type === 'buyer') {
-      return dealerPrice >= alignedSourcePrice //撮合 >= 委託 -> false
-    } else if (this.info.type === 'seller') {
-      return dealerPrice <= alignedSourcePrice //撮合 <= 委託 -> false
-    }
+    this.info.updateScore(score)
   }
 
   async #deleteDealer(symbol, type, orderID) {
@@ -48,19 +32,39 @@ class DealerProvider {
   }
 }
 
-class SellerInfo {
-  constructor() {
-    this.type = 'seller'
-    this.head = 0
-    this.tail = 0
+class DealerInfo {
+  constructor(type, orderPrice, sortedSetHead, sortedSetTail) {
+    this.type = type
+    this.orderPrice = orderPrice
+    this.sortedSetHead = sortedSetHead
+    this.sortedSetTail = sortedSetTail
+    this.score = null
+    this.alignPrice = null
+    this.orderID = null
+  }
+
+  updateScore(score) {
+    this.score = score
+    this.alignPrice = parseInt(score.toString().slice(0, -8))
   }
 }
 
-class BuyerInfo {
-  constructor() {
-    this.type = 'buyer'
-    this.head = -1
-    this.tail = -1
+class SellerInfo extends DealerInfo {
+  constructor(orderPrice) {
+    super('seller', orderPrice, 0, 0)
+  }
+
+  haveBestDealer() {
+    return this.orderPrice * 100 >= this.alignPrice
+  }
+}
+
+class BuyerInfo extends DealerInfo {
+  constructor(orderPrice) {
+    super('buyer', orderPrice, -1, -1)
+  }
+  haveBestDealer() {
+    return this.alignPrice >= this.orderPrice * 100
   }
 }
 
