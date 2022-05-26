@@ -59,6 +59,7 @@ async function matchLogic(orderFromQueue) {
     let lockOrderValue = await redisClient.get(`lock-${order.orderID}`)
     let lockStockValue = await redisClient.get(`lock-${order.symbol}-${order.BS}`)
     let lockFiveTicksValue = await redisClient.get(`lock-${order.symbol}-${order.BS}-fiveTicks`)
+    let lockDealerValue = await redisClient.get(`lock-${dealerProvider.orderID}`)
     if (lockOrderValue === 'match') {
       await redisClient.del(`lock-${order.orderID}`)
     }
@@ -68,6 +69,10 @@ async function matchLogic(orderFromQueue) {
     if (lockFiveTicksValue === 'match') {
       await redisClient.del(`lock-${order.symbol}-${order.BS}-fiveTicks`)
     }
+    if (lockDealerValue === 'match') {
+      await redisClient.del(`lock-${dealerProvider.orderID}`)
+    }
+
     QueueProvider.queueConnect.ack(orderFromQueue)
   }
 }

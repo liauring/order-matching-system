@@ -8,6 +8,20 @@ class DealerProvider {
   async shiftDealer() {
     await this.#fetchInfo()
     if (this.info.orderID && this.info.haveBestDealer()) {
+      //get redis lock
+      let requestTimeForLock = new Date().getTime()
+      let dealerIsLock, waitingPeriod
+      do {
+        dealerIsLock = await redisClient.setnx(`lock-${this.info.orderID}`, 'match')
+        let currentTime = new Date().getTime()
+        waitingPeriod = currentTime - requestTimeForLock
+      } while (orderIsLock == 0 && waitingPeriod < 5000)
+
+      if (orderIsLock == 0) {
+        let error = new Error('Can not get redis lock.')
+        throw error
+      }
+
       let data = await this.cacheProvider.getKeyValue(this.info.orderID)
       let dealer = JSON.parse(data)
       await this.#deleteDealer(this.symbol, this.info.type, this.info.orderID)
