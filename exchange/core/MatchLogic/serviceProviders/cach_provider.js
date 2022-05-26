@@ -32,6 +32,10 @@ class Redis {
   async publishChannel(channel, content) {
     await this.cacheConnect.publish(channel, content)
   }
+
+  async setnx(key, value) {
+    await this.cacheConnect.setnx(key, value)
+  }
 }
 
 const CacheProvider = new Redis()
