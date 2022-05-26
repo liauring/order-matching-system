@@ -1,13 +1,7 @@
 const redisClient = require('../../util/redis')
 let { CurrentFiveTicks, UpdateOrderFiveTicks } = require('../../core/FiveTicks')
 
-// TODO: error handling: 1. can not find orderID
 const updateOrder = async (req, res) => {
-  let { orderID, symbol, quantity, BS } = req.body
-  orderID = parseInt(orderID)
-  symbol = parseInt(symbol)
-  quantity = parseInt(quantity)
-
   //get redis lock
   let requestTimeForLock = new Date().getTime()
   let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
@@ -22,8 +16,21 @@ const updateOrder = async (req, res) => {
   if (orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) {
     return res.status(500).json('Please try again later.') //TODO:error handling
   }
+  //------------------
+
+  let { orderID, symbol, quantity, BS } = req.body
+  orderID = parseInt(orderID)
+  symbol = parseInt(symbol)
+  quantity = parseInt(quantity)
 
   let orderInfo = await redisClient.get(`${orderID}`)
+
+  if (!orderInfo) {
+    // await redisClient.set(`updateOrderNotMatch-${orderInfo.orderID}`, quantity)
+    await releaseRedisLock(orderID, BS, symbol)
+    return res.status(400).json('There is not unmatched order. Try again later.')
+  }
+
   orderInfo = JSON.parse(orderInfo)
   await redisClient.del(`${orderID}`)
   orderInfo.quantity = parseInt(orderInfo.quantity)

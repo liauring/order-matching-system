@@ -12,6 +12,32 @@ const { saveLogs } = require('../util/util')
 
 async function matchLogic(orderFromQueue) {
   let order = JSON.parse(orderFromQueue.content.toString())
+  //get redis lock
+  let requestTimeForLock = new Date().getTime()
+  let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
+  do {
+    orderIsLock = await redisClient.setnx(`lock-${order.orderID}`, 'match')
+    stockSetIsLock = await redisClient.setnx(`lock-${order.symbol}-${order.BS}`, 'match')
+    fiveTicksIsLock = await redisClient.setnx(`lock-${order.symbol}-${order.BS}-fiveTicks`, 'match')
+    let currentTime = new Date().getTime()
+    waitingPeriod = currentTime - requestTimeForLock
+  } while ((orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) && waitingPeriod < 5000)
+  if (orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) {
+    let error = new Error('Can not get redis lock.')
+    throw error
+  }
+  //----------------------
+
+  //check if the order was updated before matching
+  // let updateQuantity = await redisClient.get(`updateOrderNotMatch-${order.orderID}`)
+  // if (updateQuantity) {
+  //   order.quantity -= updateQuantity
+  //   if (order.quantity <= 0) {
+  //     return
+  //   }
+  // }
+  //---------------
+
   let { BS } = order
   let dealerInfo = new BSDealerInfoMap[BS](order.price)
   let dealerProvider = new DealerProvider(dealerInfo, order.symbol, CacheProvider)
@@ -19,21 +45,6 @@ async function matchLogic(orderFromQueue) {
   let matchLogic = new MatchLogic(order, dealerProvider, QueueProvider, CacheProvider, executionUpdater)
 
   try {
-    // get redis lock
-    let requestTimeForLock = new Date().getTime()
-    let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
-    do {
-      orderIsLock = await redisClient.setnx(`lock-${order.orderID}`, 'match')
-      stockSetIsLock = await redisClient.setnx(`lock-${order.symbol}-${order.BS}`, 'match')
-      fiveTicksIsLock = await redisClient.setnx(`lock-${order.symbol}-${order.BS}-fiveTicks`, 'match')
-      let currentTime = new Date().getTime()
-      waitingPeriod = currentTime - requestTimeForLock
-    } while ((orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) && waitingPeriod < 5000)
-    if (orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) {
-      let error = new Error('Can not get redis lock.')
-      throw error
-    }
-
     await matchLogic.matchWorkFlow()
   } catch (error) {
     console.error(error)
