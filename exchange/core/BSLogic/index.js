@@ -1,5 +1,6 @@
-const { BuyerLogic, BuyerOrder } = require('./BuyerLogic')
-const { SellerLogic, SellerOrder } = require('./SellerLogic')
+const { BuyerOrder } = require('./BuyerLogic')
+const { SellerOrder } = require('./SellerLogic')
+const { BuyerInfo, SellerInfo } = require('./DealerProvider')
 
 // module.exports = [
 //   { buyer: BuyerOrder, seller: SellerOrder },

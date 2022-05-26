@@ -7,10 +7,10 @@ class DealerProvider {
 
   async shiftDealer() {
     await this.#fetchInfo()
-    if (this.info.orderID !== null && this.info.haveBestDealer()) {
+    if (this.info.orderID && this.info.haveBestDealer()) {
       let data = await this.cacheProvider.getKeyValue(this.info.orderID)
       let dealer = JSON.parse(data)
-      await this.#deleteDealer(this.symbol, this.info.type, orderID)
+      await this.#deleteDealer(this.symbol, this.info.type, this.info.orderID)
       return dealer
     }
     return null
@@ -20,8 +20,8 @@ class DealerProvider {
     let score
     ;[this.info.orderID, score] = await this.cacheProvider.getSortedSetItem(
       `${this.symbol}-${this.info.type}`,
-      this.info.head,
-      this.info.tail
+      this.info.sortedSetHead,
+      this.info.sortedSetTail
     )
     this.info.updateScore(score)
   }
@@ -44,6 +44,9 @@ class DealerInfo {
   }
 
   updateScore(score) {
+    if (!score) {
+      return
+    }
     this.score = score
     this.alignPrice = parseInt(score.toString().slice(0, -8))
   }

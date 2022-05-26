@@ -1,4 +1,4 @@
-const BSLogicMap = require('../../core/BSLogic')[0]
+const BSLogicMap = require('../../core/BSLogic').newOrder
 const redisClient = require('../../util/redis')
 const { QueueProvider } = require('../../core/BSLogic/serviceProviders/queue_provider')
 

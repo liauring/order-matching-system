@@ -22,8 +22,14 @@ class MatchLogic {
     do {
       this.dealer = await this.dealerProvider.shiftDealer()
       if (this.dealer === null) {
-        this.#writeNewDealerToRadis()
-        this.#writeFiveTicksOrderToRadis(this.symbol, this.order.BS, this.order.price, this.order.quantity, '+')
+        await this.#writeNewDealerToRedis()
+        await this.#writeFiveTicksOrderToRedis(
+          this.order.symbol,
+          this.order.BS,
+          this.order.price,
+          this.order.quantity,
+          '+'
+        )
         return
       }
       this.orderMap[this.dealer.BS] = this.dealer
@@ -35,7 +41,7 @@ class MatchLogic {
     } while (this.#hasRemainingQuantity)
   }
 
-  async #writeNewDealerToRadis() {
+  async #writeNewDealerToRedis() {
     let setScore = this.order.orderID
     await this.cacheProvider.addSortedSetMember(
       `${this.order.symbol}-${this.order.BS}`,
@@ -45,8 +51,8 @@ class MatchLogic {
     await this.cacheProvider.addKeyValue(`${this.order.orderID}`, JSON.stringify(this.order))
   }
 
-  async #writeFiveTicksOrderToRadis(symbol, type, price, quantity, operation) {
-    await new NewOrderFiveTicks().addNewOrderFiveTicks(`${symbol}-${type}`, price, quantity, operation)
+  async #writeFiveTicksOrderToRedis(symbol, type, price, quantity, operator) {
+    await new NewOrderFiveTicks().addNewOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
   }
 
   async #matchExecutionQuantity() {
@@ -55,12 +61,7 @@ class MatchLogic {
       this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.dealer.orderStatus = 3
-      await this.#writeFiveTicksOrderToRadis(
-        `${this.order.symbol}-${this.dealer.BS}`,
-        this.dealer.price,
-        this.finalQTY,
-        '-'
-      )
+      await this.#writeFiveTicksOrderToRedis(this.order.symbol, this.dealer.BS, this.dealer.price, this.finalQTY, '-')
     } else if (this.order.quantity < this.dealer.quantity) {
       this.finalQTY = this.order.quantity
       this.dealer.quantity -= this.order.quantity
@@ -73,24 +74,14 @@ class MatchLogic {
       this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.dealer.orderStatus = 2
-      await this.#writeFiveTicksOrderToRadis(
-        `${this.order.symbol}-${this.dealer.BS}`,
-        this.dealer.price,
-        this.finalQTY,
-        '-'
-      )
+      await this.#writeFiveTicksOrderToRedis(this.order.symbol, this.dealer.BS, this.dealer.price, this.finalQTY, '-')
     } else if (this.order.quantity > this.dealer.quantity) {
       this.finalQTY = this.dealer.quantity
       this.order.quantity -= this.dealer.quantity
       this.#hasRemainingQuantity = true
       this.order.orderStatus = 2
       this.dealer.orderStatus = 3
-      await this.#writeFiveTicksOrderToRadis(
-        `${this.order.symbol}-${this.dealer.BS}`,
-        this.dealer.price,
-        this.finalQTY,
-        '-'
-      )
+      await this.#writeFiveTicksOrderToRedis(this.order.symbol, this.dealer.BS, this.dealer.price, this.finalQTY, '-')
     } else {
       console.error('matchExecutionQuantity() Error')
     }
@@ -98,4 +89,4 @@ class MatchLogic {
   }
 }
 
-module.exports = { MatchLogic, NewOrder }
+module.exports = { MatchLogic }

@@ -1,6 +1,15 @@
 const { v4: uuidv4 } = require('uuid')
 
 class ExecutionUpdater {
+  #queueProvider
+  #cacheProvider
+  #executionID
+  #executionTime
+  #seller
+  #buyer
+  #symbol
+  #dealerPrice
+  #finalQTY
   constructor(queueProvider, cacheProvider) {
     this.#queueProvider = queueProvider
     this.#cacheProvider = cacheProvider
