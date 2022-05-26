@@ -8,7 +8,7 @@ const postNewOrder = async (req, res, next) => {
   await createNewOrderHistory(getNewBody.data)
   let response = await axios.post(`${process.env.apiHost}/api/newOrder`, getNewBody.data)
 
-  res.status(200).json(response.data)
+  return res.status(200).json(response.data)
 }
 
 // newOrder.body {

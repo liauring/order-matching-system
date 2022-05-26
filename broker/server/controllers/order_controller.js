@@ -6,7 +6,7 @@ const getOrder = async (req, res) => {
   account = parseInt(account)
   symbol = parseInt(symbol)
   let response = await getOrderInfo(account, symbol)
-  res.status(200).json(response)
+  return res.status(200).json(response)
 }
 
 // postOrder.body {
@@ -20,7 +20,7 @@ const updateOrder = async (req, res) => {
   await updateOrderInfo(updateResponse.data)
   await createOrderHistory(reqBody, updateResponse.data)
   let response = await getOrderInfoSingle(updateResponse.data.orderID)
-  res.status(200).json(response[0])
+  return res.status(200).json(response[0])
 }
 
 // updateOrder.body {

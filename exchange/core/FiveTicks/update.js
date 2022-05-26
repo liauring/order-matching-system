@@ -1,7 +1,7 @@
 const redisClient = require('../../util/redis')
 
-class NewOrderFiveTicks {
-  async addNewOrderFiveTicks(redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {
+class UpdateOrderFiveTicks {
+  async updateOrderFiveTicks(redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {
     let scoreForVal = parseInt(newOrderPrice * 100)
       .toString()
       .padStart(5, '0')
@@ -31,7 +31,7 @@ class NewOrderFiveTicks {
       newQuantity = originalQuantity - newOrderQuantity
       fiveTicksSize = scoreForVal + newQuantity.toString()
     } else {
-      console.error('addNewOrderFiveTicks error: no operator')
+      console.error('UpdateOrderFiveTicks error: no operator')
     }
 
     await redisClient.zremrangebyscore(`${redisKeyPrefix}-fiveTicks`, score, score)
@@ -39,8 +39,7 @@ class NewOrderFiveTicks {
       //防止減到零還存入五檔
       await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, fiveTicksSize)
     }
-    return
   }
 }
 
-module.exports = { NewOrderFiveTicks }
+module.exports = { UpdateOrderFiveTicks }

@@ -1,4 +1,4 @@
 const { CurrentFiveTicks } = require('./get')
-const { NewOrderFiveTicks } = require('./update')
+const { UpdateOrderFiveTicks } = require('./update')
 
-module.exports = { CurrentFiveTicks, NewOrderFiveTicks }
+module.exports = { CurrentFiveTicks, UpdateOrderFiveTicks }

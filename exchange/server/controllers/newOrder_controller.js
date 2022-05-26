@@ -1,6 +1,6 @@
-const BSLogicMap = require('../../core/BSLogic').newOrder
+const BSLogicMap = require('../../core/NewOrder').newOrder
 const redisClient = require('../../util/redis')
-const { QueueProvider } = require('../../core/BSLogic/serviceProviders/queue_provider')
+const { QueueProvider } = require('../../core/MatchLogic/serviceProviders/queue_provider')
 
 const getNewOrderID = async (req, res, next) => {
   await QueueProvider.connect()
@@ -9,7 +9,7 @@ const getNewOrderID = async (req, res, next) => {
   dealer.orderTimeInDayPeriod()
   dealer.createOrderID()
   dealer.createGetOrderResponse()
-  res.status(200).json(dealer.order)
+  return res.status(200).json(dealer.order)
 }
 
 const postNewOrder = async (req, res, next) => {
@@ -18,7 +18,7 @@ const postNewOrder = async (req, res, next) => {
   dealer.formatOrder()
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
-  res.status(200).json(orderResponse)
+  return res.status(200).json(orderResponse)
 }
 
 const postNewOrderStressTest = async (req, res, next) => {
@@ -30,7 +30,7 @@ const postNewOrderStressTest = async (req, res, next) => {
   dealer.createOrderID()
   await dealer.shardingToRabbitmq()
   let orderResponse = dealer.createOrderResponse()
-  res.status(200).json(orderResponse)
+  return res.status(200).json(orderResponse)
 }
 
 // newOrder.body {

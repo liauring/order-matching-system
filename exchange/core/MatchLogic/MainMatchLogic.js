@@ -1,4 +1,4 @@
-let { NewOrderFiveTicks } = require('../FiveTicks')
+let { UpdateOrderFiveTicks } = require('../FiveTicks')
 
 class MatchLogic {
   #hasRemainingQuantity
@@ -52,7 +52,7 @@ class MatchLogic {
   }
 
   async #writeFiveTicksOrderToRedis(symbol, type, price, quantity, operator) {
-    await new NewOrderFiveTicks().addNewOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
+    await new UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
   }
 
   async #matchExecutionQuantity() {

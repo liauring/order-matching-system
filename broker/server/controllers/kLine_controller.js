@@ -7,7 +7,7 @@ const getkLineHistory = async (req, res) => {
   time = parseInt(time)
   let url = `${process.env.apiHost}/api/kLine/${symbol}?time=${time}`
   let response = await axios.get(url)
-  res.status(200).json(response.data)
+  return res.status(200).json(response.data)
 }
 
 // let kLineInfo = {

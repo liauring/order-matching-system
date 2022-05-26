@@ -1,7 +1,7 @@
 const { expect } = require('chai')
 
 const { MockCacheForDealerProvider } = require('./mockProvider/mockCache_provider')
-const { DealerProvider, SellerInfo, BuyerInfo } = require('../core/BSLogic/DealerProvider')
+const { DealerProvider, SellerInfo, BuyerInfo } = require('../core/MatchLogic/DealerProvider')
 
 describe('DealerProvider-updateDealer()-Seller', function () {
   it('Seller Lower To Dealer', async function () {

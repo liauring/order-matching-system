@@ -6,7 +6,7 @@ const getkLineHistory = async (req, res) => {
   symbol = parseInt(symbol)
   time = parseInt(time)
   const executionResult = await mongodbGetExecutionHistory(symbol, time)
-  res.status(200).json(executionResult)
+  return res.status(200).json(executionResult)
 }
 
 // let kLineInfo = {

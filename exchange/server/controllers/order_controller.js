@@ -1,4 +1,5 @@
 const redisClient = require('../../util/redis')
+let { CurrentFiveTicks, UpdateOrderFiveTicks } = require('../../core/FiveTicks')
 
 // TODO: error handling: 1. can not find orderID
 const updateOrder = async (req, res) => {
@@ -13,12 +14,13 @@ const updateOrder = async (req, res) => {
   do {
     orderIsLock = await redisClient.setnx(`lock-${orderID}`, 'updateOrder')
     stockSetIsLock = await redisClient.setnx(`lock-${symbol}-${BS}`, 'updateOrder')
+    fiveTicksIsLock = await redisClient.setnx(`lock-${symbol}-${BS}-fiveTicks`, 'updateOrder')
     let currentTime = new Date().getTime()
     waitingPeriod = currentTime - requestTimeForLock
-  } while ((orderIsLock == 0 || stockSetIsLock == 0) && waitingPeriod < 30000)
+  } while ((orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) && waitingPeriod < 5000)
 
-  if (orderIsLock == 0 || stockSetIsLock == 0) {
-    res.status(500).json('Please try again later.') //TODO:error handling
+  if (orderIsLock == 0 || stockSetIsLock == 0 || fiveTicksIsLock == 0) {
+    return res.status(500).json('Please try again later.') //TODO:error handling
   }
 
   let orderInfo = await redisClient.get(`${orderID}`)
@@ -36,7 +38,7 @@ const updateOrder = async (req, res) => {
       orderTime: orderInfo.orderTime,
       orderID: orderInfo.orderID,
     }
-    res.status(200).json(response)
+    return res.status(200).json(response)
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo))
   let response = {
@@ -47,17 +49,35 @@ const updateOrder = async (req, res) => {
     orderID: orderInfo.orderID,
   }
 
+  //update fiveTicks
+  let newFiveTicks = new CurrentFiveTicks(symbol)
+  let fiveTicks = await newFiveTicks.getFiveTicks()
+  let dealerFiveTicks = fiveTicks[BS]
+  for (let i = 0; i < dealerFiveTicks.length; i++) {
+    if (dealerFiveTicks[i].price == orderInfo.price) {
+      await new UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${BS}`, orderInfo.price, quantity, '-')
+      let getCurrentFiveTicks = new CurrentFiveTicks(symbol)
+      let updatedFiveTicks = await getCurrentFiveTicks.getFiveTicks()
+      console.debug('[fiveTicks]', updatedFiveTicks)
+      await redisClient.publish('fiveTicks', JSON.stringify(updatedFiveTicks))
+      break
+    }
+  }
+
   //release redis lock
   let lockOrderValue = await redisClient.get(`lock-${orderID}`)
   let lockStockValue = await redisClient.get(`lock-${symbol}-${BS}`)
+  let lockFiveTicksValue = await redisClient.get(`lock-${symbol}-${BS}-fiveTicks`)
   if (lockOrderValue === 'updateOrder') {
     await redisClient.del(`lock-${orderID}`)
   }
   if (lockStockValue === 'updateOrder') {
     await redisClient.del(`lock-${symbol}-${BS}`)
   }
-  //TODO:update five ticks
-  res.status(200).json(response)
+  if (lockFiveTicksValue === 'updateOrder') {
+    await redisClient.del(`lock-${symbol}-${BS}-fiveTicks`)
+  }
+  return res.status(200).json(response)
 }
 
 // updateOrder.body {
