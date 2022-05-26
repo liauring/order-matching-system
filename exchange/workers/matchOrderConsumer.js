@@ -21,7 +21,7 @@ async function matchLogic(orderFromQueue) {
   try {
     // get redis lock
     let requestTimeForLock = new Date().getTime()
-    let waitingPeriod, orderIsLock, stockSetIsLock
+    let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
     do {
       orderIsLock = await redisClient.setnx(`lock-${order.orderID}`, 'match')
       stockSetIsLock = await redisClient.setnx(`lock-${order.symbol}-${order.BS}`, 'match')
