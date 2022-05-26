@@ -2,6 +2,10 @@ const redisClient = require('../../util/redis')
 let { CurrentFiveTicks, UpdateOrderFiveTicks } = require('../../core/FiveTicks')
 
 const updateOrder = async (req, res) => {
+  let { orderID, symbol, quantity, BS } = req.body
+  orderID = parseInt(orderID)
+  symbol = parseInt(symbol)
+  quantity = parseInt(quantity)
   //get redis lock
   let requestTimeForLock = new Date().getTime()
   let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
@@ -17,11 +21,6 @@ const updateOrder = async (req, res) => {
     return res.status(500).json('Please try again later.') //TODO:error handling
   }
   //------------------
-
-  let { orderID, symbol, quantity, BS } = req.body
-  orderID = parseInt(orderID)
-  symbol = parseInt(symbol)
-  quantity = parseInt(quantity)
 
   let orderInfo = await redisClient.get(`${orderID}`)
 
