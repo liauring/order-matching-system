@@ -12,7 +12,7 @@ class DealerProvider {
       let requestTimeForLock = new Date().getTime()
       let dealerIsLock, waitingPeriod
       do {
-        dealerIsLock = await redisClient.setnx(`lock-${this.info.orderID}`, 'match')
+        dealerIsLock = await this.cacheProvider.setnx(`lock-${this.info.orderID}`, 'match')
         let currentTime = new Date().getTime()
         waitingPeriod = currentTime - requestTimeForLock
       } while (orderIsLock == 0 && waitingPeriod < 5000)
