@@ -38,6 +38,8 @@ const updateOrder = async (req, res) => {
       orderTime: orderInfo.orderTime,
       orderID: orderInfo.orderID,
     }
+    //release redis lock
+    await releaseRedisLock(orderID, BS, orderID)
     return res.status(200).json(response)
   }
   await redisClient.set(`${orderID}`, JSON.stringify(orderInfo))
@@ -65,6 +67,11 @@ const updateOrder = async (req, res) => {
   }
 
   //release redis lock
+  await releaseRedisLock(orderID, BS, orderID)
+  return res.status(200).json(response)
+}
+
+async function releaseRedisLock(orderID, BS, orderID) {
   let lockOrderValue = await redisClient.get(`lock-${orderID}`)
   let lockStockValue = await redisClient.get(`lock-${symbol}-${BS}`)
   let lockFiveTicksValue = await redisClient.get(`lock-${symbol}-${BS}-fiveTicks`)
@@ -77,7 +84,6 @@ const updateOrder = async (req, res) => {
   if (lockFiveTicksValue === 'updateOrder') {
     await redisClient.del(`lock-${symbol}-${BS}-fiveTicks`)
   }
-  return res.status(200).json(response)
 }
 
 // updateOrder.body {
