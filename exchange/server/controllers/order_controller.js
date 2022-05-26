@@ -28,27 +28,27 @@ const updateOrder = async (req, res) => {
   await redisClient.del(`${orderID}`)
   orderInfo.quantity = parseInt(orderInfo.quantity)
   orderInfo.quantity -= quantity
+
+  let response
   if (orderInfo.quantity <= 0) {
     // delete the order in the zset of redis
     await redisClient.zrem(`${symbol}-${BS}`, orderID.toString())
-    let response = {
+    response = {
       orderStatus: 0, //delete remaining order
       quantity: 0,
       price: orderInfo.price,
       orderTime: orderInfo.orderTime,
       orderID: orderInfo.orderID,
     }
-    //release redis lock
-    await releaseRedisLock(orderID, BS, symbol)
-    return res.status(200).json(response)
-  }
-  await redisClient.set(`${orderID}`, JSON.stringify(orderInfo))
-  let response = {
-    orderStatus: orderInfo.orderStatus,
-    quantity: orderInfo.quantity,
-    price: orderInfo.price,
-    orderTime: orderInfo.orderTime,
-    orderID: orderInfo.orderID,
+  } else {
+    await redisClient.set(`${orderID}`, JSON.stringify(orderInfo))
+    response = {
+      orderStatus: orderInfo.orderStatus,
+      quantity: orderInfo.quantity,
+      price: orderInfo.price,
+      orderTime: orderInfo.orderTime,
+      orderID: orderInfo.orderID,
+    }
   }
 
   //update fiveTicks
