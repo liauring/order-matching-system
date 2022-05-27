@@ -6,7 +6,7 @@ const { DealerProvider } = require('../core/MatchLogic/DealerProvider')
 const { ExecutionUpdater } = require('../core/MatchLogic/ExecutionUpdater')
 const { CurrentFiveTicks } = require('../core/FiveTicks')
 const { QueueProvider } = require('../core/MatchLogic/serviceProviders/queue_provider')
-const { CacheProvider } = require('../core/MatchLogic/serviceProviders/cach_provider')
+const { CacheProvider } = require('../core/MatchLogic/serviceProviders/cache_provider')
 const { MatchLogic } = require('../core/MatchLogic/MainMatchLogic')
 const { saveLogs } = require('../util/util')
 
