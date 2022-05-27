@@ -7,7 +7,7 @@ class UpdateOrderFiveTicks {
       .padStart(5, '0')
     let score = parseInt(scoreForVal, 10)
     let fiveTicksSize
-    // 取現在該價格的值
+    // get the quantity of the current price
     let [orderFiveTicks, orderFiveTicksScore] = await redisClient.zrange(
       `${redisKeyPrefix}-fiveTicks`,
       score,
@@ -36,7 +36,7 @@ class UpdateOrderFiveTicks {
 
     await redisClient.zremrangebyscore(`${redisKeyPrefix}-fiveTicks`, score, score)
     if (newQuantity > 0) {
-      //防止減到零還存入五檔
+      // If the quatity less than 1, the tick can not add to the sorted set
       await redisClient.zadd(`${redisKeyPrefix}-fiveTicks`, score, fiveTicksSize)
     }
   }

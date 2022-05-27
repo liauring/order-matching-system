@@ -56,7 +56,7 @@ const OrderHistory = ({ orders, setUpdateOrder }) => {
           <EditingWindow
             symbol={selectedOrder.symbol}
             price={selectedOrder.price}
-            remainingQuantity={selectedOrder.quantity - selectedOrder.executionQuantity}
+            remainingQuantity={selectedOrder.quantity}
             updateOrder={(quantity) => updateAndCloseOrder(quantity)}
             setSelectedOrder={setSelectedOrder}
           />

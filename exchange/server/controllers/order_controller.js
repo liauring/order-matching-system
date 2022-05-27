@@ -6,7 +6,7 @@ const updateOrder = async (req, res) => {
   orderID = parseInt(orderID)
   symbol = parseInt(symbol)
   quantity = parseInt(quantity)
-  //get redis lock
+  // get redis lock
   let requestTimeForLock = new Date().getTime()
   let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
   do {

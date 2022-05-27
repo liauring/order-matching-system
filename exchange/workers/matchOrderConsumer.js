@@ -12,7 +12,7 @@ const { saveLogs } = require('../util/util')
 
 async function matchLogic(orderFromQueue) {
   let order = JSON.parse(orderFromQueue.content.toString())
-  //get redis lock
+  // get redis lock
   let requestTimeForLock = new Date().getTime()
   let waitingPeriod, orderIsLock, stockSetIsLock, fiveTicksIsLock
   do {

@@ -8,7 +8,7 @@ class DealerProvider {
   async shiftDealer() {
     await this.#fetchInfo()
     if (this.info.orderID && this.info.haveBestDealer()) {
-      //get redis lock
+      // get redis lock
       let requestTimeForLock = new Date().getTime()
       let dealerIsLock, waitingPeriod
       do {
