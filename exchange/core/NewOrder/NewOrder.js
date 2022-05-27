@@ -1,7 +1,8 @@
 class NewOrder {
+  #queueProvider
   constructor(order, queueProvider) {
     this.order = order
-    this.queueProvider = queueProvider
+    this.#queueProvider = queueProvider
     this.orderID = null
   }
 
@@ -22,7 +23,7 @@ class NewOrder {
 
   async shardingToRabbitmq() {
     let symbolSharding = this.order.symbol % 5
-    await this.queueProvider.shardingToQueue('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
+    await this.#queueProvider.shardingToQueue('matchNewOrder', symbolSharding.toString(), JSON.stringify(this.order))
     return
   }
 

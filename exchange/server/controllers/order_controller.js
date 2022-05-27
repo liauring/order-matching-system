@@ -63,7 +63,7 @@ const updateOrder = async (req, res) => {
   let dealerFiveTicks = fiveTicks[BS]
   for (let i = 0; i < dealerFiveTicks.length; i++) {
     if (dealerFiveTicks[i].price == orderInfo.price) {
-      await new UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${BS}`, orderInfo.price, quantity, '-')
+      await UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${BS}`, orderInfo.price, quantity, '-')
       let getCurrentFiveTicks = new CurrentFiveTicks(symbol)
       let updatedFiveTicks = await getCurrentFiveTicks.getFiveTicks()
       console.debug('[fiveTicks]', updatedFiveTicks)

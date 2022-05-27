@@ -34,7 +34,7 @@ class ExecutionUpdater {
     await this.#emitKLine()
   }
 
-  async #sendExecutionToRabbitmqForStorage(seller, buyer) {
+  async #sendExecutionToRabbitmqForStorage() {
     let executionDetail = {
       executionID: this.#executionID,
       executionTime: this.#executionTime,

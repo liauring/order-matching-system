@@ -1,8 +1,9 @@
 class DealerProvider {
+  #cacheProvider
   constructor(info, symbol, cacheProvider) {
     this.info = info
     this.symbol = symbol
-    this.cacheProvider = cacheProvider
+    this.#cacheProvider = cacheProvider
   }
 
   async shiftDealer() {
@@ -12,7 +13,7 @@ class DealerProvider {
       let requestTimeForLock = new Date().getTime()
       let dealerIsLock, waitingPeriod
       do {
-        dealerIsLock = await this.cacheProvider.setnx(`lock-${this.info.orderID}`, 'match')
+        dealerIsLock = await this.#cacheProvider.setnx(`lock-${this.info.orderID}`, 'match')
         let currentTime = new Date().getTime()
         waitingPeriod = currentTime - requestTimeForLock
       } while (dealerIsLock == 0 && waitingPeriod < 5000)
@@ -22,7 +23,7 @@ class DealerProvider {
         throw error
       }
 
-      let data = await this.cacheProvider.getKeyValue(this.info.orderID)
+      let data = await this.#cacheProvider.getKeyValue(this.info.orderID)
       let dealer = JSON.parse(data)
       await this.#deleteDealer(this.symbol, this.info.type, this.info.orderID)
       return dealer
@@ -32,7 +33,7 @@ class DealerProvider {
 
   async #fetchInfo() {
     let score
-    ;[this.info.orderID, score] = await this.cacheProvider.getSortedSetItem(
+    ;[this.info.orderID, score] = await this.#cacheProvider.getSortedSetItem(
       `${this.symbol}-${this.info.type}`,
       this.info.sortedSetHead,
       this.info.sortedSetTail
@@ -41,8 +42,8 @@ class DealerProvider {
   }
 
   async #deleteDealer(symbol, type, orderID) {
-    await this.cacheProvider.deleteSortedSetMember(`${symbol}-${type}`, orderID)
-    await this.cacheProvider.deleteKeyValue(`${orderID}`)
+    await this.#cacheProvider.deleteSortedSetMember(`${symbol}-${type}`, orderID)
+    await this.#cacheProvider.deleteKeyValue(`${orderID}`)
   }
 }
 

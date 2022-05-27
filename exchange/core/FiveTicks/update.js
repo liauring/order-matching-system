@@ -1,7 +1,7 @@
 const redisClient = require('../../util/redis')
 
 class UpdateOrderFiveTicks {
-  async updateOrderFiveTicks(redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {
+  static async updateOrderFiveTicks(redisKeyPrefix, newOrderPrice, newOrderQuantity, operator) {
     let scoreForVal = parseInt(newOrderPrice * 100)
       .toString()
       .padStart(5, '0')

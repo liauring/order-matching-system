@@ -2,13 +2,13 @@ let { UpdateOrderFiveTicks } = require('../FiveTicks')
 
 class MatchLogic {
   #hasRemainingQuantity
+  #cacheProvider
 
-  constructor(order, dealerProvider, queueProvider, cacheProvider, executionUpdater) {
+  constructor(order, dealerProvider, cacheProvider, executionUpdater) {
     this.orderMap = {}
     this.order = order
     this.dealerProvider = dealerProvider
-    this.queueProvider = queueProvider
-    this.cacheProvider = cacheProvider
+    this.#cacheProvider = cacheProvider
     this.executionUpdater = executionUpdater
 
     this.finalQTY = null
@@ -43,16 +43,16 @@ class MatchLogic {
 
   async #writeNewDealerToRedis() {
     let setScore = this.order.orderID
-    await this.cacheProvider.addSortedSetMember(
+    await this.#cacheProvider.addSortedSetMember(
       `${this.order.symbol}-${this.order.BS}`,
       setScore,
       JSON.stringify(this.order.orderID)
     )
-    await this.cacheProvider.addKeyValue(`${this.order.orderID}`, JSON.stringify(this.order))
+    await this.#cacheProvider.addKeyValue(`${this.order.orderID}`, JSON.stringify(this.order))
   }
 
   async #writeFiveTicksOrderToRedis(symbol, type, price, quantity, operator) {
-    await new UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
+    await UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
   }
 
   async #matchExecutionQuantity() {
@@ -65,12 +65,12 @@ class MatchLogic {
     } else if (this.order.quantity < this.dealer.quantity) {
       this.finalQTY = this.order.quantity
       this.dealer.quantity -= this.order.quantity
-      await this.cacheProvider.addSortedSetMember(
+      await this.#cacheProvider.addSortedSetMember(
         `${this.order.symbol}-${this.dealer.BS}`,
         this.dealerProvider.info.score,
         JSON.stringify(this.dealer.orderID)
       )
-      await this.cacheProvider.addKeyValue(`${this.dealer.orderID}`, JSON.stringify(this.dealer))
+      await this.#cacheProvider.addKeyValue(`${this.dealer.orderID}`, JSON.stringify(this.dealer))
       this.#hasRemainingQuantity = false
       this.order.orderStatus = 3
       this.dealer.orderStatus = 2

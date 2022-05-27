@@ -42,7 +42,7 @@ async function matchLogic(orderFromQueue) {
   let dealerInfo = new BSDealerInfoMap[BS](order.price)
   let dealerProvider = new DealerProvider(dealerInfo, order.symbol, CacheProvider)
   let executionUpdater = new ExecutionUpdater(QueueProvider, CacheProvider)
-  let matchLogic = new MatchLogic(order, dealerProvider, QueueProvider, CacheProvider, executionUpdater)
+  let matchLogic = new MatchLogic(order, dealerProvider, CacheProvider, executionUpdater)
 
   try {
     await matchLogic.matchWorkFlow()
