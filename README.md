@@ -135,3 +135,10 @@ https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-
 
 
 # Installation
+0. Requirement: Redis, RabbitMQ, MongoDB, MySQL
+1. `git clone https://github.com/liauring/order-matching-system.git`
+2. `cd exchange` then `npm install`
+3. `cd broker` then `npm install`
+4. `cd frontend`, `npm install` then `npm run start`
+5. `node /exchange/execScripts/rabbitmqInit.js`
+6. `node /exchange/execScripts/placeOrder.js`
