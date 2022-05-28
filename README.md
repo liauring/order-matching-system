@@ -32,7 +32,7 @@ The repository includes three roles:
 ## Order Book
 ### Price-Time FIFO Matching
 - **Buy-side:** ascending in price, descending in time.
-  **Sell-side:** ascending in price, ascending in time.
+- **Sell-side:** ascending in price, ascending in time.
 - **Redis Sorted Set** 
   - Key: StockID-buyer, StockID-seller
   - Buy-side-Score: Price concatenates (Midnight 23:59 - Placing Time )
@@ -46,7 +46,7 @@ The repository includes three roles:
 
 ### Five Ticks
 - **Buy-side:** quantity of the five highest buyer prices
-  **Sell-side:** quantity of the five lowest seller prices
+- **Sell-side:** quantity of the five lowest seller prices
 - **Redis Sorted Set**
   - Key: StockID-buyer-fiveTicks, StockID-seller-fiveTicks
   - Score: Price
