@@ -55,14 +55,14 @@ The repository includes three roles:
   ![Redis Sorted Set for five ticks](https://user-images.githubusercontent.com/20513954/170835124-1188d1f4-f134-4d47-83a9-c55600b24a0a.png)
 
 ## Sequence Diagram of A New Order Request
-![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170835531-91ed5390-23e7-4462-b92d-6e7e18893fa2.png)
+![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170836346-654b75df-b25a-4025-82fc-81cd6ffb7ea0.png)
 
 
 ## Matching Flow Chart 
 ![Matching Flow Chart ](https://user-images.githubusercontent.com/20513954/170835145-5974a1c0-2e3b-42f1-b187-5dc3d09cbaba.png)
 
 ## Infrastructure Architecture
-![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170835158-bd86070b-8d40-44f6-9e41-6411df8f8b40.png)
+![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170836617-4fd61413-67d3-43ca-8213-fc4595acc280.png)
 
 ## Matching Class Diagram
 - **MatchLogic Class:** responsible for the `main matching workflow`
