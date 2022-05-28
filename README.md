@@ -39,8 +39,9 @@ The repository includes three roles:
     Sell-side-Score: Price concatenates (Placing Time - Midnight 00:00)
   - Value: orderID
   - Example: a sell order of stock 2330 with ID B-123, price 500, and placing time 5/28 9:00:00:000 AM (GMT)
+  
   ![Redis Sorted Set for order book](https://user-images.githubusercontent.com/20513954/170835083-2f82c28e-9775-45cb-ac25-204c0b7a90ea.png)
-)
+
 
 
 ### Five Ticks
@@ -50,10 +51,11 @@ The repository includes three roles:
   - Key: StockID-buyer-fiveTicks, StockID-seller-fiveTicks
   - Score: Price
   - Value: Size
+  
   ![Redis Sorted Set for five ticks](https://user-images.githubusercontent.com/20513954/170835124-1188d1f4-f134-4d47-83a9-c55600b24a0a.png)
 
 ## Sequence Diagram of A New Order Request
-![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170835133-32ce242d-190c-4248-93e8-5c36afaa9d56.png)
+![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170835531-91ed5390-23e7-4462-b92d-6e7e18893fa2.png)
 
 
 ## Matching Flow Chart 
@@ -71,6 +73,7 @@ The repository includes three roles:
 - DealerProvider, ExecutionUpdate, and Redis are injected into MatchLogic.
 - DealerInfo and Redis are injected into DealerProvider.
 - RabbitMQ and Redis are injected into DealerProvider.
+
 ![Matching Class UML](https://user-images.githubusercontent.com/20513954/170835174-72fcc8c3-7e82-4c16-9ab5-f364686955be.png)
 
 ## Race Condition Solution
