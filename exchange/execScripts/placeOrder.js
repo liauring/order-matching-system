@@ -61,7 +61,7 @@ let placeOrderInterval = setInterval(function () {
   let currentTime = new Date()
   let period = currentTime - startTime
   console.log(period)
-  if (period < 43200000) {
+  if (period < 16200000) {
     placeOrder()
   } else {
     clearInterval(placeOrderInterval)
