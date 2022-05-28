@@ -7,16 +7,16 @@ The repository includes three roles:
 3. Order webpage
 
 # Features
-1. Exchange
+**1. Exchange**
   - Limit Orders
   - Market Orders (planning)
   - Price-Time FIFO matching
 
-2. Broker
+**2. Broker**
   - Transmit order data between exchange and order webpage
   - Store order requests for placing and updating
 
-3. Order webpage
+**3. Order webpage**
   - K-Line
   - Five Ticks
   - Order Placing and Updating Section
@@ -62,7 +62,7 @@ The repository includes three roles:
 ![Matching Flow Chart ](https://user-images.githubusercontent.com/20513954/170835145-5974a1c0-2e3b-42f1-b187-5dc3d09cbaba.png)
 
 ## Infrastructure Architecture
-![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170836617-4fd61413-67d3-43ca-8213-fc4595acc280.png)
+![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170836721-4f194d19-52b1-45e8-ab1c-baf6b6f587ea.png)
 
 ## Matching Class Diagram
 - **MatchLogic Class:** responsible for the `main matching workflow`
