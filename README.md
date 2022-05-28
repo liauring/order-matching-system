@@ -1,11 +1,11 @@
-# 📈 Order Matching System
+# Order Matching System
 A system written in Node.js matches buy and sell orders for a stock market. [(Link)](https://connieplayground.site) 
 ##### The repository includes three roles:
 1. Exchange
 2. Broker
 3. Order webpage
 
-# 🛠 Language and Tools
+# 📍 Language and Tools
 <img src="https://user-images.githubusercontent.com/20513954/170839330-dd457cfa-5fad-4f59-bf54-944eb8a00c87.png" title="Nodejs" alt="Nodejs" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839333-dedcb8c9-4e7e-4b7a-a59f-dc42ca912802.png" title="React" alt="React" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839864-77e1b0f7-484e-4f7b-b043-669878048e27.svg" title="RabbitMQ" alt="RabbitMQ" height="40"/>&nbsp;
@@ -16,7 +16,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 <img src="https://user-images.githubusercontent.com/20513954/170839683-01133667-44a4-43b1-a974-dff6d177c547.png" alt="SocketIO" height="40"/>&nbsp;
 
 
-# 📋 Table of Contents
+# 📍 Table of Contents
 - [Features](#Features)
 - [Techniques](#Techniques)
   - [Order Book](#Order-Book)
@@ -33,7 +33,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - [Installation](#Installation)
 
 
-# 🪄 Features
+# 📍 Features
 **1. Exchange**
   - Limit Orders
   - Market Orders (planning)
@@ -49,7 +49,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
   - Order Placing and Updating Section
   - Order History
 
-# 💡 Techniques
+# 📍 Techniques
 ## Order Book
 ### Price-Time FIFO Matching
 - **Buy-side:** ascending in price, descending in time.
@@ -106,7 +106,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - RESTful API (document is in the progress)
 - Socket.IO
 
-# 📝 Performance Test of Exchange Server 
+# 📍 Performance Test of Exchange Server 
 ## Test Scenario 
 Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
 > 2021/5/1 - 5/30 on average 250 executions per second in Taiwan stock market.
@@ -131,11 +131,11 @@ Calculate the duration from receiving a request to sending the execution result 
 
 ![Performance Test](https://user-images.githubusercontent.com/20513954/170837849-b73fcd71-a339-4816-bd32-1521626ff200.png)
 
-# 🎞 Demo
+# 📍 Demo
 https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-86f7-02205cd1b3bf.mov
 
 
-# 🔧 Installation
+# 📍 Installation
 0. Requirement: Redis, RabbitMQ, MongoDB, MySQL
 1. `git clone https://github.com/liauring/order-matching-system.git`
 2. `cd exchange`, `npm install`, then `vim .env`
