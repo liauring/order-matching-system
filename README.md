@@ -65,7 +65,7 @@ The repository includes three roles:
 ![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170835158-bd86070b-8d40-44f6-9e41-6411df8f8b40.png)
 
 ## Matching Class Diagram
-- **MatchLogic Class:** responsible for the main matching workflow
+- **MatchLogic Class:** responsible for the `main matching workflow`
 - **DealerProvider Class:** provide the order info of the best dealer
 - **SellerInfo/BuyerInfo Class:** inherit from DealerInfo class to provide the condition of the best dealer
 - **ExecutionUpdate Class:** handle and send the execution result 
@@ -74,12 +74,12 @@ The repository includes three roles:
 - DealerInfo and Redis are injected into DealerProvider.
 - RabbitMQ and Redis are injected into DealerProvider.
 
-![Matching Class UML](https://user-images.githubusercontent.com/20513954/170835174-72fcc8c3-7e82-4c16-9ab5-f364686955be.png)
+![Matching Class UML](https://user-images.githubusercontent.com/20513954/170836193-f98e9cb0-6b0f-462c-b06f-5aa678c567b7.png)
 
 ## Race Condition Solution
-- Redis: SETNX method
-- MySQL: Lock-For-Update method
-- API response & Socket.IO conflict on the order list (webpage): record the order list status to sustain the latest result
+- **Redis:** SETNX method
+- **MySQL:** Lock-For-Update method
+- **API response & Socket.IO conflict on the order list (webpage):** record the order list status to sustain the latest result
 
 ## Data Transmission
 - RESTful API (document is in the progress)
