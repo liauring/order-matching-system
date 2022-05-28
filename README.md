@@ -103,7 +103,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - **API response & Socket.IO conflict on the order list (webpage):** record the order list status to sustain the latest result
 
 ## 💡 Data Transmission
-- RESTful API ([document](https://github.com/liauring/order-matching-system/blob/main/exchange/README.md) is in the progress)
+- RESTful API ([Document](https://github.com/liauring/order-matching-system/blob/main/exchange/README.md) is in progress)
 - Socket.IO
 
 # Performance Test of Exchange Server 
