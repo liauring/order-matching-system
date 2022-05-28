@@ -103,7 +103,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - **API response & Socket.IO conflict on the order list (webpage):** record the order list status to sustain the latest result
 
 ## 💡 Data Transmission
-- RESTful API (document is in the progress)
+- RESTful API ([document](https://github.com/liauring/order-matching-system/blob/main/exchange/README.md) is in the progress)
 - Socket.IO
 
 # Performance Test of Exchange Server 
@@ -144,3 +144,7 @@ https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-
 5. Import DB schema to MySQL
 6. `node /exchange/execScripts/rabbitmqInit.js`
 7. `node /exchange/execScripts/placeOrder.js`
+8. `node /exchange/app_exchange.js`
+9. `node /broker/app_broker.js`
+10. `node /exchange/workers/matchOrderConsumer.js`
+11. `node /exchange/workers/saveNewExecConsumer.js`
