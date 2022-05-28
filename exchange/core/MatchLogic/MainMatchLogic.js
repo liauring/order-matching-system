@@ -52,7 +52,7 @@ class MatchLogic {
   }
 
   async #writeFiveTicksOrderToRedis(symbol, type, price, quantity, operator) {
-    await UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
+    await new UpdateOrderFiveTicks().updateOrderFiveTicks(`${symbol}-${type}`, price, quantity, operator)
   }
 
   async #matchExecutionQuantity() {
