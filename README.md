@@ -1,10 +1,35 @@
-# order-matching-system
-
-A system written in Node.js matches buy and sell orders for a stock market. 
-The repository includes three roles:
+# Order Matching System
+A system written in Node.js matches buy and sell orders for a stock market. The repository includes three roles:
 1. Exchange
 2. Broker
 3. Order webpage
+
+# Language and Tools
+<img src="https://user-images.githubusercontent.com/20513954/170839330-dd457cfa-5fad-4f59-bf54-944eb8a00c87.png" title="Nodejs" alt="Nodejs" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839333-dedcb8c9-4e7e-4b7a-a59f-dc42ca912802.png" title="React" alt="React" height="40"/>&nbsp;
+<img src="(https://user-images.githubusercontent.com/20513954/170839335-1e8a30f2-e4ad-47c4-844d-b0a1e668ad51.jpeg" title="Redis" alt="Redis" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839331-d657b417-ef6d-4b62-a92d-517b938235ec.png" title="RabbitMQ" alt="RabbitMQ" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839211-67faef21-ed92-4ded-b778-528a8c5c1676.png" title="MongoDB" alt="MongoDB" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839212-08016e0d-0593-4d3c-9ca5-efcf4e30a26f.png" title="MySQL" alt="MySQL" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839336-821f0b6b-9b2e-4d87-baef-e34d323a601b.jpeg" title="SocketIO" alt="SocketIO" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839209-8b1e9c9e-0394-4dba-96bd-6d94e52cd88e.png" title="EC2" alt="EC2" height="40"/>&nbsp;
+
+# Table of Contents
+- [Features](#Features)
+- [Techniques](#Techniques)
+  - [Order Book](#Order-Book)
+    - [Price-Time FIFO Matching](#Price-Time-FIFO-Matching)
+    - [Five Ticks](#Five-Ticks)
+  - [Sequence Diagram of A New Order Request](#Sequence-Diagram-of-A-New-Order-Request)
+  - [Matching Flow Chart ](#Matching-Flow-Chart)
+  - [Infrastructure Architecture](#Infrastructure-Architecture)
+  - [Matching Class Diagram](#Matching-Class-Diagram)
+  - [Race Condition Solution](#Race-Condition-Solution)
+  - [Data Transmission](#Data-Transmission)
+- [Performance Test of Exchange Server](#Performance-Test-of-Exchange-Server )
+- [Demo](#Demo)
+- [Installation](#Installation)
+
 
 # Features
 **1. Exchange**
@@ -21,12 +46,6 @@ The repository includes three roles:
   - Five Ticks
   - Order Placing and Updating Section
   - Order History
-
-# Requirements
-- Redis
-- RabbitMQ
-- MongoDB
-- MySQL
 
 # Techniques
 ## Order Book
@@ -85,7 +104,7 @@ The repository includes three roles:
 - RESTful API (document is in the progress)
 - Socket.IO
 
-# Exchange Server Performance Test
+# Performance Test of Exchange Server 
 ## Test Scenario 
 Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
 > 2021/5/1 - 5/30 on average 250 executions per second in Taiwan stock market.
@@ -96,13 +115,13 @@ Calculate the duration from receiving a request to sending the execution result 
 - Exchange worker and Redis on an EC2 t2-medium in Singapore
 
 ## Test Procedure
-- Record timestamp of start and end time when the order is passed to the next step.
-- Clear all data in all services.
-- Send a sell order with 1 dollar and 250 quantities by Postman.
-- Send 250 buy orders with 1 dollar and 1 quantity by javascript for-loop (concurrent operation) so that each order would be ensured to match.
-- Send the timestamp result to RabbitMQ so that the result processing would not block the matching process.
-- A worker consumes the result from RabbitMQ and exports the data to a CSV file.
-- Analyze the result file.
+1. Record timestamp of start and end time when the order is passed to the next step.
+2. Clear all data in all services.
+3. Send a sell order with 1 dollar and 250 quantities by Postman.
+4. Send 250 buy orders with 1 dollar and 1 quantity by javascript for-loop (concurrent operation) so that each order would be ensured to match.
+5. Send the timestamp result to RabbitMQ so that the result processing would not block the matching process.
+6. A worker consumes the result from RabbitMQ and exports the data to a CSV file.
+7. Analyze the result file.
 
 ## Test Result
 - On average an order **processing duration**: lower than 20 milliseconds
