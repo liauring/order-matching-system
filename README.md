@@ -1,11 +1,11 @@
-# Order Matching System
+# ✏️ Order Matching System
 A system written in Node.js matches buy and sell orders for a stock market. [(Link)](https://connieplayground.site) 
 ##### The repository includes three roles:
 1. Exchange
 2. Broker
 3. Order webpage
 
-# 📍 Language and Tools
+# ✏️ Language and Tools
 <img src="https://user-images.githubusercontent.com/20513954/170839330-dd457cfa-5fad-4f59-bf54-944eb8a00c87.png" title="Nodejs" alt="Nodejs" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839333-dedcb8c9-4e7e-4b7a-a59f-dc42ca912802.png" title="React" alt="React" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839864-77e1b0f7-484e-4f7b-b043-669878048e27.svg" title="RabbitMQ" alt="RabbitMQ" height="40"/>&nbsp;
@@ -16,7 +16,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 <img src="https://user-images.githubusercontent.com/20513954/170839683-01133667-44a4-43b1-a974-dff6d177c547.png" alt="SocketIO" height="40"/>&nbsp;
 
 
-# 📍 Table of Contents
+# ✏️ Table of Contents
 - [Features](#Features)
 - [Techniques](#Techniques)
   - [Order Book](#Order-Book)
@@ -33,7 +33,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - [Installation](#Installation)
 
 
-# 📍 Features
+# ✏️ Features
 **1. Exchange**
   - Limit Orders
   - Market Orders (planning)
@@ -49,8 +49,8 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
   - Order Placing and Updating Section
   - Order History
 
-# 📍 Techniques
-## Order Book
+# ✏️ Techniques
+## 💡 Order Book
 ### Price-Time FIFO Matching
 - **Buy-side:** ascending in price, descending in time.
 - **Sell-side:** ascending in price, ascending in time.
@@ -75,17 +75,17 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
   
   ![Redis Sorted Set for five ticks](https://user-images.githubusercontent.com/20513954/170835124-1188d1f4-f134-4d47-83a9-c55600b24a0a.png)
 
-## Sequence Diagram of A New Order Request
+## 💡 Sequence Diagram of A New Order Request
 ![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170836906-506530ff-6392-4209-9496-588eeb6f2906.png)
 
 
-## Matching Flow Chart 
+## 💡 Matching Flow Chart 
 ![Matching Flow Chart ](https://user-images.githubusercontent.com/20513954/170835145-5974a1c0-2e3b-42f1-b187-5dc3d09cbaba.png)
 
-## Infrastructure Architecture
+## 💡 Infrastructure Architecture
 ![Infrastructure Architecture](https://user-images.githubusercontent.com/20513954/170836721-4f194d19-52b1-45e8-ab1c-baf6b6f587ea.png)
 
-## Matching Class Diagram
+## 💡 Matching Class Diagram
 - **MatchLogic Class:** responsible for the `main matching workflow`
 - **DealerProvider Class:** provide the order info of the best dealer
 - **SellerInfo/BuyerInfo Class:** inherit from DealerInfo class to provide the condition of the best dealer
@@ -97,26 +97,26 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 
 ![Matching Class UML](https://user-images.githubusercontent.com/20513954/170836193-f98e9cb0-6b0f-462c-b06f-5aa678c567b7.png)
 
-## Race Condition Solution
+## 💡 Race Condition Solution
 - **Redis:** SETNX method
 - **MySQL:** Lock-For-Update method
 - **API response & Socket.IO conflict on the order list (webpage):** record the order list status to sustain the latest result
 
-## Data Transmission
+## 💡 Data Transmission
 - RESTful API (document is in the progress)
 - Socket.IO
 
 # 📍 Performance Test of Exchange Server 
-## Test Scenario 
+## 💡 Test Scenario 
 Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
 > 2021/5/1 - 5/30 on average 250 executions per second in Taiwan stock market.
 >
 
-## Test Circumstances
+## 💡 Test Circumstances
 - Exchange server on an EC2 t2-medium in Singapore
 - Exchange worker and Redis on an EC2 t2-medium in Singapore
 
-## Test Procedure
+## 💡 Test Procedure
 1. Record timestamp of start and end time when the order is passed to the next step.
 2. Clear all data in all services.
 3. Send a sell order with 1 dollar and 250 quantities by Postman.
@@ -125,17 +125,17 @@ Calculate the duration from receiving a request to sending the execution result 
 6. A worker consumes the result from RabbitMQ and exports the data to a CSV file.
 7. Analyze the result file.
 
-## Test Result
+## 💡 Test Result
 - On average an order **processing duration**: lower than 20 milliseconds
 - On average an order **matching duration**: 2.5 milliseconds seconds
 
 ![Performance Test](https://user-images.githubusercontent.com/20513954/170837849-b73fcd71-a339-4816-bd32-1521626ff200.png)
 
-# 📍 Demo
+# ✏️ Demo
 https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-86f7-02205cd1b3bf.mov
 
 
-# 📍 Installation
+# ✏️ Installation
 0. Requirement: Redis, RabbitMQ, MongoDB, MySQL
 1. `git clone https://github.com/liauring/order-matching-system.git`
 2. `cd exchange`, `npm install`, then `vim .env`
