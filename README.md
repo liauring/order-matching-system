@@ -11,7 +11,7 @@ A system written in Node.js matches buy and sell orders for a stock market. The 
 <img src="https://user-images.githubusercontent.com/20513954/170839211-67faef21-ed92-4ded-b778-528a8c5c1676.png" title="MongoDB" alt="MongoDB" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839212-08016e0d-0593-4d3c-9ca5-efcf4e30a26f.png" title="MySQL" alt="MySQL" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839864-77e1b0f7-484e-4f7b-b043-669878048e27.svg" title="RabbitMQ" alt="RabbitMQ" height="40"/>&nbsp;
-<img src="https://user-images.githubusercontent.com/20513954/170840030-cce82b25-a6a7-4fe4-a56d-1dfb37c1e856.png" alt="EC2" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839801-7ddb772e-b727-4e50-94d0-f0b30a6ebaee.png" alt="EC2" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839683-01133667-44a4-43b1-a974-dff6d177c547.png" alt="SocketIO" height="40"/>&nbsp;
 
 
