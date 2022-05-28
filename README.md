@@ -55,7 +55,7 @@ The repository includes three roles:
   ![Redis Sorted Set for five ticks](https://user-images.githubusercontent.com/20513954/170835124-1188d1f4-f134-4d47-83a9-c55600b24a0a.png)
 
 ## Sequence Diagram of A New Order Request
-![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170836346-654b75df-b25a-4025-82fc-81cd6ffb7ea0.png)
+![Sequence Diagram of A New Order Request](https://user-images.githubusercontent.com/20513954/170836906-506530ff-6392-4209-9496-588eeb6f2906.png)
 
 
 ## Matching Flow Chart 
@@ -84,6 +84,31 @@ The repository includes three roles:
 ## Data Transmission
 - RESTful API (document is in the progress)
 - Socket.IO
+
+# Exchange Server Performance Test
+## Test Scenario 
+Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
+> 2021/5/1 - 5/30 on average 250 executions per second in Taiwan stock market.
+>
+
+## Test Circumstances
+- Exchange server on an EC2 t2-medium in Singapore
+- Exchange worker and Redis on an EC2 t2-medium in Singapore
+
+## Test Procedure
+- Record timestamp of start and end time when the order is passed to the next step.
+- Clear all data in all services.
+- Send a sell order with 1 dollar and 250 quantities by Postman.
+- Send 250 buy orders with 1 dollar and 1 quantity by javascript for-loop (concurrent operation) so that each order would be ensured to match.
+- Send the timestamp result to RabbitMQ so that the result processing would not block the matching process.
+- A worker consumes the result from RabbitMQ and exports the data to a CSV file.
+- Analyze the result file.
+
+## Test Result
+- On average an order **processing duration**: lower than 20 milliseconds
+- On average an order **matching duration**: 2.5 milliseconds seconds
+
+![Performance Test](https://user-images.githubusercontent.com/20513954/170837849-b73fcd71-a339-4816-bd32-1521626ff200.png)
 
 # Demo
 https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-86f7-02205cd1b3bf.mov
