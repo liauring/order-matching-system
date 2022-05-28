@@ -7,12 +7,12 @@ A system written in Node.js matches buy and sell orders for a stock market. The 
 # Language and Tools
 <img src="https://user-images.githubusercontent.com/20513954/170839330-dd457cfa-5fad-4f59-bf54-944eb8a00c87.png" title="Nodejs" alt="Nodejs" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839333-dedcb8c9-4e7e-4b7a-a59f-dc42ca912802.png" title="React" alt="React" height="40"/>&nbsp;
-<img src="(https://user-images.githubusercontent.com/20513954/170839335-1e8a30f2-e4ad-47c4-844d-b0a1e668ad51.jpeg" title="Redis" alt="Redis" height="40"/>&nbsp;
+<img src="(https://user-images.githubusercontent.com/20513954/170839651-c78b8dcf-f9cb-43ce-aa10-65ede202ad9a.png" alt="Redis" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839331-d657b417-ef6d-4b62-a92d-517b938235ec.png" title="RabbitMQ" alt="RabbitMQ" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839211-67faef21-ed92-4ded-b778-528a8c5c1676.png" title="MongoDB" alt="MongoDB" height="40"/>&nbsp;
 <img src="https://user-images.githubusercontent.com/20513954/170839212-08016e0d-0593-4d3c-9ca5-efcf4e30a26f.png" title="MySQL" alt="MySQL" height="40"/>&nbsp;
-<img src="https://user-images.githubusercontent.com/20513954/170839336-821f0b6b-9b2e-4d87-baef-e34d323a601b.jpeg" title="SocketIO" alt="SocketIO" height="40"/>&nbsp;
-<img src="https://user-images.githubusercontent.com/20513954/170839209-8b1e9c9e-0394-4dba-96bd-6d94e52cd88e.png" title="EC2" alt="EC2" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839683-01133667-44a4-43b1-a974-dff6d177c547.png" alt="SocketIO" height="40"/>&nbsp;
+<img src="https://user-images.githubusercontent.com/20513954/170839669-a4afe020-9e52-41c2-97ea-08a48e285db6.png" alt="EC2" height="40"/>&nbsp;
 
 # Table of Contents
 - [Features](#Features)
