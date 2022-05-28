@@ -15,7 +15,7 @@ function sentNewOrder(reqBody) {
   axios
     .post(url, reqBody, { headers: { 'Content-Type': 'application/json' } })
     .then((response) => {
-      console.log(response.data)
+      // console.log(response.data)
     })
     .catch((err) => {
       console.error(err)
@@ -60,11 +60,10 @@ let startTime = new Date()
 let placeOrderInterval = setInterval(function () {
   let currentTime = new Date()
   let period = currentTime - startTime
-  console.log(period)
   if (period < 16200000) {
     placeOrder()
   } else {
     clearInterval(placeOrderInterval)
     process.exit(0)
   }
-}, 2000)
+}, 2500)
