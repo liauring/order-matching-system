@@ -83,6 +83,6 @@ The repository includes three roles:
 - Socket.IO
 
 # Demo
-![Demo video](https://user-images.githubusercontent.com/20513954/170835191-602e619b-6327-4686-b9f0-4e7f1c282db1.mov)
+https://user-images.githubusercontent.com/20513954/170835191-602e619b-6327-4686-b9f0-4e7f1c282db1.mov
 
 # Installation
