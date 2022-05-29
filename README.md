@@ -95,9 +95,12 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - **SellerInfo/BuyerInfo Class:** inherit from DealerInfo class to provide the condition of the best dealer
 - **ExecutionUpdate Class:** handle and send the execution result 
 - **RabbitMQ/Redis Class:** service providers
-> DealerProvider, ExecutionUpdate, and Redis are injected into MatchLogic. >
-> DealerInfo and Redis are injected into DealerProvider. >
-> RabbitMQ and Redis are injected into DealerProvider. >
+
+> DealerProvider, ExecutionUpdate, and Redis are injected into MatchLogic.
+
+> DealerInfo and Redis are injected into DealerProvider.
+
+> RabbitMQ and Redis are injected into DealerProvider.
 
 ![Matching Class UML](https://user-images.githubusercontent.com/20513954/170836193-f98e9cb0-6b0f-462c-b06f-5aa678c567b7.png)
 
