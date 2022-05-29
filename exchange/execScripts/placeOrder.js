@@ -2,8 +2,8 @@ const axios = require('axios').default
 
 const dealers = ['seller', 'buyer']
 
-function getRandomInt(x) {
-  return Math.floor(Math.random() * x) + 1
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min
 }
 
 function getRandomPrice(min, max) {
@@ -22,28 +22,10 @@ function sentNewOrder(reqBody) {
     })
 }
 
-// function placeOrder() {
-//   for (let i = 0; i < 10; i++) {
-//     let getRandomDealer = Math.floor(Math.random() * dealers.length)
-//     let reqBody = {
-//       account: getRandomInt(99),
-//       broker: 1030,
-//       symbol: 2330,
-//       BS: dealers[getRandomDealer],
-//       orderType: 'limit',
-//       duration: 'ROD',
-//       price: getRandomPrice(530, 550),
-//       quantity: getRandomInt(100),
-//     }
-
-//     sentNewOrder(reqBody)
-//   }
-// }
-
 function placeOrder() {
   let getRandomDealer = Math.floor(Math.random() * dealers.length)
   let reqBody = {
-    account: getRandomInt(99),
+    account: getRandomInt(100, 999),
     broker: 1030,
     symbol: 2330,
     BS: dealers[getRandomDealer],
