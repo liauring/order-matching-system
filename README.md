@@ -132,15 +132,17 @@ Calculate the duration from receiving a request to sending the execution result 
 ![Performance Test](https://user-images.githubusercontent.com/20513954/170837849-b73fcd71-a339-4816-bd32-1521626ff200.png)
 
 ## 💡 Scalability
-- Vertical Scaling
-  - Compare the performance between different configurations and specifications.
-  - Worker and Redis on `the same` EC2 has better performance. Since the core matching workflow strongly relies on Redis, configuring them in the same instance reduces the connection time of Redis.
-  - There is no apparent difference in performance between t2-micro and t2-medium when the worker and Redis are on the same EC2. In this case, the bottleneck is the matching algorithm. As long as the matching duration is shorter, which means the worker can handle an order faster and consume another order from RabbitMQ faster, the whole process duration will become shorter.
-  - ![Configuration Comparison](https://user-images.githubusercontent.com/20513954/170854281-8184c5f1-f99e-4287-8379-94fca5cb804f.png)
-- Horizontal Scaling
-  - **Scale exchange server:** The exchange server can be scaled with more instances to accept more placing order requests.
-  - **Scale queues:** `Queues are sharded by stock ID`. They can be scaled by increasing the number of shardings so that less stock will be handled by a queue.
-  - **Scale workers for a queue:** Given that only one order can be matched at a time, the number of workers consuming a queue can `only remain one`.
+### Vertical Scaling
+Compare the performance between different configurations and specifications.
+#### **Configurations:** 
+Worker and Redis on `the same` EC2 has better performance. Since the core matching workflow strongly relies on Redis, configuring them in the same instance reduces the connection time of Redis.
+#### **Specifications:** There is no apparent difference in performance between t2-micro and t2-medium when the worker and Redis are on the same EC2. In this case, the bottleneck is the matching algorithm. As long as the matching duration is shorter, which means the worker can handle an order faster and consume another order from RabbitMQ faster, the whole process duration will become shorter.
+- ![Configuration Comparison](https://user-images.githubusercontent.com/20513954/170854281-8184c5f1-f99e-4287-8379-94fca5cb804f.png)
+
+### Horizontal Scaling
+#### **Scale exchange server:** The exchange server can be scaled with more instances to accept more placing order requests.
+#### **Scale queues:** `Queues are sharded by stock ID`. They can be scaled by increasing the number of shardings so that less stock will be handled by a queue.
+#### **Scale workers for a queue:** Given that only one order can be matched at a time, the number of workers consuming a queue can `only remain one`.
   
 
 # Demo
