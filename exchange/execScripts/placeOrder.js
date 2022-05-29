@@ -31,7 +31,7 @@ function placeOrder() {
     BS: dealers[getRandomDealer],
     orderType: 'limit',
     duration: 'ROD',
-    price: getRandomPrice(530, 550),
+    price: getRandomPrice(530, 549),
     quantity: getRandomInt(100),
   }
 
