@@ -134,8 +134,7 @@ Calculate the duration from receiving a request to sending the execution result 
 ## 💡 Scalability
 ### Vertical Scaling
 - Compare the performance between different `configurations` and `specifications`.
-- **Configurations:** 
-Worker and Redis on `the same` EC2 has better performance. Since the core matching workflow strongly relies on Redis, configuring them in the same instance reduces the connection time of Redis.
+- **Configurations:** Worker and Redis on `the same` EC2 has better performance. Since the core matching workflow strongly relies on Redis, configuring them in the same instance reduces the connection time of Redis.
 - **Specifications:** There is no apparent difference in performance between t2-micro and t2-medium when the worker and Redis are on the same EC2. In this case, the bottleneck is the matching algorithm. `As long as the matching duration is shorter`, which means the worker can handle an order faster and consume another order from RabbitMQ faster, `the whole process duration will become shorter`.
 - ![Configuration Comparison](https://user-images.githubusercontent.com/20513954/170854281-8184c5f1-f99e-4287-8379-94fca5cb804f.png)
 
