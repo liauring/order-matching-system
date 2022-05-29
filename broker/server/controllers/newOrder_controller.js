@@ -5,7 +5,7 @@ const postNewOrder = async (req, res, next) => {
   let reqBody = req.body
   console.log('broker getNewBody request', reqBody)
   let getNewBody = await axios.post(`${process.env.apiHost}/api/newOrder/orderID`, reqBody)
-  console.log('broker getNewBody response from exchange api', getNewBody)
+  console.log('broker getNewBody response from exchange api', getNewBody.data)
   await createNewOrder(getNewBody.data)
   await createNewOrderHistory(getNewBody.data)
   let response = await axios.post(`${process.env.apiHost}/api/newOrder`, getNewBody.data)
