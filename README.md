@@ -138,9 +138,9 @@ Calculate the duration from receiving a request to sending the execution result 
   - There is no apparent difference in performance between t2-micro and t2-medium when the worker and Redis are on the same EC2. In this case, the bottleneck is the matching algorithm. As long as the matching duration is shorter, which means the worker can handle an order faster and consume another order from RabbitMQ faster, the whole process duration will become shorter.
   - ![Configuration Comparison](https://user-images.githubusercontent.com/20513954/170854281-8184c5f1-f99e-4287-8379-94fca5cb804f.png)
 - Horizontal Scaling
-  - **Scale exchange server:** The exchange server can be scaled with more instances to accept more placing order requests
+  - **Scale exchange server:** The exchange server can be scaled with more instances to accept more placing order requests.
   - **Scale workers for a queue:** Given that only one order can be matched at a time, the number of workers consuming a queue can `only remain one`.
-  - **Scale queues:** Queues are sharded by stock ID. They can be scaled by increasing the number of shardings so that less stock will be handled by a queue.
+  - **Scale queues:** `Queues are sharded by stock ID`. They can be scaled by increasing the number of shardings so that less stock will be handled by a queue.
 
 # Demo
 https://user-images.githubusercontent.com/20513954/170835348-77f79ec4-0592-4534-86f7-02205cd1b3bf.mov
