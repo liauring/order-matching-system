@@ -131,7 +131,7 @@ Calculate the duration from receiving a request to sending the execution result 
 
 ![Performance Test](https://user-images.githubusercontent.com/20513954/170837849-b73fcd71-a339-4816-bd32-1521626ff200.png)
 
-## 💡 scalibility
+## 💡 Scalability
 - Vertical Scaling
   - Compare the performance between different configurations and specifications.
   - Worker and Redis on `the same` EC2 has better performance. Since the core matching workflow strongly relies on Redis, configuring them in the same instance reduces the connection time of Redis.
