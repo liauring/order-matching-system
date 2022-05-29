@@ -57,7 +57,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 - **Redis Sorted Set** 
   - Key: StockID-buyer, StockID-seller
   - Buy-side-Score: Price concatenates (Midnight 23:59 - Placing Time )
-    Sell-side-Score: Price concatenates (Placing Time - Midnight 00:00)
+  - Sell-side-Score: Price concatenates (Placing Time - Midnight 00:00)
   - Value: orderID
   - Example: a sell order of stock 2330 with ID B-123, price 500, and placing time 5/28 9:00:00:000 AM (GMT)
     - Key: 2330-seller
