@@ -32,7 +32,7 @@ function placeOrder() {
     orderType: 'limit',
     duration: 'ROD',
     price: getRandomPrice(530, 549),
-    quantity: getRandomInt(100),
+    quantity: getRandomInt(1, 100),
   }
 
   sentNewOrder(reqBody)
