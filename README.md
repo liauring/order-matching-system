@@ -118,21 +118,12 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 # Performance Test of Exchange Server 
 ## 💡 Test Scenario 
 Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
-> 2021/5/1 - 5/30 on average 250 executions per second in Taiwan stock market
+> 2021/5/1 - 5/30 on average 250 executions per second in ![Taiwan stock market](https://www.twse.com.tw/zh/page/trading/exchange/MI_5MINS.html)
 >
 
 ## 💡 Test Circumstances
 - Exchange server on an EC2 t2-micro in Singapore
 - Exchange worker and Redis on an EC2 t2-micro in Singapore
-
-## 💡 Test Procedure
-1. Record timestamp of start and end time when the order is passed to the next step.
-2. Clear all data in all services.
-3. Send a sell order with 1 dollar and 250 quantities by Postman.
-4. Send 250 buy orders with 1 dollar and 1 quantity and the same symbol by javascript for-loop (concurrent operation) so that each order would be ensured to be matched.
-5. Send the timestamp result to RabbitMQ so that the result processing would not block the matching process.
-6. A worker consumes the result from RabbitMQ and exports the data to a CSV file.
-7. Analyze the result file.
 
 ## 💡 Test Result
 - On average an order **processing duration**: lower than 20 milliseconds
