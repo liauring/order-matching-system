@@ -118,7 +118,7 @@ A system written in Node.js matches buy and sell orders for a stock market. [(Li
 # Performance Test of Exchange Server 
 ## 💡 Test Scenario 
 Calculate the duration from receiving a request to sending the execution result under the condition of 250 executions per second.
-> 2021/5/1 - 5/30 on average 250 executions per second in ![Taiwan stock market](https://www.twse.com.tw/zh/page/trading/exchange/MI_5MINS.html)
+> 2021/5/1 - 5/30 on average 250 executions per second in [Taiwan stock market](https://www.twse.com.tw/zh/page/trading/exchange/MI_5MINS.html)
 >
 
 ## 💡 Test Circumstances
